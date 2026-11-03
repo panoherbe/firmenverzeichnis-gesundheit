@@ -1,0 +1,10 @@
+<div class="crumb"><a href="/matchmaking/admin">← {{ _("Organisation") }}</a>{% if ev and ev.id %}<a href="/matchmaking/{{ ev.slug }}" target="_blank">{{ _("Seite ansehen") }} ↗</a>{% endif %}</div>
+<h1>{{ mm_tr(ev, "title") if ev and ev.id else _("Neue Veranstaltung") }}</h1>
+{% if ev and ev.id %}<nav class="tabs">
+  <a href="/matchmaking/admin/{{ ev.id }}" class="{{ 'on' if tab == 'edit' }}">{{ _("Einstellungen") }}</a>
+  <a href="/matchmaking/admin/{{ ev.id }}/teilnehmende" class="{{ 'on' if tab == 'people' }}">{{ _("Teilnehmende") }}</a>
+  <a href="/matchmaking/admin/{{ ev.id }}/gespraeche" class="{{ 'on' if tab == 'meetings' }}">{{ _("Gespräche") }}</a>
+  <a href="/matchmaking/admin/{{ ev.id }}/einladung" class="{{ 'on' if tab == 'invite' }}">{{ _("Einladung") }}</a>
+  <a href="/matchmaking/admin/{{ ev.id }}/auswertung" class="{{ 'on' if tab == 'report' }}">{{ _("Auswertung") }}</a>
+</nav>{% endif %}
+{% if msg %}<div class="msg">{{ _(msg) }}</div>{% endif %}

@@ -1,0 +1,23 @@
+[Unit]
+Description=Firmenverzeichnis quarterly cleanup of outdated records (PRIMARY)
+OnFailure=firmen-alert@%n.service
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=firmen
+Group=firmen
+WorkingDirectory=/srv/firmen/app
+ExecStart=/srv/firmen/app/ops/refresh.sh quarterly
+TimeoutStartSec=6h
+Nice=10
+IOSchedulingClass=idle
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/srv/firmen
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes

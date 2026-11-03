@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}API documentation{% endblock %}
+{% block css %}
+code, pre { background:var(--soft); border-radius:4px; } code { padding:1px 6px; } pre { padding:10px 12px; overflow-x:auto; font-size:13px; }
+.op { border:1px solid var(--line); border-radius:var(--radius); padding:12px 16px; margin:12px 0; }
+.verb { font-weight:700; color:var(--accent); margin-right:8px; }
+{% endblock %}
+{% block main %}
+<h1>API documentation</h1>
+<p>Read-only REST API, JSON over HTTPS. Same data and filters as the search page; every record carries its sources.
+Machine-readable schema: <a href="/openapi.json">/openapi.json</a> (OpenAPI 3). Use within the licence terms (<a href="/quellen">sources &amp; licences</a>).</p>
+<h2>Quick start</h2>
+<pre>curl "{{ base }}/api/v1/companies?q=endoscope*&amp;sector=medtech&amp;region=DE-BW&amp;limit=10"
+curl "{{ base }}/api/v1/stats?sector=pharma"
+curl -o list.xlsx "{{ base }}/export.xlsx?product=W"</pre>
+<p class="small">Search syntax in <code>q</code>: AND/OR/NOT (also UND/ODER/NICHT), brackets, "phrases", prefix*. Pagination with
+<code>limit</code> (max 1000) and <code>offset</code>; responses include <code>total</code> and facet counts.</p>
+<h2>Endpoints</h2>
+{% for path, verb, op in ops %}
+<div class="op"><div><span class="verb">{{ verb }}</span><code>{{ path }}</code></div>
+{% if op.description or op.summary %}<p>{{ (op.description or op.summary) }}</p>{% endif %}
+{% set ps = op.parameters or [] %}{% if ps %}
+<table class="small"><thead><tr><th>parameter</th><th>in</th><th>type</th><th>default</th></tr></thead>
+{% for p in ps %}<tr><td><code>{{ p.name }}</code></td><td>{{ p['in'] }}</td><td>{{ (p.schema or {}).get('type', '') }}</td><td>{{ (p.schema or {}).get('default', '') }}</td></tr>{% endfor %}</table>{% endif %}
+</div>
+{% endfor %}
+{% endblock %}

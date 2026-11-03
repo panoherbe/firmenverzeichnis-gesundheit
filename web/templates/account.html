@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Mein Konto") }}{% endblock %}
+{% block main %}
+<h1>{{ _("Mein Konto") }}</h1>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px" class="acct">
+<section class="card">
+<h2 style="margin-top:0">{{ _("Gespeicherte Suchen") }}</h2>
+<table>
+{% for s in saved %}
+<tr><td><a href="/?{{ s.query }}">{{ s.name }}</a><br><span class="small">{{ s.query | replace('&', ' · ') | urldecode }}</span></td>
+<td style="white-space:nowrap"><a href="/export.xlsx?{{ s.query }}" class="small">Excel</a>
+  <form method="post" action="/konto/suche/{{ s.id }}/loeschen" style="display:inline"><button class="ghost" style="padding:2px 8px">{{ _("Löschen") }}</button></form></td></tr>
+{% else %}<tr><td class="small">{{ _("Noch keine gespeicherten Suchen.") }}</td></tr>{% endfor %}
+</table>
+</section>
+<section class="card">
+<h2 style="margin-top:0">{{ _("Suchverlauf") }}</h2>
+<table>
+{% for h in hist %}
+<tr><td><a href="/?{{ h.query }}">{{ h.query | replace('&', ' · ') | urldecode }}</a></td><td class="small">{{ h.hits }} {{ _("Treffer") }}</td>
+<td class="small">{{ h.at.strftime("%d.%m. %H:%M") }}</td></tr>
+{% else %}<tr><td class="small">{{ _("Noch kein Suchverlauf.") }}</td></tr>{% endfor %}
+</table>
+</section>
+</div>
+{% endblock %}

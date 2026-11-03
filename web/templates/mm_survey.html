@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Umfrage") }} – {{ mm_tr(ev, "title") }}{% endblock %}
+{% block css %}{% include "mm_style.html" %}{% endblock %}
+{% block main %}
+<div class="mm">
+<div class="crumb"><a href="/matchmaking/p/{{ me.token }}">← {{ _("Ihr Profil") }}</a></div>
+<h1>{{ _("Umfrage") }}: {{ mm_tr(ev, "title") }}</h1>
+{% if done %}<div class="msg">{{ _("Danke für Ihr Feedback!") }}</div><p><a class="btn sec" href="/matchmaking/p/{{ me.token }}">{{ _("Zurück") }}</a></p>{% else %}
+<p class="help">{{ _("Die Umfrage dauert 2 Minuten. Die Antworten werden ausgewertet, ohne Ihren Namen zu zeigen.") }}</p>
+<form class="f" method="post" action="/matchmaking/p/{{ me.token }}/umfrage">
+{% for key, q in [("satisfaction", "Wie zufrieden waren Sie insgesamt?"), ("benefit", "Wie nützlich war die Veranstaltung für Ihr Geschäft?")] %}
+<fieldset><legend>{{ _(q) }}</legend><span class="small">{{ _("1 = gar nicht, 5 = sehr") }}</span><div class="checks">
+  {% for i in range(1, 6) %}<label class="inline"><input type="radio" name="{{ key }}" value="{{ i }}" required {% if prev[key] == i %}checked{% endif %}> {{ i }}</label>{% endfor %}</div></fieldset>
+{% endfor %}
+<fieldset><legend>{{ _("Wie viele neue Kontakte haben Sie geknüpft?") }}</legend>
+  <input type="number" name="contacts" min="0" max="500" value="{{ prev.contacts if prev.contacts is not none and prev.contacts is defined else held }}" style="max-width:120px"></fieldset>
+<fieldset><legend>{{ _("Welche Umsatzchance erwarten Sie in den nächsten 12 Monaten?") }}</legend><div class="checks">
+  {% for k, v in MM_REVENUE.items() %}<label class="inline"><input type="radio" name="revenue_band" value="{{ k }}" required {% if prev.revenue_band == k %}checked{% endif %}> {{ _(v) }}</label>{% endfor %}</div></fieldset>
+<fieldset><legend>{{ _("Planen Sie Folgegespräche?") }}</legend>
+  <label class="inline"><input type="radio" name="follow_up" value="yes" {% if prev.follow_up %}checked{% endif %}> {{ _("Ja") }}</label>
+  <label class="inline"><input type="radio" name="follow_up" value="no" {% if prev.follow_up == false %}checked{% endif %}> {{ _("Nein") }}</label></fieldset>
+<fieldset><legend>{{ _("Was sollen wir besser machen? (optional)") }}</legend><textarea name="comment" maxlength="2000">{{ prev.comment or "" }}</textarea></fieldset>
+<p><button class="big">{{ _("Absenden") }}</button></p>
+</form>{% endif %}
+</div>
+{% endblock %}

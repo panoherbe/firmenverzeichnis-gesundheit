@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block css %}{% include "mm_style.html" %}{% endblock %}
+{% block main %}
+<div class="mm"><div class="hero"><h1>{{ title }}</h1>
+<p><a class="btn sec" href="/matchmaking{% if ev %}/{{ ev.slug }}{% endif %}">{{ _("Zurück") }}</a></p></div></div>
+{% endblock %}

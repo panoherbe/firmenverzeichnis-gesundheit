@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Matchmaking") }} – {{ _("Veranstaltungen") }}{% endblock %}
+{% block css %}{% include "mm_style.html" %}{% endblock %}
+{% block main %}
+<div class="mm">
+<div class="crumb"><span>{{ _("Matchmaking") }}</span></div>
+<div class="hero">
+  <h1>{{ _("B2B-Matchmaking der Gesundheitswirtschaft") }}</h1>
+  <p class="lead">{{ _("Deutsche Unternehmen treffen internationale Partner in kurzen, vorab vereinbarten Online-Gesprächen.") }}</p>
+  <ol class="steps">
+    <li>{{ _("Anmelden und Profil ausfüllen.") }}</li>
+    <li>{{ _("Vorschläge ansehen und Gespräche anfragen.") }}</li>
+    <li>{{ _("Anfragen annehmen – der Termin wird automatisch eingeplant.") }}</li>
+    <li>{{ _("Zum Termin den Videolink öffnen (oder an den Tisch vor Ort kommen).") }}</li>
+    <li>{{ _("Nach der Veranstaltung: kurze Umfrage.") }}</li>
+  </ol>
+</div>
+<h2>{{ _("Veranstaltungen") }}</h2>
+<div class="cards">
+{% for e in rows %}
+  <div class="card{% if e.status == 'open' %} hl{% endif %}">
+    <div class="spread"><span class="badge b-{{ e.status }}">{{ _(MM_EV_STATUS[e.status]) }}</span>
+      <span class="badge">{{ _("virtuell") if e.format == "virtual" else _("hybrid") }}</span></div>
+    <h3 style="margin-top:8px"><a href="/matchmaking/{{ e.slug }}">{{ mm_tr(e, "title") }}</a></h3>
+    <div class="small">{{ mm_dt(e.starts_at, e.tz) }}–{{ mm_dt(e.ends_at, e.tz, "time") }} ({{ e.tz }})</div>
+    {% if e.markets %}<div class="small">{{ _("Zielmärkte") }}: {% for m in e.markets %}{{ mm_country(m) }}{% if not loop.last %}, {% endif %}{% endfor %}</div>{% endif %}
+    <p style="margin:10px 0 0"><a class="btn{% if e.status != 'open' %} sec{% endif %}" href="/matchmaking/{{ e.slug }}">{{ _("Details und Anmeldung") }}</a>
+      <span class="small">&nbsp;{{ e.n }} {{ _("Angemeldet") }}</span></p>
+  </div>
+{% else %}
+  <p>{{ _("Derzeit ist keine Veranstaltung geöffnet.") }}</p>
+{% endfor %}
+</div>
+</div>
+{% endblock %}

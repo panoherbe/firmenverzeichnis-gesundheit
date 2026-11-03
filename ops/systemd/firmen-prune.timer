@@ -1,0 +1,10 @@
+[Unit]
+Description=Firmenverzeichnis retention: access log 90 d, requester e-mails (PRIMARY) (timer)
+
+[Timer]
+OnCalendar=*-*-* 04:45:00 Europe/Berlin
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

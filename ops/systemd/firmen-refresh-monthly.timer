@@ -1,0 +1,10 @@
+[Unit]
+Description=Firmenverzeichnis monthly data refresh EUDAMED/EMA/GLEIF + rebuild (PRIMARY) (timer)
+
+[Timer]
+OnCalendar=*-*-02 00:30:00 Europe/Berlin
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

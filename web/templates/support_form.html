@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Support-Anfrage") }} – Firmenverzeichnis Gesundheitswirtschaft{% endblock %}
+{% block main %}
+<style>
+.sup { max-width:760px; }
+.sup label { display:block; font-weight:600; margin:14px 0 4px; }
+.sup input[type=text], .sup input[type=email], .sup select, .sup textarea { width:100%; padding:8px; border:1px solid var(--line); border-radius:6px; font:inherit; }
+.sup textarea { min-height:160px; }
+.sup .prio label { font-weight:400; margin:6px 0; display:flex; gap:8px; align-items:flex-start; }
+.sup .prio small { display:block; color:var(--muted); }
+.sup .err { background:#fdecea; border:1px solid #f5c2c0; padding:8px 12px; border-radius:6px; }
+.sup .hp { position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden; }
+.sup .note { background:var(--soft); padding:10px 12px; border-radius:6px; font-size:13px; }
+</style>
+<div class="sup">
+<h1>{{ _("Support-Anfrage") }}</h1>
+{% if errors %}<div class="err" role="alert">{% for e in errors %}<div>{{ e }}</div>{% endfor %}</div>{% endif %}
+<form method="post" action="/support">
+  {% if embed %}<input type="hidden" name="embed" value="1">{% endif %}
+  <label for="category">{{ _("Kategorie") }} *</label>
+  <select id="category" name="category" required>
+    <option value=""></option>
+    {% for k, v in categories.items() %}<option value="{{ k }}"{% if values.category == k %} selected{% endif %}>{{ _(v) }}</option>{% endfor %}
+  </select>
+
+  <fieldset class="prio" style="border:0;padding:0;margin:14px 0 0">
+    <legend style="font-weight:600">{{ _("Wie dringend ist es?") }} *</legend>
+    {% for k, (title, crit) in priorities.items() %}
+    <label><input type="radio" name="priority" value="{{ k }}" required{% if values.priority == k %} checked{% endif %}>
+      <span><strong>{{ _(title) }}</strong><small>{{ _(crit) }}</small></span></label>
+    {% endfor %}
+    <p class="small">{{ _("Antwortzeiten (Servicezeit Mo–Fr 08–17 Uhr, ohne Feiertage in Hamburg)") }}:
+      P1 {{ _("8 Stunden") }} · P2 {{ _("12 Stunden") }} · P3 {{ _("24 Stunden") }} · {{ _("Routineanfrage") }} {{ _("3 Arbeitstage") }}.
+      {{ _("Bei Priorität 1 und 2 wird der Bereitschaftsdienst sofort per Telefon-Alarm benachrichtigt, auch außerhalb der Servicezeit.") }}</p>
+  </fieldset>
+
+  <label for="subject">{{ _("Betreff") }} *</label>
+  <input type="text" id="subject" name="subject" maxlength="200" required value="{{ values.subject or '' }}">
+
+  <label for="description">{{ _("Beschreibung") }} *</label>
+  <textarea id="description" name="description" maxlength="8000" required minlength="10"
+    placeholder="{{ _('Was ist passiert? Was haben Sie erwartet? Welche Seite, welche Suche?') }}">{{ values.description or '' }}</textarea>
+  <p class="small">{{ _("Bitte keine personenbezogenen Daten Dritter in die Beschreibung schreiben.") }}</p>
+
+  <label for="email">{{ _("Ihre E-Mail-Adresse (dienstlich)") }} *</label>
+  <input type="email" id="email" name="email" maxlength="254" required autocomplete="email" value="{{ values.email or '' }}">
+
+  <div class="hp" aria-hidden="true"><label for="website">Website</label><input type="text" id="website" name="website" tabindex="-1" autocomplete="off"></div>
+
+  <p class="note"><strong>{{ _("Datenschutzhinweis") }}:</strong>
+  {{ _("Wir speichern Ihre E-Mail-Adresse nur, um diese Anfrage zu beantworten (Art. 6 Abs. 1 lit. b DSGVO, Vertragserfüllung). Sie wird 90 Tage nach Abschluss der Anfrage gelöscht. Nummer, Priorität und Zeitstempel der Anfrage bleiben ohne E-Mail-Adresse für den monatlichen SLA-Bericht erhalten.") }}</p>
+  <label style="font-weight:400"><input type="checkbox" name="consent" value="1" required> {{ _("Ich habe den Datenschutzhinweis gelesen.") }} *</label>
+  <p><button type="submit">{{ _("Anfrage senden") }}</button></p>
+</form>
+<p class="small"><a href="/status">{{ _("Servicestatus") }}</a></p>
+</div>
+{% endblock %}

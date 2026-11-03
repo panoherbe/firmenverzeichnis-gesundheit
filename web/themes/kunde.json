@@ -1,0 +1,14 @@
+{
+ "name": "Beispiel-Kundendesign",
+ "logo": "/static/demo-logo.svg",
+ "fg": "#222222",
+ "muted": "#666666",
+ "line": "#e3e3e3",
+ "bg": "#ffffff",
+ "soft": "#f5f2ee",
+ "accent": "#a3123a",
+ "accent_fg": "#ffffff",
+ "radius": "2px",
+ "font": "Arial, Helvetica, sans-serif",
+ "provider": "Anbieter: Panagiotis Herbe, Hamburg"
+}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Nutzerverwaltung") }}{% endblock %}
+{% block main %}
+<h1>{{ _("Nutzerverwaltung") }}</h1>
+{% if created %}<p class="hint" role="status">{{ _("Neues Konto – Zugangsdaten jetzt notieren, sie werden nur einmal angezeigt:") }} <code>{{ created }}</code></p>{% endif %}
+<p class="small">{{ rows | selectattr('active') | list | length }} / {{ max_users }} {{ _("Konten aktiv") }}. {{ _("Administratoren melden sich mit zweitem Faktor (TOTP) an.") }}</p>
+<table>
+<thead><tr><th>{{ _("Name") }}</th><th>{{ _("E-Mail") }}</th><th>{{ _("Rolle") }}</th><th>{{ _("Aktiv") }}</th><th class="hide-s">{{ _("Letzte Anmeldung") }}</th></tr></thead>
+{% for u in rows %}<tr><td>{{ u.name }}</td><td>{{ u.email }}</td><td>{{ u.role }}</td><td>{{ "✓" if u.active else "–" }}</td>
+<td class="hide-s small">{{ u.last_login.strftime("%d.%m.%Y %H:%M") if u.last_login else "–" }}</td></tr>{% endfor %}
+</table>
+<h2>{{ _("Nutzer anlegen") }}</h2>
+<form method="post" action="/admin/nutzer" class="meta">
+  <input name="name" placeholder="{{ _('Name') }}" required> <input name="email" type="email" placeholder="{{ _('E-Mail') }}" required>
+  <select name="role"><option value="user">user</option><option value="admin">admin</option></select>
+  <button>{{ _("Nutzer anlegen") }}</button>
+</form>
+<h2>{{ _("Zugriffsprotokoll") }}</h2>
+<p class="small">{{ _("Alle Zugriffe, IP-Adresse gekürzt, 90 Tage aufbewahrt. Die letzten 50:") }}</p>
+<table class="small">
+{% for l in log %}<tr><td>{{ l.at.strftime("%d.%m. %H:%M:%S") }}</td><td>{{ l.email or "–" }}</td><td>{{ l.ip_net or "" }}</td><td>{{ l.method }} {{ l.path }}</td><td>{{ l.status }}</td><td>{{ l.ms }} ms</td></tr>{% endfor %}
+</table>
+{% endblock %}

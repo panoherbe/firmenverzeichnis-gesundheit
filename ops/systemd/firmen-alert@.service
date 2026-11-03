@@ -1,0 +1,11 @@
+# OnFailure handler for every firmen-* job: sends a P3 alert with the unit's last log lines (ops/alert.py).
+[Unit]
+Description=Firmenverzeichnis alert for failed unit %i
+
+[Service]
+Type=oneshot
+User=firmen
+Group=firmen
+SupplementaryGroups=systemd-journal
+WorkingDirectory=/srv/firmen/app
+ExecStart=/srv/firmen/app/.venv/bin/python -m ops.alert --unit %i

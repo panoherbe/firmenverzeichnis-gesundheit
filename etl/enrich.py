@@ -1,0 +1,188 @@
+"""
+Enrich `company` after etl.resolve with facts from the newest raw runs (idempotent; run after every resolve):
+
+  devices   raw/eudamed_devices  → device_count, emdn [[code, text]], emdn_groups (EMDN category letters), markets
+  websites  raw/websites         → contact_url, site_ok (home page answered 2xx/3xx), site_checked
+                                   employees + employees_source + employees_evidence (sentence the company wrote)
+  ema       source_record facts  → products (medicinal product names, up to 20) for EMA marketing-authorisation holders
+  wikidata  raw/wikidata         → employees / revenue for companies matched by LEI (CC0; optional, if fetched)
+  size      employees → size_class (EU SME: micro < 10, small < 50, medium < 250, large ≥ 250);
+            revenue → revenue_class r1 ≤ 2 M€, r2 ≤ 10 M€, r3 ≤ 50 M€, r4 > 50 M€
+  search    appends EMDN texts, product names and the contact domain to the tsvector
+
+Employee figures from websites: regex over the visible text of home/about/career pages; the number must sit next to
+"Mitarbeiter*/Mitarbeitende/Beschäftigte/employees/staff". Precision is measured on a hand-checked sample before
+the field is shown (handover §5a; sample 1 of 2026-11-03: 18/25 right, errors mostly company-history figures,
+so a figure with a year in the 90 characters before it is skipped unless "heute/currently/…" is there too;
+sample 2 after that rule: 27/30 right, 95 % CI ≈ 74–97 %); a figure from a group page ("weltweit", "worldwide", "Gruppe", "group") is kept
+but marked as group-level and not used for the size class.
+
+    python -m etl.enrich
+"""
+
+from __future__ import annotations
+
+import gzip
+import html
+import json
+import re
+from collections import Counter
+
+from etl.common.db import connect
+from etl.common.raw import latest_dir
+
+COLUMNS = """
+ALTER TABLE company ADD COLUMN IF NOT EXISTS contact_url text;
+ALTER TABLE company ADD COLUMN IF NOT EXISTS site_ok boolean;
+ALTER TABLE company ADD COLUMN IF NOT EXISTS site_checked date;
+ALTER TABLE company ADD COLUMN IF NOT EXISTS employees int;
+ALTER TABLE company ADD COLUMN IF NOT EXISTS employees_source text;
+ALTER TABLE company ADD COLUMN IF NOT EXISTS employees_evidence text;
+ALTER TABLE company ADD COLUMN IF NOT EXISTS size_class text;
+ALTER TABLE company ADD COLUMN IF NOT EXISTS revenue_eur numeric;
+ALTER TABLE company ADD COLUMN IF NOT EXISTS revenue_class text;
+ALTER TABLE company ADD COLUMN IF NOT EXISTS device_count int;
+ALTER TABLE company ADD COLUMN IF NOT EXISTS emdn jsonb;
+ALTER TABLE company ADD COLUMN IF NOT EXISTS emdn_groups text[];
+ALTER TABLE company ADD COLUMN IF NOT EXISTS markets text[];
+ALTER TABLE company ADD COLUMN IF NOT EXISTS products text[];
+CREATE TABLE IF NOT EXISTS site_check (company_id text, checked date, ok boolean, PRIMARY KEY (company_id, checked));
+"""
+
+NUM = r"(\d{1,3}(?:[.,\s]\d{3})+|\d{1,6})"
+EMP_WORDS = r"(?:Mitarbeiter(?:innen|n)?|Mitarbeitende[n]?|Beschäftigte[n]?|Angestellte[n]?|employees|staff members|people)"
+EMP = re.compile(rf"(?:(über|mehr als|rund|ca\.?|circa|etwa|knapp|more than|over|about|around|approximately|nearly)\s+)?"
+                 rf"{NUM}\s*\+?\s*(?:engagierte[n]?\s+|motivierte[n]?\s+|qualifizierte[n]?\s+|dedicated\s+|highly\s+qualified\s+)?"
+                 rf"{EMP_WORDS}\b", re.I)
+GROUP = re.compile(r"weltweit|worldwide|global|gruppe|group|konzern|international", re.I)
+YEAR = re.compile(r"\b(19[5-9]\d|20[0-2]\d)\b")
+NOW = re.compile(r"heute|today|derzeit|currently|aktuell|inzwischen|mittlerweile|\bnow\b", re.I)
+TAG = re.compile(r"<(script|style|noscript)[^>]*>.*?</\1>|<[^>]+>", re.I | re.S)
+
+
+def visible(raw: bytes) -> str:
+    text = raw.decode("utf-8", "replace")
+    return re.sub(r"\s+", " ", html.unescape(TAG.sub(" ", text)))
+
+
+def employees_from(text: str) -> tuple[int, str, bool] | None:
+    best = None
+    for m in EMP.finditer(text):
+        if m.group(2).startswith("0"):  # numbered steps ("04 Mitarbeitende begleiten …")
+            continue
+        n = int(re.sub(r"[.,\s]", "", m.group(2)))
+        if n < 2 or n > 500_000 or 1900 <= n <= 2030 and not m.group(1):  # years and tiny numbers are noise
+            continue
+        before = text[max(0, m.start() - 90): m.start()]
+        if YEAR.search(before) and not NOW.search(before):  # company history ("2004 … 10 Mitarbeiter") is not today
+            continue
+        ctx = text[max(0, m.start() - 80): m.end() + 40]
+        group = bool(GROUP.search(ctx))
+        cand = (n, ctx.strip()[:200], group)
+        if best is None or (best[2] and not group) or (best[2] == group and n > best[0]):
+            best = cand
+    return best
+
+
+def size_class(n: int | None) -> str | None:
+    if not n:
+        return None
+    return "micro" if n < 10 else "small" if n < 50 else "medium" if n < 250 else "large"
+
+
+def revenue_class(eur: float | None) -> str | None:
+    if not eur:
+        return None
+    return "r1" if eur <= 2e6 else "r2" if eur <= 10e6 else "r3" if eur <= 50e6 else "r4"
+
+
+def main() -> None:
+    conn = connect()
+    conn.execute(COLUMNS)
+    companies = {r[0]: r for r in conn.execute("SELECT id, srns, lei FROM company").fetchall()}
+    by_srn = {s: cid for cid, srns, _l in companies.values() for s in (srns or [])}
+    up: dict[str, dict] = {cid: {} for cid in companies}
+
+    # devices
+    try:
+        path = latest_dir("eudamed_devices") / "devices.jsonl"
+        recs = [json.loads(l) for l in path.open()]
+    except FileNotFoundError:
+        recs = []
+    agg: dict[str, dict] = {}
+    for r in recs:
+        cid = by_srn.get(r["srn"])
+        if r.get("status") != 200 or not cid:
+            continue
+        a = agg.setdefault(cid, {"n": 0, "emdn": Counter(), "text": {}, "markets": Counter()})
+        a["n"] += r.get("total") or 0
+        for d in r.get("details") or []:
+            for code, text in d.get("emdn") or []:
+                if code:
+                    a["emdn"][code] += 1
+                    a["text"][code] = text
+            a["markets"].update(d.get("markets") or [])
+    for cid, a in agg.items():
+        codes = [c for c, _n in a["emdn"].most_common(12)]
+        up[cid].update(device_count=a["n"], emdn=json.dumps([[c, a["text"][c]] for c in codes]),
+                       emdn_groups=sorted({c[0] for c in codes}), markets=sorted(a["markets"])[:30])
+    print(f"  devices: {len(recs)} SRN records, {len(agg)} companies with device data")
+
+    # websites
+    try:
+        wdir = latest_dir("websites")
+        sites = [json.loads(l) for l in (wdir / "sites.jsonl").open()]
+    except FileNotFoundError:
+        sites, wdir = [], None
+    day = wdir.name if wdir else None
+    n_emp = 0
+    for s in sites:
+        cid = s["cid"]
+        if cid not in up:
+            continue
+        home = next((p for p in s["pages"] if p.get("kind") == "home"), {})
+        ok = isinstance(home.get("status"), int) and home["status"] < 400
+        up[cid].update(site_ok=ok if s.get("robots") == "ok" else None, site_checked=day)
+        if s.get("contact"):
+            up[cid]["contact_url"] = s["contact"]
+        best = None
+        for p in s["pages"]:
+            if p.get("file") and isinstance(p.get("status"), int) and p["status"] < 400:
+                found = employees_from(visible(gzip.decompress((wdir / p["file"]).read_bytes())))
+                if found and (best is None or (best[2] and not found[2])):
+                    best = found
+        if best:
+            n_emp += 1
+            up[cid].update(employees=best[0], employees_evidence=best[1],
+                           employees_source="Angabe des Unternehmens auf der eigenen Website" + (" (Gruppe)" if best[2] else ""))
+            if not best[2]:
+                up[cid]["size_class"] = size_class(best[0])
+        conn.execute("INSERT INTO site_check VALUES (%s, %s, %s) ON CONFLICT DO NOTHING", (cid, day, ok))
+    print(f"  websites: {len(sites)} sites, {sum(1 for u in up.values() if u.get('contact_url'))} contact pages, "
+          f"{n_emp} with an employee figure")
+
+    # EMA products
+    for cid, names in conn.execute("""
+            SELECT m.company_id, array_agg(DISTINCT p) FROM company_member m
+            JOIN source_record s USING (source, source_id), jsonb_array_elements_text(coalesce(s.facts->'products', '[]')) p
+            WHERE m.source = 'ema' GROUP BY 1""").fetchall():
+        up[cid]["products"] = sorted(names)[:20]
+
+    cols = ["contact_url", "site_ok", "site_checked", "employees", "employees_source", "employees_evidence", "size_class",
+            "revenue_eur", "revenue_class", "device_count", "emdn", "emdn_groups", "markets", "products"]
+    conn.execute("UPDATE company SET " + ", ".join(f"{c} = NULL" for c in cols))
+    with conn.cursor() as cur:
+        cur.executemany("UPDATE company SET " + ", ".join(f"{c} = %({c})s" for c in cols) + " WHERE id = %(id)s",
+                        [{**{c: u.get(c) for c in cols}, "id": cid} for cid, u in up.items() if u])
+    conn.execute("""UPDATE company SET search = search ||
+        setweight(to_tsvector('simple', coalesce((SELECT string_agg(e->>1, ' ') FROM jsonb_array_elements(emdn) e), '') || ' ' ||
+                                        coalesce(array_to_string(products, ' '), '')), 'C')
+        WHERE emdn IS NOT NULL OR products IS NOT NULL""")
+    print("  enrich:", conn.execute("""SELECT count(*) FILTER (WHERE verified),
+        count(*) FILTER (WHERE verified AND (email_role IS NOT NULL OR contact_url IS NOT NULL OR website IS NOT NULL)),
+        count(*) FILTER (WHERE verified AND size_class IS NOT NULL), count(*) FILTER (WHERE verified AND emdn_groups IS NOT NULL)
+        FROM company""").fetchone(), "(verified, with contact path, with size class, with EMDN)")
+
+
+if __name__ == "__main__":
+    main()

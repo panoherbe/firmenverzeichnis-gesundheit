@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Ticket") }} {{ t.number }}{% endblock %}
+{% block main %}
+<h1>{{ _("Ticket") }} {{ t.number }}</h1>
+<dl class="kv">
+  <dt>{{ _("Betreff") }}</dt><dd>{{ t.subject }}</dd>
+  <dt>{{ _("Kategorie") }}</dt><dd>{{ _(categories.get(t.category, t.category)) }}</dd>
+  <dt>{{ _("Priorität") }}</dt><dd>{{ _(priorities[t.priority][0]) }}</dd>
+  <dt>{{ _("Status") }}</dt><dd><strong>{{ _(statuses[t.status]) }}</strong></dd>
+  <dt>{{ _("Eingegangen") }}</dt><dd>{{ t.created_at.astimezone(tz).strftime("%d.%m.%Y %H:%M") }}</dd>
+  <dt>{{ _("Reaktion spätestens") }}</dt><dd>{{ t.due_at.astimezone(tz).strftime("%d.%m.%Y %H:%M") }}</dd>
+  <dt>{{ _("Erste Reaktion") }}</dt><dd>{{ t.first_reaction_at.astimezone(tz).strftime("%d.%m.%Y %H:%M") if t.first_reaction_at else _("offen") }}</dd>
+  <dt>{{ _("Gelöst") }}</dt><dd>{{ t.resolved_at.astimezone(tz).strftime("%d.%m.%Y %H:%M") if t.resolved_at else "–" }}</dd>
+</dl>
+<h2>{{ _("Beschreibung") }}</h2>
+<p style="white-space:pre-wrap">{{ t.description }}</p>
+{% if events %}<h2>{{ _("Verlauf") }}</h2>
+<table><tbody>{% for e in events %}
+<tr><td class="small">{{ e.at.astimezone(tz).strftime("%d.%m.%Y %H:%M") }}</td>
+<td>{% if e.kind == "status" %}{{ _("Status") }}: {{ _(statuses.get(e.new_value, e.new_value)) }}{% elif e.kind == "priority" %}{{ _("Priorität") }}: {{ e.new_value }}{% else %}<span style="white-space:pre-wrap">{{ e.note }}</span>{% endif %}</td></tr>
+{% endfor %}</tbody></table>{% endif %}
+{% endblock %}

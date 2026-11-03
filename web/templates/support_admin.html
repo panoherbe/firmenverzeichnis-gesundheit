@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Support-Tickets") }}{% endblock %}
+{% block main %}
+<h1>{{ _("Support-Tickets") }}</h1>
+<p class="meta"><a href="/admin/support">{{ _("Offene") }}</a> <a href="/admin/support?alle=1">{{ _("Alle") }}</a></p>
+<table>
+<thead><tr><th>Nr.</th><th>{{ _("Eingegangen") }}</th><th>{{ _("Priorität") }}</th><th>{{ _("Betreff") }}</th><th>{{ _("Status") }}</th>
+<th>{{ _("Frist") }}</th><th>{{ _("Erste Reaktion") }}</th><th>h</th><th>{{ _("Gelöst") }}</th></tr></thead>
+<tbody>{% for r in rows %}
+<tr><td><a href="/admin/support/{{ r.id }}">{{ r.number }}</a></td>
+<td class="small">{{ r.created_at.astimezone(tz).strftime("%d.%m. %H:%M") }}</td>
+<td>{{ r.priority }}{% if r.priority != r.priority_requested %} <span class="small">({{ r.priority_requested }})</span>{% endif %}</td>
+<td>{{ r.subject }}</td><td>{{ _(statuses[r.status]) }}</td>
+<td class="small">{{ r.due_at.astimezone(tz).strftime("%d.%m. %H:%M") }}</td>
+<td class="small">{{ r.first_reaction_at.astimezone(tz).strftime("%d.%m. %H:%M") if r.first_reaction_at else "–" }}</td>
+<td class="small">{{ r.reaction_hours }}/{{ r.target_hours }}{% if r.met is true %} <span class="ok">✓</span>{% elif r.met is false %} <strong style="color:#b42318">✗</strong>{% endif %}</td>
+<td class="small">{{ r.resolved_at.astimezone(tz).strftime("%d.%m. %H:%M") if r.resolved_at else "–" }}</td></tr>
+{% else %}<tr><td colspan="9">–</td></tr>{% endfor %}</tbody></table>
+<p class="small">h = {{ _("Erste Reaktion") }} in Service-Stunden / Ziel. ✓ {{ _("eingehalten") }}, ✗ {{ _("überschritten") }}.</p>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Quellen & Lizenzen – Firmenverzeichnis{% endblock %}
+{% block main %}
+<h1>Quellen &amp; Lizenzen</h1>
+<p>Das Verzeichnis enthält nur Unternehmen (juristische Personen) und keine personenbezogenen Daten: keine Namen von
+Personen, keine persönlichen E-Mail-Adressen, keine Einzelkaufleute. Jedes Feld ist auf eine Quelle zurückführbar.</p>
+<table>
+<thead><tr><th>Quelle</th><th>Einträge verknüpft</th><th>Lizenz / Nutzung</th><th>Namensnennung</th></tr></thead>
+<tbody>
+{% for r in rows %}
+<tr><td><a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title }}</a><br><span class="small">{{ r.note or "" }}</span></td>
+<td>{% if r.id == "gleif" %}{{ gleif }}{% else %}{{ r.n }}{% endif %}</td><td class="small">{{ r.licence }}</td><td class="small">{{ r.attribution }}</td></tr>
+{% endfor %}
+</tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,10 @@
+[Unit]
+Description=Firmenverzeichnis: is the standby monitor alive? (PRIMARY) (timer)
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=5min
+AccuracySec=5s
+
+[Install]
+WantedBy=timers.target

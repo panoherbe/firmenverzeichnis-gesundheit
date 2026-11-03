@@ -1,0 +1,7 @@
+# PRIMARY: heals a hung app (3 failed local health checks -> restart). Runs as root to be allowed to restart units.
+[Unit]
+Description=Firmenverzeichnis local health check / self-heal
+
+[Service]
+Type=oneshot
+ExecStart=/srv/firmen/app/ops/server/app_healthcheck.sh

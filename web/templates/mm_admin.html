@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Matchmaking") }} – {{ _("Organisation") }}{% endblock %}
+{% block css %}{% include "mm_style.html" %}{% endblock %}
+{% block main %}
+<div class="mm">
+<div class="crumb"><a href="/matchmaking">{{ _("Matchmaking") }}</a></div>
+<div class="spread"><h1>{{ _("Organisation") }}</h1>
+  <div class="row"><a class="btn" href="/matchmaking/admin/neu">+ {{ _("Neue Veranstaltung") }}</a>
+  <a class="btn sec" href="/matchmaking/admin/international">{{ _("Internationale Datenbank") }} ({{ intl.n }})</a></div></div>
+<p class="help">{{ _("Hier legen Sie Veranstaltungen an, sehen Anmeldungen und Gespräche und werten die Umfrage aus.") }}</p>
+<p class="note">{{ _("Keine Kalt-E-Mails: Einladungen nur über eigene Kanäle (Newsletter, Website, AHK-Netz, Verbände). Werbe-E-Mails ohne Einwilligung sind nach § 7 UWG unzulässig. Die Plattform verschickt keine E-Mails.") }}</p>
+<div class="scroll"><table>
+<thead><tr><th>{{ _("Veranstaltungen") }}</th><th>{{ _("Status") }}</th><th>{{ _("Anmeldungen") }}</th><th>{{ _("Gespräche") }}</th><th>{{ _("Umfrage") }}</th><th></th></tr></thead>
+{% for e in rows %}
+<tr><td><a href="/matchmaking/admin/{{ e.id }}"><b>{{ e.title }}</b></a><br><span class="small">{{ mm_dt(e.starts_at, e.tz) }} · {{ _("virtuell") if e.format == "virtual" else _("hybrid") }}</span></td>
+  <td><span class="badge b-{{ e.status }}">{{ _(MM_EV_STATUS[e.status]) }}</span></td>
+  <td>{{ e.k.reg }} <span class="small">({{ e.k.reg_de }} DE · {{ e.k.reg_intl }} intl)</span></td>
+  <td>{{ e.k.m_acc }} / {{ e.k.m_req }} <span class="small">{{ _("bestätigt") }}</span></td>
+  <td>{{ e.k.survey[0].n if e.k.survey else 0 }}</td>
+  <td class="row"><a href="/matchmaking/admin/{{ e.id }}/teilnehmende">{{ _("Teilnehmende") }}</a> <a href="/matchmaking/admin/{{ e.id }}/auswertung">{{ _("Auswertung") }}</a></td></tr>
+{% else %}<tr><td colspan="6">–</td></tr>{% endfor %}
+</table></div>
+{% if purged %}<p class="small">{{ purged }} × {{ _("Daten werden 12 Monate nach der Veranstaltung gelöscht.") }}</p>{% endif %}
+</div>
+{% endblock %}

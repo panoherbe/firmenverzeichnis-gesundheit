@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}{{ c.name }} – {{ _("Firmenverzeichnis Gesundheitswirtschaft") }}{% endblock %}
+{% block css %}
+.prof { display:grid; grid-template-columns: 1fr 300px; gap:24px; }
+.contact a.btn { margin:4px 6px 4px 0; }
+.crumbs { font-size:13px; } .crumbs a { text-decoration:none; }
+@media (max-width:900px) { .prof { grid-template-columns:1fr; } }
+{% endblock %}
+{% block main %}
+{% set e = '?embed=1' if embed else '' %}
+<p class="crumbs noprint"><a href="javascript:history.length>1?history.back():location.assign('/{{ e }}')">← {{ _("zur Suche") }}</a>
+  {% for s in c.sectors %} · <a href="/?sector={{ s }}{{ '&embed=1' if embed }}">{{ _(SECTORS[s]) }}</a>{% endfor %}
+  {% if c.region %} · <a href="/?region={{ c.region }}{{ '&embed=1' if embed }}">{{ REGIONS.get(c.region, c.region) }}</a>{% endif %}</p>
+<h1>{{ c.name }}</h1>
+<p>{% for s in c.sectors %}<span class="tag">{{ _(SECTORS[s]) }}</span>{% endfor %}
+   <span class="small">{{ _(TIERS.get(c.tier, "")) }}</span>
+   {% if c.verified %}<span class="ok">✓ {{ _("registergeprüft") }}</span>{% else %}<span class="small">{{ _("nicht registergeprüft") }}</span>{% endif %}</p>
+
+<div class="prof">
+<div>
+<div class="card contact" style="margin-bottom:16px">
+  <strong>{{ _("Kontaktweg") }}</strong><br>
+  {% if c.contact_url %}<a class="btn" href="{{ c.contact_url }}" rel="noopener nofollow" target="_blank">{{ _("Kontaktseite") }} ↗</a>{% endif %}
+  {% if c.website %}<a class="btn ghost" href="{{ c.website }}" rel="noopener nofollow" target="_blank">{{ c.domain }} ↗</a>{% endif %}
+  {% if c.email_role %}<a class="btn ghost" href="mailto:{{ c.email_role }}">{{ c.email_role }}</a>{% endif %}
+  {% if not (c.contact_url or c.website or c.email_role) %}<span class="small">–</span>{% endif %}
+  <div class="small" style="margin-top:6px">{{ _("Nur Funktionspostfächer und Kontaktseiten der Unternehmen, keine persönlichen Daten.") }}</div>
+</div>
+<dl class="kv">
+  <dt>{{ _("Rechtsform") }}</dt><dd>{{ c.legal_form or "–" }}</dd>
+  <dt>{{ _("Anschrift") }}</dt><dd>{{ c.street or "" }}{% if c.street %}, {% endif %}{{ c.post_code or "" }} {{ c.city or "" }}{% if c.region %} ({{ REGIONS.get(c.region, c.region) }}){% endif %}</dd>
+  {% if c.emdn %}<dt>{{ _("Produkte (EMDN)") }}</dt><dd>{% for code, text in c.emdn[:8] %}<span class="tag" title="{{ text }}">{{ code }}</span> <span class="small">{{ text | lower }}</span><br>{% endfor %}</dd>{% endif %}
+  {% if c.device_count %}<dt>{{ _("Medizinprodukte in EUDAMED") }}</dt><dd>{{ c.device_count }}{% if c.markets %} · {{ _("erhältlich in") }} {{ c.markets | join(", ") }}{% endif %}</dd>{% endif %}
+  {% if c.products %}<dt>{{ _("Arzneimittel (Auswahl)") }}</dt><dd>{{ c.products[:10] | join(", ") }}</dd>{% endif %}
+  {% if c.size_class or c.employees %}<dt>{{ _("Größenklasse") }}</dt><dd>{% if c.size_class %}{{ _(SIZES[c.size_class]) }}{% endif %}{% if c.employees %} · {{ _("rund") }} {{ "{:,}".format(c.employees).replace(",", ".") }} {{ _("Beschäftigte") }}{% endif %}
+      {% if c.employees_source %}<br><span class="small">{{ _("Quelle") }}: {{ _(c.employees_source) }}</span>{% endif %}</dd>{% endif %}
+  <dt>{{ _("USt-IdNr.") }}</dt><dd>{{ c.vat or "–" }}</dd>
+  <dt>{{ _("Handelsregister") }}</dt><dd>{{ c.register_no or "–" }}</dd>
+  <dt>LEI</dt><dd>{% if c.lei %}<a href="https://search.gleif.org/#/record/{{ c.lei }}" target="_blank" rel="noopener">{{ c.lei }}</a>{% else %}–{% endif %}</dd>
+  <dt>EUDAMED SRN</dt><dd>{{ c.srns | join(", ") or "–" }}</dd>
+  <dt>{{ _("Öffentliche Aufträge") }}</dt><dd>{% if c.public_awards %}{{ c.public_awards }} {{ _("Bekanntmachungen") }}, {{ c.public_buyers }} {{ _("Auftraggeber") }}, {{ _("zuletzt") }} {{ c.public_last_award.strftime("%d.%m.%Y") if c.public_last_award else "–" }}{% else %}–{% endif %}</dd>
+  <dt>{{ _("Begründung Branche") }}</dt><dd class="small">{% for k, v in c.sector_evidence.items() %}{{ _(SECTORS[k]) }}: {{ v | join(", ") }}<br>{% endfor %}</dd>
+</dl>
+
+<h2>{{ _("Herkunft der Daten") }}</h2>
+<table>
+<thead><tr><th>{{ _("Quelle") }}</th><th>{{ _("Eintrag") }}</th><th class="hide-s">{{ _("Verknüpft über") }}</th><th class="hide-s">{{ _("Lizenz") }}</th></tr></thead>
+<tbody>
+{% for m in members %}
+<tr><td>{{ m.title }}</td><td>{{ m.name }}{% if m.city %}, {{ m.city }}{% endif %}{% if m.srn %} <span class="small">{{ m.srn }}</span>{% endif %}{% if m.n > 1 %} <span class="small">({{ m.n }}×)</span>{% endif %}</td>
+<td class="hide-s small">{{ m.rule }}</td><td class="hide-s small">{{ m.licence }}</td></tr>
+{% endfor %}
+{% if c.lei %}<tr><td>GLEIF – LEI Golden Copy</td><td>{{ c.lei }}</td><td class="hide-s small">{{ _("Name/Register/Ort") }}</td><td class="hide-s small">CC0 1.0</td></tr>{% endif %}
+</tbody>
+</table>
+</div>
+
+<aside>
+  <div class="card noprint">
+    <strong>{{ _("Daten exportieren") }}</strong>
+    <div class="small" style="margin-top:6px"><a href="/firma/{{ c.id }}/pdf">{{ _("Profil als PDF") }}</a> · <a href="/api/v1/companies/{{ c.id }}">JSON</a> ·
+      <a href="#" onclick="navigator.clipboard.writeText(location.href.split('?')[0]);this.textContent='✓';return false">{{ _("Link kopieren") }}</a></div>
+  </div>
+  {% if similar %}
+  <div class="card" style="margin-top:14px">
+    <strong>{{ _("Ähnliche Unternehmen") }}</strong>
+    {% for s in similar %}<div style="margin-top:6px"><a href="/firma/{{ s.id }}{{ e }}">{{ s.name }}</a><br><span class="small">{{ s.city or "" }}</span></div>{% endfor %}
+  </div>
+  {% endif %}
+  <p class="small noprint" style="margin-top:14px">{{ _("Fehler gefunden oder Eintrag entfernen?") }} <a href="/support?company={{ c.id }}">{{ _("Melden") }}</a></p>
+</aside>
+</div>
+{% endblock %}

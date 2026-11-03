@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Gespräche") }}{% endblock %}
+{% block css %}{% include "mm_style.html" %}{% endblock %}
+{% block main %}
+<div class="mm">{% include "mm_tabs.html" %}
+<p class="help">{{ _("Tipp: Gespräche entstehen durch Anfragen der Teilnehmenden. Hier können Sie zusätzlich Paare direkt anlegen.") }}</p>
+<div class="row">
+  <form method="post" action="/matchmaking/admin/{{ ev.id }}/gespraeche" class="row">
+    <select name="de_id" required>{% for p in de %}<option value="{{ p.id }}">{{ p.org_name }}</option>{% endfor %}</select> ×
+    <select name="intl_id" required>{% for p in intl %}<option value="{{ p.id }}">{{ p.org_name }} ({{ p.country }})</option>{% endfor %}</select>
+    <button>{{ _("Gespräch anlegen") }}</button></form>
+  <form method="post" action="/matchmaking/admin/{{ ev.id }}/planen"><button class="sec">{{ _("Freie Termine automatisch verteilen") }}</button></form>
+  <a class="btn sec" href="/matchmaking/admin/{{ ev.id }}/gespraeche.csv">{{ _("CSV exportieren") }}</a>
+</div>
+<h2>{{ _("Gesprächsmatrix") }}</h2>
+<p class="small">{{ _("Zeile = deutsches Unternehmen, Spalte = internationaler Gast.") }} {{ _("Zeiten in") }} {{ ev.tz }}.</p>
+<div class="scroll"><table class="matrix">
+<thead><tr><th class="r"></th>{% for b in intl %}<th title="{{ b.org_name }}">{{ b.org_name|truncate(18) }}<br><span class="small">{{ b.country }}</span></th>{% endfor %}</tr></thead>
+{% for a in de %}<tr><td class="r"><b>{{ a.org_name|truncate(30) }}</b></td>
+  {% for b in intl %}{% set m = cell.get((a.id, b.id)) %}<td>{% if m %}<a href="#m{{ m.id }}" class="badge b-{{ m.status }}">{{ mm_dt(m.starts_at, ev.tz, "time") if m.starts_at else _(MM_STATUS[m.status]) }}</a>{% endif %}</td>{% endfor %}</tr>
+{% endfor %}
+</table></div>
+<h2>{{ _("Gespräche") }} ({{ ms|length }})</h2>
+<div class="scroll"><table>
+<thead><tr><th>{{ _("Zeit") }}</th><th>{{ _("Partner") }}</th><th>{{ _("Wo") }}</th><th>{{ _("Status") }}</th></tr></thead>
+{% for m in ms %}<tr id="m{{ m.id }}">
+  <td>{% if m.starts_at %}{{ mm_dt(m.starts_at, ev.tz, "time") }}–{{ mm_dt(m.ends_at, ev.tz, "time") }}{% else %}<span class="small">{{ _("ohne Termin") }}</span>{% endif %}</td>
+  <td>{{ m.a_org or _("(gelöscht)") }} → {{ m.b_org or _("(gelöscht)") }}{% if m.created_by == "organiser" %} <span class="badge">{{ _("Organisation") }}</span>{% endif %}{% if m.message %}<br><span class="small">„{{ m.message|truncate(80) }}“</span>{% endif %}</td>
+  <td>{% if m.table_no %}{{ _("Tisch") }} {{ m.table_no }} · {% endif %}<a href="{{ m.room_url }}" target="_blank" rel="noopener noreferrer" class="small">{{ m.room_url|replace("https://", "") }}</a></td>
+  <td><form method="post" action="/matchmaking/admin/{{ ev.id }}/gespraeche/{{ m.id }}"><select name="status" onchange="this.form.submit()">
+    {% for k, v in MM_STATUS.items() %}<option value="{{ k }}" {% if m.status == k %}selected{% endif %}>{{ _(v) }}</option>{% endfor %}</select><noscript><button>OK</button></noscript></form></td>
+</tr>{% else %}<tr><td colspan="4">–</td></tr>{% endfor %}
+</table></div>
+</div>
+{% endblock %}

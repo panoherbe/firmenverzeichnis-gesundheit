@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Anmeldung") }} – {{ mm_tr(ev, "title") }}{% endblock %}
+{% block css %}{% include "mm_style.html" %}{% endblock %}
+{% block main %}
+{% set base = "/matchmaking/" ~ ev.slug ~ "/anmelden?side=" ~ side %}
+<div class="mm">
+<div class="crumb"><a href="/matchmaking/{{ ev.slug }}">← {{ mm_tr(ev, "title") }}</a></div>
+<h1>{{ _("Anmeldung") }}: {{ _("Deutsches Unternehmen") if side == "de" else _("Internationaler Gast") }}</h1>
+<p class="small">{{ mm_dt(ev.starts_at, ev.tz) }}–{{ mm_dt(ev.ends_at, ev.tz, "time") }} ({{ ev.tz }}) · {{ _("virtuell") if ev.format == "virtual" else _("hybrid") }}</p>
+{% if error %}<div class="err">{{ _(error.split(":")[0]) }}{% if ":" in error %}:{{ error.split(":", 1)[1] }}{% endif %}</div>{% endif %}
+{% if ev.status != "open" %}<div class="note">{{ _("Die Anmeldung ist geschlossen.") }}</div>{% else %}
+
+<form class="f" method="get" action="/matchmaking/{{ ev.slug }}/anmelden">
+<fieldset><legend>{{ _("Schritt 1: Ihre Organisation") }}</legend>
+  <input type="hidden" name="side" value="{{ side }}">
+  {% if chosen %}
+    <div class="card hl spread"><div><b>{{ chosen.name }}</b><br><span class="small">{{ chosen.city or "" }} · {{ mm_country(chosen.country) }}{% if chosen.website %} · {{ chosen.website }}{% endif %}</span></div>
+      <span class="badge b-accepted">✓ {{ _("Ausgewählt") }}</span></div>
+    <p><a href="{{ base }}">{{ _("Andere wählen") }}</a></p>
+  {% else %}
+    <label for="q">{{ _("Firma im Verzeichnis suchen") if side == "de" else _("Organisation in unserer internationalen Datenbank suchen (optional)") }}</label>
+    <div class="row"><input id="q" type="search" name="q" value="{{ q }}" placeholder="{{ _('Name oder Ort') }}" style="flex:1"><button type="submit">{{ _("Suchen") }}</button></div>
+    {% if q %}
+      {% for h in hits %}<div class="card spread" style="margin-top:8px"><div><b>{{ h.name }}</b><br><span class="small">{{ h.city or "" }} · {{ mm_country(h.country) }}{% if h.website %} · {{ h.website }}{% endif %}</span></div>
+        <a class="btn sec" href="{{ base }}&pick={{ h.id }}">{{ _("Auswählen") }}</a></div>
+      {% else %}<p class="note">{{ _("Keine Treffer. Bitte anders schreiben oder Ort weglassen.") }}</p>{% endfor %}
+    {% endif %}
+    <p class="small">{{ _("Ihre Firma fehlt? Nur Unternehmen aus dem Verzeichnis können teilnehmen. Bitte melden Sie sich beim Organisationsteam.") if side == "de" else _("Nicht gefunden? Dann einfach unten eintragen.") }}</p>
+  {% endif %}
+</fieldset>
+</form>
+
+{% if side == "intl" or chosen %}
+<form class="f" method="post" action="/matchmaking/{{ ev.slug }}/anmelden">
+<input type="hidden" name="side" value="{{ side }}"><input type="hidden" name="pick" value="{{ chosen.id if chosen else '' }}">
+{% if side == "intl" %}
+<fieldset><legend>{{ _("Ihre Organisation") }}</legend>
+  <div class="g2">
+    <div><label for="org_name">{{ _("Name der Organisation") }} *</label><input id="org_name" type="text" name="org_name" required value="{{ chosen.name if chosen else '' }}" {% if chosen %}readonly{% endif %}></div>
+    <div><label for="org_type">{{ _("Art") }}</label><select id="org_type" name="org_type">{% for k, v in MM_ORG_TYPES.items() %}<option value="{{ k }}">{{ _(v) }}</option>{% endfor %}</select></div>
+    <div><label for="country">{{ _("Land") }} *</label><select id="country" name="country" required><option value=""></option>
+      {% for k, v in MM_COUNTRIES.items()|sort(attribute="1") if k != "DE" %}<option value="{{ k }}" {% if chosen and chosen.country == k %}selected{% endif %}>{{ mm_country(k) }}</option>{% endfor %}</select></div>
+    <div><label for="city">{{ _("Stadt") }}</label><input id="city" type="text" name="city" value="{{ chosen.city or '' if chosen else '' }}"></div>
+    <div><label for="website">{{ _("Website") }}</label><input id="website" type="text" name="website" value="{{ chosen.website or '' if chosen else '' }}" placeholder="https://"></div>
+  </div>
+</fieldset>
+{% endif %}
+<fieldset><legend>{{ _("Schritt 2: Sie als Ansprechperson") }}</legend>
+  <div class="g2">
+    <div><label for="person_name">{{ _("Ihr Name") }} *</label><input id="person_name" type="text" name="person_name" required autocomplete="name"></div>
+    <div><label for="job_title">{{ _("Funktion") }}</label><input id="job_title" type="text" name="job_title" autocomplete="organization-title"></div>
+    <div><label for="email">{{ _("E-Mail") }} *</label><input id="email" type="email" name="email" required autocomplete="email"></div>
+    <div><label for="tz">{{ _("Ihre Zeitzone") }}</label><select id="tz" name="tz">{% for z in MM_TZS %}<option {% if z == ev.tz %}selected{% endif %}>{{ z }}</option>{% endfor %}</select></div>
+  </div>
+  {% if ev.format == "hybrid" %}<label>{{ _("Teilnahme") }}</label>
+    <label class="inline"><input type="radio" name="mode" value="online" checked> {{ _("online") }}</label>
+    <label class="inline"><input type="radio" name="mode" value="onsite"> {{ _("vor Ort") }}{% if ev.venue %} ({{ ev.venue }}){% endif %}</label>{% endif %}
+</fieldset>
+<fieldset><legend>{{ _("Schritt 3: Interessen") }}</legend>
+  <label>{{ _("Branchen") }}</label>
+  <div class="checks">{% for k, v in MM_SECTORS.items() %}<label class="inline"><input type="checkbox" name="sectors" value="{{ k }}" {% if chosen and k in (chosen.sectors or []) %}checked{% endif %}> {{ _(v) }}</label>{% endfor %}</div>
+  <label for="products">{{ _("Produkte / Produktgruppen") }}</label><input id="products" type="text" name="products" placeholder="{{ _('z. B. Wundversorgung, Ultraschall, Generika') }}">
+  {% if side == "de" %}
+    <label>{{ _("Ihre Zielmärkte") }}</label>
+    <div class="checks">{% for m in ev.markets %}<label class="inline"><input type="checkbox" name="markets" value="{{ m }}" checked> {{ mm_country(m) }}</label>{% endfor %}</div>
+    <input type="text" name="markets_extra" placeholder="{{ _('Länderkürzel, mit Komma getrennt, z. B. FR, IT, US') }}">
+  {% else %}
+    <label for="markets">{{ _("Märkte, in denen Sie aktiv sind") }}</label>
+    <select id="markets" name="markets" multiple size="5">{% for k, v in MM_COUNTRIES.items()|sort(attribute="1") %}<option value="{{ k }}">{{ mm_country(k) }}</option>{% endfor %}</select>
+  {% endif %}
+  <div class="g2">
+    <div><label for="offer">{{ _("Was bieten Sie?") }}</label><textarea id="offer" name="offer"></textarea></div>
+    <div><label for="seek">{{ _("Was suchen Sie?") }}</label><textarea id="seek" name="seek" placeholder="{{ _('z. B. Vertriebspartner in Frankreich, Lizenzpartner, klinische Studien') }}"></textarea></div>
+  </div>
+</fieldset>
+<fieldset class="slots"><legend>{{ _("Schritt 4: Verfügbarkeit") }}</legend>
+  <p class="small">{{ _("Wann haben Sie Zeit? Abwählen, was nicht passt.") }} {{ _("Zeiten in") }} {{ ev.tz }}.</p>
+  <div class="checks">{% for s in slots %}<label class="inline"><input type="checkbox" name="slot" value="{{ s.timestamp()|int }}" checked> {{ mm_dt(s, ev.tz, "time") }}</label>{% endfor %}</div>
+</fieldset>
+<fieldset><legend>{{ _("Schritt 5: Einwilligung") }}</legend>
+  <p class="consent">{{ consent }}</p>
+  <label class="inline"><input type="checkbox" name="consent" value="yes" required> <b>{{ _("Ich willige ein, dass meine Angaben für diese Matchmaking-Veranstaltung verarbeitet werden.") }}</b></label>
+</fieldset>
+<p><button class="big" type="submit">{{ _("Jetzt anmelden") }}</button> <span class="small">* {{ _("Pflichtfeld") }}</span></p>
+</form>
+<script>(function(){try{var z=Intl.DateTimeFormat().resolvedOptions().timeZone,s=document.getElementById("tz");for(var i=0;i<s.options.length;i++){if(s.options[i].value===z){s.selectedIndex=i;}}}catch(e){}})();</script>
+{% endif %}
+{% endif %}
+</div>
+{% endblock %}

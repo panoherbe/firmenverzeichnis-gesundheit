@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Ticket") }} {{ t.number }}{% endblock %}
+{% block main %}
+<p class="small"><a href="/admin/support">← {{ _("Support-Tickets") }}</a></p>
+<h1>{{ _("Ticket") }} {{ t.number }}: {{ t.subject }}</h1>
+<dl class="kv">
+  <dt>{{ _("Kategorie") }}</dt><dd>{{ _(categories.get(t.category, t.category)) }}</dd>
+  <dt>{{ _("Priorität") }}</dt><dd>{{ t.priority }} ({{ _("angefragt") }}: {{ t.priority_requested }})</dd>
+  <dt>{{ _("Status") }}</dt><dd>{{ _(statuses[t.status]) }}</dd>
+  <dt>E-Mail</dt><dd>{{ t.contact_email or "(gelöscht)" }}</dd>
+  <dt>{{ _("Eingegangen") }}</dt><dd>{{ t.created_at.astimezone(tz).strftime("%d.%m.%Y %H:%M") }}</dd>
+  <dt>{{ _("Frist") }}</dt><dd>{{ t.due_at.astimezone(tz).strftime("%d.%m.%Y %H:%M") }}</dd>
+  <dt>{{ _("Erste Reaktion") }}</dt><dd>{{ t.first_reaction_at.astimezone(tz).strftime("%d.%m.%Y %H:%M") if t.first_reaction_at else _("offen") }}
+    · {{ t.reaction_hours }} / {{ t.target_hours }} h{% if t.met is true %} <span class="ok">✓</span>{% elif t.met is false %} ✗{% endif %}</dd>
+  <dt>Alarm / Bestätigung</dt><dd>{{ t.alert_sent_at.astimezone(tz).strftime("%d.%m. %H:%M") if t.alert_sent_at else "–" }} / {{ t.ack_sent_at.astimezone(tz).strftime("%d.%m. %H:%M") if t.ack_sent_at else "–" }}</dd>
+  <dt>{{ _("Gelöst") }}</dt><dd>{{ t.resolved_at.astimezone(tz).strftime("%d.%m.%Y %H:%M") if t.resolved_at else "–" }}</dd>
+</dl>
+<p style="white-space:pre-wrap; background:var(--soft); padding:10px; border-radius:6px">{{ t.description }}</p>
+<form method="post" action="/admin/support/{{ t.id }}" style="display:grid; gap:8px; max-width:640px">
+  <label>{{ _("Status") }} <select name="status">{% for k, v in statuses.items() %}<option value="{{ k }}"{% if k == t.status %} selected{% endif %}>{{ _(v) }}</option>{% endfor %}</select></label>
+  <label>{{ _("Priorität") }} <select name="priority">{% for k, v in priorities.items() %}<option value="{{ k }}"{% if k == t.priority %} selected{% endif %}>{{ _(v[0]) }}</option>{% endfor %}</select></label>
+  <label>{{ _("Antwort / Notiz") }}<br><textarea name="note" rows="5" style="width:100%"></textarea></label>
+  <label><input type="checkbox" name="public" value="1"> {{ _("öffentlich (für Anfragende sichtbar, per E-Mail)") }}</label>
+  <button type="submit">{{ _("Speichern") }}</button>
+</form>
+<h2>{{ _("Verlauf") }}</h2>
+<table><tbody>{% for e in events %}
+<tr><td class="small">{{ e.at.astimezone(tz).strftime("%d.%m.%Y %H:%M:%S") }}</td><td class="small">{{ e.actor }}</td><td>{{ e.kind }}</td>
+<td>{% if e.old_value or e.new_value %}{{ e.old_value or "" }} → {{ e.new_value or "" }}{% endif %} {% if e.public %}<span class="tag">öffentlich</span>{% endif %}
+<span style="white-space:pre-wrap">{{ e.note or "" }}</span></td></tr>
+{% endfor %}</tbody></table>
+{% endblock %}

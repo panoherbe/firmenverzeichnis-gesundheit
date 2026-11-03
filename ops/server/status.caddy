@@ -1,0 +1,9 @@
+# Status page on the STANDBY (other data centre), written every minute by ops/monitor.py.
+__STATUS_DOMAIN__ {
+	import security_headers
+	import content_policy
+	import access_log
+	root * /srv/firmen/app/var/status
+	header Cache-Control "max-age=30"
+	file_server
+}

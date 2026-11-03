@@ -1,0 +1,10 @@
+[Unit]
+Description=Firmenverzeichnis nightly restore of newest dump (STANDBY) (timer)
+
+[Timer]
+OnCalendar=*-*-* 04:15:00 Europe/Berlin
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

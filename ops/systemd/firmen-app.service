@@ -1,0 +1,29 @@
+# PRIMARY (on the standby only after ops/failover.sh promote). Web app behind Caddy, loopback only.
+# The app reads /srv/firmen/app/.env itself (no EnvironmentFile: systemd would strip the quotes of FRAME_ANCESTORS='self').
+# SECRET_KEY must be set in .env: with 2 workers each would otherwise sign sessions with its own random key.
+[Unit]
+Description=Firmenverzeichnis web app (uvicorn)
+After=network-online.target postgresql.service
+Wants=network-online.target postgresql.service
+
+StartLimitIntervalSec=0
+
+[Service]
+User=firmen
+Group=firmen
+WorkingDirectory=/srv/firmen/app
+ExecStart=/srv/firmen/app/.venv/bin/uvicorn web.app:app --host 127.0.0.1 --port 8601 --workers 2 --proxy-headers --forwarded-allow-ips 127.0.0.1 --no-server-header --timeout-keep-alive 5
+Restart=always
+RestartSec=3
+TimeoutStopSec=20
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ReadWritePaths=/srv/firmen
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+
+[Install]
+WantedBy=multi-user.target

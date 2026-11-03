@@ -1,0 +1,62 @@
+# /etc/caddy/Caddyfile — written by ops/server/bootstrap.sh (placeholders __ACME_EMAIL__ etc. are replaced there).
+# Sites live in /etc/caddy/sites-available/*.caddy and are switched on by symlink in sites-enabled/:
+#   PRIMARY: app.caddy · STANDBY: status.caddy (+ app.caddy after ops/failover.sh promote)
+# Automatic HTTPS: Let's Encrypt certificate, renewal ~30 days before expiry, HTTP -> HTTPS redirect.
+{
+	email __ACME_EMAIL__
+}
+
+(security_headers) {
+	header {
+		# HSTS: 1 year. No `preload` (would be irreversible for the domain).
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		# `?` = only if the app did not set it (the app sets these already; Caddy keeps the app's values)
+		?X-Content-Type-Options "nosniff"
+		?Referrer-Policy "strict-origin-when-cross-origin"
+		?Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+		?Cross-Origin-Opener-Policy "same-origin"
+		-Server
+		-X-Powered-By
+		# NO X-Frame-Options: it would break the iframe embedding. Framing is governed by the app's CSP
+		# frame-ancestors (env FRAME_ANCESTORS), which Caddy passes through unchanged.
+		defer
+	}
+}
+
+(content_policy) {
+	# A SECOND Content-Security-Policy header (`+` adds, it does not replace): browsers enforce both, so the app's
+	# `frame-ancestors` stays in force and this one adds the resource rules. No external hosts (no CDNs).
+	@not_docs not path /api/docs /api/docs/* /api/redoc
+	header @not_docs +Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+}
+
+(access_log) {
+	# Access log for tender A25 (together with the app's access_log table). IPs masked to /24 (IPv4) and /48 (IPv6),
+	# cookies and tokens removed; kept 90 days (roll_keep_for 2160h).
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 50MiB
+			roll_keep 200
+			roll_keep_for 2160h
+		}
+		format filter {
+			wrap json
+			fields {
+				request>remote_ip ip_mask {
+					ipv4 24
+					ipv6 48
+				}
+				request>client_ip ip_mask {
+					ipv4 24
+					ipv6 48
+				}
+				request>headers>Cookie delete
+				request>headers>Authorization delete
+				request>headers>X-Ops-Token delete
+				resp_headers>Set-Cookie delete
+			}
+		}
+	}
+}
+
+import /etc/caddy/sites-enabled/*.caddy

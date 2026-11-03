@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Internationale Datenbank") }}{% endblock %}
+{% block css %}{% include "mm_style.html" %}{% endblock %}
+{% block main %}
+<div class="mm">
+<div class="crumb"><a href="/matchmaking/admin">← {{ _("Organisation") }}</a></div>
+<h1>{{ _("Internationale Datenbank") }}</h1>
+<p class="help">{{ _("Organisationen außerhalb Deutschlands aus EU-Registern (EMA, CORDIS, EUDAMED). Nur juristische Personen, keine Kontaktpersonen.") }} {{ _("Ansprache über AHKs, Verbände und Partnernetzwerke – nicht per Kalt-E-Mail.") }}</p>
+<form class="f g4" method="get" action="/matchmaking/admin/international" style="align-items:end">
+  <div><label for="q">{{ _("Name der Organisation") }}</label><input id="q" type="search" name="q" value="{{ q }}"></div>
+  <div><label for="country">{{ _("Land") }}</label><select id="country" name="country"><option value="">{{ _("Alle Länder") }}</option>
+    {% for c in by_country %}<option value="{{ c.country }}" {% if country == c.country %}selected{% endif %}>{{ mm_country(c.country) }} ({{ c.n }})</option>{% endfor %}</select></div>
+  <div><label for="sector">{{ _("Branchen") }}</label><select id="sector" name="sector"><option value="">{{ _("Alle Branchen") }}</option>
+    {% for k, v in MM_SECTORS.items() %}<option value="{{ k }}" {% if sector == k %}selected{% endif %}>{{ _(v) }}</option>{% endfor %}</select></div>
+  <div><button>{{ _("Suchen") }}</button> <a href="?{{ qs }}&fmt=csv">CSV</a></div>
+</form>
+<p class="meta"><b>{{ total }} {{ _("Organisationen") }}</b> · {{ by_country|length }} {{ _("Länder") }}</p>
+<div class="scroll"><table>
+<thead><tr><th>{{ _("Name der Organisation") }}</th><th>{{ _("Land") }}</th><th class="hide-s">{{ _("Stadt") }}</th><th>{{ _("Branchen") }}</th><th class="hide-s">{{ _("Quelle") }}</th></tr></thead>
+{% for r in rows %}<tr><td><b>{{ r.name }}</b>{% if r.website %}<br><a class="small" href="{{ r.website }}" target="_blank" rel="noopener noreferrer">{{ r.website|replace("https://", "") }}</a>{% endif %}</td>
+  <td>{{ mm_country(r.country) }}</td><td class="hide-s">{{ r.city or "" }}</td>
+  <td>{% for s in r.sectors or [] %}<span class="tag">{{ _(MM_SECTORS.get(s, s)) }}</span>{% endfor %}</td><td class="hide-s small">{{ r.sources|join(", ") }}</td></tr>
+{% else %}<tr><td colspan="5">–</td></tr>{% endfor %}
+</table></div>
+</div>
+{% endblock %}

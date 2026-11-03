@@ -1,0 +1,70 @@
+{
+ "dauer_s": 58.3,
+ "frames": 165,
+ "kapitel": [
+  [
+   0,
+   "[Karte] Prototyp · läuft heute Firmenverzeichnis Gesundheitswirtschaft 4.787 Unternehmen aus Medizintechnik, Pharma, Biotech und digitaler Gesundheit – aus amtlichen Re"
+  ],
+  [
+   4.5,
+   "Ein Suchfeld für alles: Produkt, Firma, Ort, Postleitzahl oder Registernummer."
+  ],
+  [
+   9.1,
+   "UND, ODER, NICHT, Klammern und Wortanfänge funktionieren – auf Deutsch und Englisch."
+  ],
+  [
+   11.7,
+   "Filter lassen sich kombinieren; die Zahl in Klammern zeigt vorher, wie viele Treffer bleiben."
+  ],
+  [
+   15.2,
+   "Zwei Klicks bis zum Profil: Kontaktseite, Produkte nach EU-Nomenklatur, Register- und Steuernummern."
+  ],
+  [
+   19.4,
+   "Jede Angabe nennt ihre Quelle und Lizenz. Keine Personendaten, nur Funktionspostfächer und Kontaktseiten."
+  ],
+  [
+   22.9,
+   "Dasselbe Profil auf Englisch – für Interessenten im Ausland. Oberfläche und Profile sind zweisprachig."
+  ],
+  [
+   25.9,
+   "Statistik zur aktuellen Auswahl. Jede Grafik geht als JPG oder PNG heraus, die Seite als PDF, die Trefferliste als Excel, CSV oder PDF."
+  ],
+  [
+   29.7,
+   "Namentliche Konten für das Team, Administratoren mit zweitem Faktor."
+  ],
+  [
+   31.1,
+   "Suchen mit allen Filtern speichern und wieder aufrufen; der Suchverlauf ist immer da."
+  ],
+  [
+   34.1,
+   "Virtuelles Matchmaking: Veranstaltungsseite mit Programm und Anmeldung, hier ein fiktives Beispiel."
+  ],
+  [
+   37.5,
+   "Jede teilnehmende Firma bekommt Vorschläge mit Begründung, fragt Gespräche an, und der Termin wird automatisch eingeplant – mit Videoraum und Kalenderdatei."
+  ],
+  [
+   41.7,
+   "Die Veranstalterin sieht Anmeldungen, Gespräche und nach der Veranstaltung die Umfrage zu Zufriedenheit, Nutzen und Umsatzchancen."
+  ],
+  [
+   45.7,
+   "[Karte] Mobil Auf dem Telefon Dieselbe Suche im Browser des Telefons. Einbettung per iframe in jede Website, Farben und Logo nach Corporate Design. github.com/panoherbe"
+  ],
+  [
+   49.3,
+   "[Karte] Gemessen am 03.11.2026 Was heute schon läuft 4.787 registergeprüfte Unternehmen (EUDAMED, EMA, LEI) 4.118 davon mit Kontaktweg: Kontaktseite, Website oder Funkt"
+  ],
+  [
+   54.3,
+   "[Karte] Selbst prüfen In zwei Minuten ausprobieren Demo öffnen, „Endoskop*“ suchen, ein Profil öffnen, oben auf EN schalten. Quellcode offen, Apache 2.0. github.com/pan"
+  ]
+ ]
+}

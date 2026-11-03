@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Ihr Profil") }} – {{ mm_tr(ev, "title") }}{% endblock %}
+{% block css %}{% include "mm_style.html" %}{% endblock %}
+{% block main %}
+{% set planned = meetings|selectattr("status", "in", ["accepted", "held"])|list %}
+{% set incoming = meetings|selectattr("status", "equalto", "requested")|selectattr("partner_id", "equalto", me.id)|list %}
+{% set outgoing = meetings|selectattr("status", "equalto", "requested")|selectattr("requester_id", "equalto", me.id)|list %}
+<div class="mm">
+<div class="crumb"><a href="/matchmaking/{{ ev.slug }}">← {{ mm_tr(ev, "title") }}</a></div>
+<div class="hero">
+  <div class="small">{{ _("Willkommen") }}, {{ me.person_name }} · {{ me.org_name }}</div>
+  <h1>{{ mm_tr(ev, "title") }}</h1>
+  <div class="small">{{ mm_dt(ev.starts_at, me.tz) }}–{{ mm_dt(ev.ends_at, me.tz, "time") }} ({{ me.tz }})
+    {% if me.tz != ev.tz %} · {{ mm_dt(ev.starts_at, ev.tz, "time") }} {{ ev.tz }}{% endif %}</div>
+  <ol class="steps">
+    <li class="done">{{ _("Profil") }}</li>
+    <li class="{{ 'done' if meetings else 'now' }}">{{ _("Partner wählen") }}</li>
+    <li class="{{ 'done' if planned else ('now' if meetings else '') }}">{{ _("Gespräche bestätigen") }}</li>
+    <li class="{{ 'now' if planned and not started else ('done' if started and planned else '') }}">{{ _("Gespräche führen") }}</li>
+    <li class="{{ 'done' if survey_done else ('now' if started else '') }}">{{ _("Feedback") }}</li>
+  </ol>
+</div>
+{% if msg %}<div class="msg">{{ _(msg) }}</div>{% endif %}
+{% if neu %}<div class="msg">{{ _("Ihre Anmeldung ist eingegangen.") }}</div>{% endif %}
+<div class="help"><b>{{ _("Ihr persönlicher Link") }}</b>
+  <div class="linkbox" style="margin:6px 0"><input id="mylink" type="text" readonly value="{{ link }}"><button type="button" class="sec" onclick="var i=document.getElementById('mylink');i.select();try{navigator.clipboard.writeText(i.value)}catch(e){}">⧉</button></div>
+  {{ _("Bitte speichern Sie diesen Link (Lesezeichen). Er ist Ihr Zugang – ohne Passwort. Nicht weitergeben.") }}</div>
+{% if started and not survey_done %}<p><a class="btn big" href="/matchmaking/p/{{ me.token }}/umfrage">{{ _("Feedback geben") }}</a></p>{% endif %}
+
+<h2 id="plan">{{ _("Ihr Zeitplan") }} <a class="btn sec" style="font-size:13px;padding:5px 10px" href="/matchmaking/p/{{ me.token }}/agenda.ics">{{ _("Kalender (.ics)") }}</a></h2>
+{% if planned %}
+<div class="scroll"><table>
+<thead><tr><th>{{ _("Ihre Zeit") }}</th>{% if me.tz != ev.tz %}<th class="hide-s">{{ _("Veranstaltungszeit") }}</th>{% endif %}<th>{{ _("Partner") }}</th><th>{{ _("Wo") }}</th><th></th></tr></thead>
+{% for m in planned %}
+<tr>
+  <td>{% if m.starts_at %}<b>{{ mm_dt(m.starts_at, me.tz, "time") }}–{{ mm_dt(m.ends_at, me.tz, "time") }}</b>{% else %}<span class="badge b-requested">{{ _("Termin folgt") }}</span>{% endif %}</td>
+  {% if me.tz != ev.tz %}<td class="hide-s small">{% if m.starts_at %}{{ mm_dt(m.starts_at, ev.tz, "time") }}{% endif %}</td>{% endif %}
+  <td><b>{{ m.org_name }}</b> · {{ mm_country(m.country) }}<br><span class="small">{{ m.person_name }}{% if m.job_title %}, {{ m.job_title }}{% endif %}</span></td>
+  <td>{% if m.table_no %}<span class="badge">{{ _("Tisch") }} {{ m.table_no }}</span><br>{% endif %}
+      <a href="{{ m.room_url }}" target="_blank" rel="noopener noreferrer">{{ _("Videoraum öffnen") }} ↗</a></td>
+  <td>{% if m.status == "accepted" %}<form method="post" action="/matchmaking/p/{{ me.token }}/antwort"><input type="hidden" name="meeting_id" value="{{ m.id }}"><button class="bad" name="decision" value="cancel">{{ _("Absagen") }}</button></form>{% else %}<span class="badge b-held">{{ _(MM_STATUS[m.status]) }}</span>{% endif %}</td>
+</tr>
+{% endfor %}
+</table></div>
+<p class="small">{{ _("Videolink: öffnet im Browser, keine Installation nötig. Kamera und Mikrofon erlauben.") }}</p>
+{% else %}<p class="small">{{ _("Noch keine bestätigten Gespräche.") }}</p>{% endif %}
+
+<h2 id="anfragen">{{ _("Anfragen an Sie") }}{% if incoming %} <span class="badge b-requested">{{ incoming|length }}</span>{% endif %}</h2>
+{% for m in incoming %}
+<div class="card spread" style="margin-bottom:8px">
+  <div><b>{{ m.org_name }}</b> · {{ mm_country(m.country) }}<br><span class="small">{{ m.person_name }}{% if m.job_title %}, {{ m.job_title }}{% endif %}</span>
+    {% if m.message %}<p style="margin:6px 0 0">„{{ m.message }}“</p>{% endif %}</div>
+  <form method="post" action="/matchmaking/p/{{ me.token }}/antwort" class="row"><input type="hidden" name="meeting_id" value="{{ m.id }}">
+    <button name="decision" value="accept">{{ _("Annehmen") }}</button><button class="bad" name="decision" value="decline">{{ _("Ablehnen") }}</button></form>
+</div>
+{% else %}<p class="small">–</p>{% endfor %}
+{% if outgoing %}<h3>{{ _("Ihre Anfragen") }}</h3>
+{% for m in outgoing %}<div class="card spread" style="margin-bottom:8px"><div><b>{{ m.org_name }}</b> · {{ mm_country(m.country) }} <span class="badge b-requested">{{ _("Wartet auf Antwort") }}</span></div>
+  <form method="post" action="/matchmaking/p/{{ me.token }}/antwort"><input type="hidden" name="meeting_id" value="{{ m.id }}"><button class="sec" name="decision" value="cancel">{{ _("Absagen") }}</button></form></div>{% endfor %}
+{% endif %}
+
+<h2 id="vorschlaege">{{ _("Vorschläge für Sie") }}</h2>
+<p class="small">{{ _("Passende Partner stehen oben. Die Zeile „Warum“ zeigt, was Sie verbindet.") }}</p>
+{% macro person(o, why=None) %}
+<div class="card">
+  <div class="spread"><div><b>{{ o.org_name }}</b><br><span class="small">{{ o.city or "" }} · {{ mm_country(o.country) }} · {{ _(MM_ORG_TYPES.get(o.org_type, "")) }}</span></div></div>
+  <div class="small">{{ o.person_name }}{% if o.job_title %}, {{ o.job_title }}{% endif %}</div>
+  <div>{% for s in o.sectors %}<span class="tag">{{ _(MM_SECTORS[s]) }}</span>{% endfor %}</div>
+  {% if why %}<div class="why"><b>{{ _("Warum") }}:</b> {{ why|join(" · ") }}</div>{% endif %}
+  {% if o.offer %}<div class="small"><b>{{ _("Bietet") }}:</b> {{ o.offer|truncate(160) }}</div>{% endif %}
+  {% if o.seek %}<div class="small"><b>{{ _("Sucht") }}:</b> {{ o.seek|truncate(160) }}</div>{% endif %}
+  {% if ev.status != "done" %}
+  <form method="post" action="/matchmaking/p/{{ me.token }}/anfrage" style="margin-top:8px"><input type="hidden" name="partner_id" value="{{ o.id }}">
+    <div class="row"><input type="text" name="message" maxlength="500" placeholder="{{ _('Kurze Nachricht (optional)') }}" style="flex:1;padding:7px;border:1px solid var(--line);border-radius:6px"><button>{{ _("Gespräch anfragen") }}</button></div></form>
+  {% endif %}
+</div>
+{% endmacro %}
+<div class="cards">{% for o, why in suggestions %}{{ person(o, why) }}{% else %}<p class="small">{{ _("Noch keine passenden Teilnehmenden. Schauen Sie später wieder vorbei.") }}</p>{% endfor %}</div>
+{% if rest %}<details style="margin-top:14px"><summary><b>{{ _("Alle anderen Teilnehmenden") }} ({{ rest|length }})</b></summary>
+<div class="cards" style="margin-top:10px">{% for o in rest %}{{ person(o) }}{% endfor %}</div></details>{% endif %}
+
+<h2 id="profil">{{ _("Ihre Angaben") }}</h2>
+<div class="g2">
+<div class="card">
+  <b>{{ me.org_name }}</b> · {{ mm_country(me.country) }}<br><span class="small">{{ me.person_name }}{% if me.job_title %}, {{ me.job_title }}{% endif %} · {{ me.email }}</span>
+  <div>{% for s in me.sectors %}<span class="tag">{{ _(MM_SECTORS[s]) }}</span>{% endfor %}</div>
+  {% if me.markets %}<div class="small">{{ _("Ihre Zielmärkte") if me.side == "de" else _("Märkte, in denen Sie aktiv sind") }}: {% for m in me.markets %}{{ mm_country(m) }}{% if not loop.last %}, {% endif %}{% endfor %}</div>{% endif %}
+  {% if me.products %}<div class="small">{{ _("Produkte / Produktgruppen") }}: {{ me.products }}</div>{% endif %}
+  {% if me.offer %}<div class="small">{{ _("Was bieten Sie?") }} {{ me.offer }}</div>{% endif %}
+  {% if me.seek %}<div class="small">{{ _("Was suchen Sie?") }} {{ me.seek }}</div>{% endif %}
+</div>
+<form class="f card" method="post" action="/matchmaking/p/{{ me.token }}/verfuegbarkeit">
+  <b>{{ _("Verfügbarkeit") }}</b> <span class="small">({{ _("Ihre Zeit") }}, {{ me.tz }})</span>
+  <div class="checks slots">{% for s in slots %}<label class="inline"><input type="checkbox" name="slot" value="{{ s.timestamp()|int }}" {% if avail is none or s.timestamp() in avail %}checked{% endif %}> {{ mm_dt(s, me.tz, "time") }}</label>{% endfor %}</div>
+  {% if ev.format == "hybrid" %}<label class="inline"><input type="radio" name="mode" value="online" {% if me.mode == "online" %}checked{% endif %}> {{ _("online") }}</label>
+    <label class="inline"><input type="radio" name="mode" value="onsite" {% if me.mode == "onsite" %}checked{% endif %}> {{ _("vor Ort") }}</label>{% endif %}
+  <p><button class="sec">{{ _("Verfügbarkeit speichern") }}</button></p>
+</form>
+</div>
+<details class="help" style="margin-top:16px"><summary>{{ _("Meine Daten löschen") }}</summary>
+  <p>{{ _("Löscht Ihre Anmeldung und alle Gespräche sofort. Das kann nicht rückgängig gemacht werden.") }}</p>
+  <form method="post" action="/matchmaking/p/{{ me.token }}/loeschen"><button class="bad">{{ _("Meine Daten löschen") }}</button></form>
+  <p class="small">{{ _("Daten werden 12 Monate nach der Veranstaltung gelöscht.") }} ({{ me.delete_after.strftime("%d.%m.%Y") }})</p>
+</details>
+</div>
+{% endblock %}

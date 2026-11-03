@@ -1,0 +1,14 @@
+# The directory itself. Enabled on the primary; on the standby only after ops/failover.sh promote.
+__DOMAIN__ {
+	import security_headers
+	import content_policy
+	import access_log
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:8601 {
+		header_up X-Forwarded-For {remote_host}
+	}
+	# only for errors Caddy itself produces (app not reachable): short plain page instead of an empty 502
+	handle_errors {
+		respond "Das Verzeichnis ist kurz nicht erreichbar und startet neu. Status: https://__STATUS_DOMAIN__ / The directory is restarting, please retry in a minute." 503
+	}
+}

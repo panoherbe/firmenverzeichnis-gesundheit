@@ -1,0 +1,10 @@
+[Unit]
+Description=Firmenverzeichnis daily pg_dump (PRIMARY) (timer)
+
+[Timer]
+OnCalendar=*-*-* 02:30:00 Europe/Berlin
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}{{ mm_tr(ev, "title") }}{% endblock %}
+{% block css %}{% include "mm_style.html" %}{% endblock %}
+{% block main %}
+<div class="mm">
+<div class="crumb"><a href="/matchmaking">← {{ _("Alle Veranstaltungen") }}</a></div>
+<div class="hero">
+  <div class="row"><span class="badge b-{{ ev.status }}">{{ _(MM_EV_STATUS[ev.status]) }}</span>
+    <span class="badge">{{ _("virtuell") if ev.format == "virtual" else _("hybrid") }}</span></div>
+  <h1>{{ mm_tr(ev, "title") }}</h1>
+  {% if mm_tr(ev, "intro") %}<p class="lead">{{ mm_tr(ev, "intro") }}</p>{% endif %}
+  <dl class="facts">
+    <div><dt>{{ _("Datum") }}</dt><dd>{{ mm_dt(ev.starts_at, ev.tz, "date") }}</dd></div>
+    <div><dt>{{ _("Zeit") }}</dt><dd>{{ mm_dt(ev.starts_at, ev.tz, "time") }}–{{ mm_dt(ev.ends_at, ev.tz, "time") }} ({{ ev.tz }})</dd></div>
+    <div><dt>{{ _("Format") }}</dt><dd>{{ _("virtuell") if ev.format == "virtual" else _("hybrid") }}{% if ev.format == "hybrid" and ev.venue %} · {{ ev.venue }}{% endif %}</dd></div>
+    <div><dt>{{ _("B2B-Gespräche") }}</dt><dd>{{ slots|length }} × {{ ev.slot_minutes }} {{ _("Minuten") }}</dd></div>
+    <div><dt>{{ _("Veranstalter") }}</dt><dd>{{ ev.organiser }}</dd></div>
+  </dl>
+  {% if ev.markets %}<p class="small">{{ _("Zielmärkte") }}: {% for m in ev.markets %}<span class="tag">{{ mm_country(m) }}</span>{% endfor %}</p>{% endif %}
+  {% if ev.sectors %}<p class="small">{{ _("Branchen") }}: {% for s in ev.sectors %}<span class="tag">{{ _(MM_SECTORS[s]) }}</span>{% endfor %}</p>{% endif %}
+  {% if ev.status == "open" %}
+  <p class="row" style="margin-top:14px">
+    <a class="btn big" href="/matchmaking/{{ ev.slug }}/anmelden?side=de">{{ _("Als deutsches Unternehmen anmelden") }}</a>
+    <a class="btn big sec" href="/matchmaking/{{ ev.slug }}/anmelden?side=intl">{{ _("Als internationaler Gast anmelden") }}</a>
+  </p>
+  <p class="small">{{ n.get("de", 0) }} {{ _("Deutsche Unternehmen") }} · {{ n.get("intl", 0) }} {{ _("Internationale Teilnehmende") }} · {{ _("Kosten: keine. Sprache der Gespräche: nach Absprache, meist Englisch.") }}</p>
+  {% else %}<p class="note">{{ _("Die Anmeldung ist geschlossen.") }}</p>{% endif %}
+</div>
+<div class="g2">
+  <div>
+    <h2>{{ _("Programm") }}</h2>
+    {% if mm_tr(ev, "agenda") %}<table>{% for line in mm_tr(ev, "agenda").splitlines() if line.strip() %}
+      {% set parts = line.split(" ", 1) %}<tr><td style="width:70px"><b>{{ parts[0] }}</b></td><td>{{ parts[1] if parts|length > 1 else "" }}</td></tr>{% endfor %}</table>{% endif %}
+    <p class="small">{{ _("B2B-Gespräche") }}: {{ mm_dt(ev.b2b_start, ev.tz, "time") }}–{{ mm_dt(ev.b2b_end, ev.tz, "time") }}, {{ _("Gesprächsdauer") }} {{ ev.slot_minutes }} {{ _("Minuten") }}. {{ _("Zeiten in") }} {{ ev.tz }}.</p>
+  </div>
+  <div>
+    <h2>{{ _("So funktioniert es") }}</h2>
+    <ol class="steps" style="flex-direction:column">
+      <li>{{ _("Anmelden und Profil ausfüllen.") }}</li>
+      <li>{{ _("Vorschläge ansehen und Gespräche anfragen.") }}</li>
+      <li>{{ _("Anfragen annehmen – der Termin wird automatisch eingeplant.") }}</li>
+      <li>{{ _("Zum Termin den Videolink öffnen (oder an den Tisch vor Ort kommen).") }}</li>
+      <li>{{ _("Nach der Veranstaltung: kurze Umfrage.") }}</li>
+    </ol>
+    <p class="small">{{ _("Teilnehmende sehen nur Name, Funktion und Organisation der anderen – nie die E-Mail.") }} {{ _("Daten werden 12 Monate nach der Veranstaltung gelöscht.") }}</p>
+  </div>
+</div>
+</div>
+{% endblock %}

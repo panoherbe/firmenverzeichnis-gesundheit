@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Einstellungen") }}{% endblock %}
+{% block css %}{% include "mm_style.html" %}{% endblock %}
+{% block main %}
+<div class="mm">{% include "mm_tabs.html" %}
+<p class="help">{{ _("Status „Anmeldung offen“ macht die Seite öffentlich. Zeiten gelten in der gewählten Zeitzone.") }}</p>
+<form class="f" method="post" action="/matchmaking/admin/speichern">
+<input type="hidden" name="eid" value="{{ ev.id or 0 }}">
+<fieldset><legend>{{ _("Veranstaltungen") }}</legend>
+  <div class="g2">
+    <div><label for="title">{{ _("Titel") }} *</label><input id="title" type="text" name="title" required value="{{ ev.title or '' }}"></div>
+    <div><label for="title_en">{{ _("Titel (englisch)") }}</label><input id="title_en" type="text" name="title_en" value="{{ ev.title_en or '' }}"></div>
+    <div><label for="intro">{{ _("Kurzbeschreibung") }}</label><textarea id="intro" name="intro">{{ ev.intro or '' }}</textarea></div>
+    <div><label for="intro_en">{{ _("Kurzbeschreibung (englisch)") }}</label><textarea id="intro_en" name="intro_en">{{ ev.intro_en or '' }}</textarea></div>
+  </div>
+  <div class="g2">
+    <div><label for="organiser">{{ _("Veranstalter") }}</label><input id="organiser" type="text" name="organiser" value="{{ ev.organiser }}"></div>
+    <div><label for="status">{{ _("Status") }}</label><select id="status" name="status">{% for k, v in MM_EV_STATUS.items() %}<option value="{{ k }}" {% if ev.status == k %}selected{% endif %}>{{ _(v) }}</option>{% endfor %}</select></div>
+  </div>
+</fieldset>
+<fieldset><legend>{{ _("Zeit") }}</legend>
+  <div class="g3">
+    <div><label for="date">{{ _("Datum") }} *</label><input id="date" type="date" name="date" required value="{{ date }}"></div>
+    <div><label for="starts">{{ _("Beginn") }}</label><input id="starts" type="time" name="starts" value="{{ t.starts_at }}"></div>
+    <div><label for="ends">{{ _("Ende") }}</label><input id="ends" type="time" name="ends" value="{{ t.ends_at }}"></div>
+    <div><label for="tz">{{ _("Zeitzone") }}</label><select id="tz" name="tz">{% for z in MM_TZS %}<option {% if z == ev.tz %}selected{% endif %}>{{ z }}</option>{% endfor %}</select></div>
+    <div><label for="b2b_start">{{ _("B2B von") }}</label><input id="b2b_start" type="time" name="b2b_start" value="{{ t.b2b_start }}"></div>
+    <div><label for="b2b_end">{{ _("B2B bis") }}</label><input id="b2b_end" type="time" name="b2b_end" value="{{ t.b2b_end }}"></div>
+    <div><label for="slot_minutes">{{ _("Gesprächsdauer") }} ({{ _("Minuten") }})</label><input id="slot_minutes" type="number" name="slot_minutes" min="5" max="120" value="{{ ev.slot_minutes }}"></div>
+    <div><label for="gap_minutes">{{ _("Pause zwischen Gesprächen") }} ({{ _("Minuten") }})</label><input id="gap_minutes" type="number" name="gap_minutes" min="0" max="60" value="{{ ev.gap_minutes }}"></div>
+    <div><label for="max_meetings">{{ _("Max. Gespräche je Person") }}</label><input id="max_meetings" type="number" name="max_meetings" min="1" max="40" value="{{ ev.max_meetings }}"></div>
+  </div>
+</fieldset>
+<fieldset><legend>{{ _("Format") }}</legend>
+  <label class="inline"><input type="radio" name="format" value="virtual" {% if ev.format == "virtual" %}checked{% endif %}> {{ _("virtuell") }}</label>
+  <label class="inline"><input type="radio" name="format" value="hybrid" {% if ev.format == "hybrid" %}checked{% endif %}> {{ _("hybrid") }}</label>
+  <label for="venue">{{ _("Veranstaltungsort (bei hybrid)") }}</label><input id="venue" type="text" name="venue" value="{{ ev.venue or '' }}">
+</fieldset>
+<fieldset><legend>{{ _("Zielmärkte") }} · {{ _("Branchen") }}</legend>
+  <label for="markets">{{ _("Zielmärkte") }}</label><input id="markets" type="text" name="markets" value="{{ mk }}" placeholder="{{ _('Länderkürzel, mit Komma getrennt, z. B. FR, IT, US') }}">
+  <label>{{ _("Branchen") }}</label><div class="checks">{% for k, v in MM_SECTORS.items() %}<label class="inline"><input type="checkbox" name="sectors" value="{{ k }}" {% if k in ev.sectors %}checked{% endif %}> {{ _(v) }}</label>{% endfor %}</div>
+</fieldset>
+<fieldset><legend>{{ _("Programm") }}</legend>
+  <p class="small">{{ _("Eine Zeile pro Punkt, z. B. „10:00 Begrüßung“.") }}</p>
+  <div class="g2"><div><label for="agenda">{{ _("Programm") }}</label><textarea id="agenda" name="agenda" rows="6">{{ ev.agenda or '' }}</textarea></div>
+  <div><label for="agenda_en">{{ _("Programm (englisch)") }}</label><textarea id="agenda_en" name="agenda_en" rows="6">{{ ev.agenda_en or '' }}</textarea></div></div>
+</fieldset>
+<p><button class="big">{{ _("Speichern") }}</button></p>
+</form>
+</div>
+{% endblock %}

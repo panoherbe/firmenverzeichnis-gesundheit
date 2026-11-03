@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Auswertung") }}{% endblock %}
+{% block css %}{% include "mm_style.html" %}{% endblock %}
+{% block main %}
+<div class="mm">{% include "mm_tabs.html" %}
+<div class="row"><a class="btn sec" href="/matchmaking/admin/{{ ev.id }}/umfrage.csv">{{ _("Umfrage") }}: {{ _("CSV exportieren") }}</a>
+  <a class="btn sec" href="/matchmaking/admin/{{ ev.id }}/gespraeche.csv">{{ _("Gespräche") }}: CSV</a>
+  <a class="btn sec" href="/matchmaking/admin/{{ ev.id }}/teilnehmende.csv">{{ _("Teilnehmende") }}: CSV</a></div>
+<h2>{{ _("Kennzahlen") }}</h2>
+<div class="kpis">
+  <div class="kpi"><b>{{ k.reg }}</b><span>{{ _("Anmeldungen") }} ({{ k.reg_de }} DE · {{ k.reg_intl }} intl)</span></div>
+  <div class="kpi"><b>{{ k.countries }}</b><span>{{ _("Länder") }}</span></div>
+  <div class="kpi"><b>{{ (k.show_rate ~ " %") if k.show_rate is not none else "–" }}</b><span>{{ _("Anwesenheitsquote") }}{% if k.show_rate is none %} ({{ _("noch nicht erfasst") }}){% endif %}</span></div>
+  <div class="kpi"><b>{{ k.m_req }}</b><span>{{ _("Gespräche") }} {{ _("angefragt") }}</span></div>
+  <div class="kpi"><b>{{ k.m_acc }}</b><span>{{ _("Gespräche") }} {{ _("bestätigt") }}{% if k.m_unplanned %} · {{ k.m_unplanned }} {{ _("ohne Termin") }}{% endif %}</span></div>
+  <div class="kpi"><b>{{ k.m_held }}</b><span>{{ _("Gespräche") }} {{ _("stattgefunden") }}</span></div>
+</div>
+<h2>{{ _("Umfrage") }}</h2>
+<div class="scroll"><table>
+<thead><tr><th></th><th>{{ _("Antworten") }}</th><th>{{ _("Zufriedenheit") }} (1–5)</th><th>{{ _("Nutzen") }} (1–5)</th><th>{{ _("Kontakte je Person") }}</th><th>{{ _("Folgegespräche geplant") }}</th></tr></thead>
+{% for s in k.survey %}<tr><td><b>{{ "Σ" if s.side is none else (_("Deutsche Unternehmen") if s.side == "de" else _("Internationale Teilnehmende")) }}</b></td>
+  <td>{{ s.n }}</td><td>{{ s.sat or "–" }}</td><td>{{ s.ben or "–" }}</td><td>{{ s.contacts or "–" }}</td><td>{{ (s.follow ~ " %") if s.follow is not none else "–" }}</td></tr>
+{% else %}<tr><td colspan="6">–</td></tr>{% endfor %}
+</table></div>
+<h2>{{ _("Umsatzchancen") }}</h2>
+<table>{% for key, label in MM_REVENUE.items() %}{% set n = k.revenue.get(key, 0) %}
+<tr><td style="width:220px">{{ _(label) }}</td><td><div class="bar"><i style="width:{{ (100 * n / total)|round|int }}%"></i></div></td><td style="width:60px">{{ n }}</td></tr>{% endfor %}</table>
+{% if comments %}<h2>{{ _("Kommentare") }}</h2>{% for c in comments %}<div class="card" style="margin-bottom:8px"><span class="badge">{{ c.side }}</span> {{ c.comment }}</div>{% endfor %}{% endif %}
+</div>
+{% endblock %}

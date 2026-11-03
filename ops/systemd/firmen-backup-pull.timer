@@ -1,0 +1,10 @@
+[Unit]
+Description=Firmenverzeichnis pull dumps from primary + off-site copy (STANDBY) (timer)
+
+[Timer]
+OnCalendar=*-*-* 03:15:00 Europe/Berlin
+Persistent=true
+RandomizedDelaySec=60
+
+[Install]
+WantedBy=timers.target

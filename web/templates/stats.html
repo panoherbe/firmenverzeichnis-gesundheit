@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Statistik") }} – {{ _("Firmenverzeichnis Gesundheitswirtschaft") }}{% endblock %}
+{% block css %}
+.charts { display:grid; grid-template-columns: 1fr 1fr; gap:18px; }
+.chart h2 { margin-top:0; font-size:16px; }
+.chart svg { width:100%; height:auto; }
+.chart .acts a { font-size:12px; margin-right:10px; }
+@media (max-width:900px) { .charts { grid-template-columns:1fr; } }
+{% endblock %}
+{% block main %}
+<h1>{{ _("Statistik") }}</h1>
+<p class="meta"><strong>{{ "{:,}".format(s.total).replace(",", ".") }} {{ _("Unternehmen") }}</strong>
+  <span>{{ _("Die Statistik folgt den gewählten Filtern.") }} <a href="/?{{ qs }}">{{ _("Filter ändern") }}</a></span>
+  <a class="btn ghost" href="/statistik.pdf?{{ qs }}">{{ _("Statistik als PDF") }}</a></p>
+<div class="charts">
+{% for key, title in charts %}
+{% set data = s[key][:16] %}{% set top = (data | map(attribute='n') | max) if data else 1 %}
+<div class="card chart">
+  <h2>{{ _(title) }}</h2>
+  {% set h = 24 * (data | length) + 10 %}
+  <svg id="chart-{{ key }}" viewBox="0 0 560 {{ h }}" role="img" aria-label="{{ _(title) }}" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, sans-serif">
+    <rect width="560" height="{{ h }}" fill="#ffffff"/>
+    {% for r in data %}{% set y = 24 * loop.index0 + 6 %}{% set w = 300 * r.n / top %}
+    <text x="200" y="{{ y + 13 }}" font-size="12" text-anchor="end" fill="#333">{{ r.label[:34] }}</text>
+    <rect x="208" y="{{ y }}" width="{{ [w, 1] | max }}" height="17" rx="2" fill="{{ theme(request).accent }}"/>
+    <text x="{{ 214 + w }}" y="{{ y + 13 }}" font-size="12" fill="#333">{{ "{:,}".format(r.n).replace(",", ".") }}</text>
+    {% endfor %}
+  </svg>
+  <div class="acts noprint">
+    <a href="#" onclick="exportChart('chart-{{ key }}','image/jpeg');return false">{{ _("Grafik als JPG") }}</a>
+    <a href="#" onclick="exportChart('chart-{{ key }}','image/png');return false">{{ _("Grafik als PNG") }}</a>
+    <a href="#" onclick="tableCsv('{{ key }}');return false">{{ _("Tabelle als CSV") }}</a>
+  </div>
+  <script type="application/json" id="data-{{ key }}">{{ s[key] | tojson }}</script>
+</div>
+{% endfor %}
+</div>
+<p class="small">{{ _("Größenklassen und Produktgruppen sind nicht für jedes Unternehmen bekannt; „unbekannt“ zeigt den Rest.") }}
+  {{ _("Grafiken und Tabellen dürfen mit Quellenangabe verwendet werden.") }} <a href="/quellen">{{ _("Quellen & Lizenzen") }}</a></p>
+{% endblock %}

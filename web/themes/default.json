@@ -1,0 +1,14 @@
+{
+ "name": "",
+ "logo": "",
+ "fg": "#1d2433",
+ "muted": "#5b6475",
+ "line": "#dde1e8",
+ "bg": "#ffffff",
+ "soft": "#f2f4f8",
+ "accent": "#0b5cad",
+ "accent_fg": "#ffffff",
+ "radius": "6px",
+ "font": "system-ui, -apple-system, \"Segoe UI\", Roboto, sans-serif",
+ "provider": "Anbieter: Panagiotis Herbe, Hamburg"
+}
