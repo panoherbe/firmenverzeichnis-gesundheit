@@ -30,7 +30,7 @@ VIEWPORT = {'width': 1120, 'height': 700}
 APP = os.environ.get('APP_URL', 'http://127.0.0.1:8601')
 AUS = Path(os.environ.get('AUS', '/aus/fv'))
 REPO = 'github.com/panoherbe/firmenverzeichnis-gesundheit'
-FUSS = ('Prototyp · Apache 2.0', 'Panagiotis Herbe · panoherbe.com')
+FUSS = ('Prototyp · AGPL-3.0', 'Panagiotis Herbe · panoherbe.com')
 HEUTE = dt.date.today().strftime('%d.%m.%Y')
 
 
@@ -177,7 +177,7 @@ def main():
         ], 'Quelle: /api/health und /api/v1 der laufenden Installation', FUSS[1]), 5.0)
         rg.karte(titelkarte('Selbst prüfen', 'In zwei Minuten ausprobieren',
                             'Demo öffnen, „Endoskop*“ suchen, ein Profil öffnen, oben auf EN schalten. '
-                            'Quellcode offen, Apache 2.0.', REPO, 'Panagiotis Herbe', 'panoherbe.com'), 4.0)
+                            'Quellcode offen, AGPL-3.0.', REPO, 'Panagiotis Herbe', 'panoherbe.com'), 4.0)
         rg.schreibe()
         browser.close()
 

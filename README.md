@@ -101,7 +101,9 @@ docker run -d --name firmen-db -e POSTGRES_USER=firmen -e POSTGRES_DB=firmen -e 
 .venv/bin/uvicorn web.app:app --host 127.0.0.1 --port 8601
 ```
 
-Lizenz: Apache 2.0 für den Code. Die gesammelten Daten sind nicht Teil des Repositorys; ihre Quellen und Lizenzen
+Lizenz: GNU AGPL-3.0 für den Code (`LICENSE`). Ab 04.11.2026 AGPL-3.0; frühere Stände bis Commit `be86abe`
+Apache-2.0. Auftraggeber erhalten die vertraglich vereinbarte Lizenz. Die gesammelten Daten sind nicht Teil des
+Repositorys; ihre Quellen und Lizenzen
 stehen unter `/quellen` in der Anwendung.
 
 Panagiotis Herbe · Hamburg · [panoherbe.com](https://panoherbe.com)
