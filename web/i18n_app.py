@@ -87,4 +87,19 @@ EN = {
     "Neues Konto – Zugangsdaten jetzt notieren, sie werden nur einmal angezeigt:": "New account – note the credentials now, they are shown only once:",
     "Konten aktiv": "accounts active", "Administratoren melden sich mit zweitem Faktor (TOTP) an.": "Administrators sign in with a second factor (TOTP).",
     "Letzte Anmeldung": "Last sign-in", "Alle Zugriffe, IP-Adresse gekürzt, 90 Tage aufbewahrt. Die letzten 50:": "All requests, IP address truncated, kept 90 days. The latest 50:",
+    "Bereich": "Area", "Welche Daten": "Which data", "Grundlage und Löschung": "Legal basis and deletion",
+    "Verzeichnis, Suche, Export, API": "Directory, search, export, API",
+    "nur Unternehmen: Name, Rechtsform, Anschrift, Registernummern, Website, Kontaktseite, Funktionspostfach":
+        "companies only: name, legal form, address, registration numbers, website, contact page, company mailbox",
+    "öffentliche Register; keine Personendaten": "public registers; no personal data",
+    "Name, Funktion und E-Mail-Adresse der teilnehmenden Person, Interessen, Gesprächstermine, Umfrageantworten":
+        "name, job title and e-mail of the participant, interests, meeting slots, survey answers",
+    "Einwilligung bei der Anmeldung; gelöscht 12 Monate nach der Veranstaltung oder jederzeit auf Wunsch":
+        "consent at registration; deleted 12 months after the event or at any time on request",
+    "Nutzerkonten": "User accounts", "Name und E-Mail-Adresse, gespeicherte Suchen, Suchverlauf": "name and e-mail, saved searches, search history",
+    "Vertrag mit der Organisation; gelöscht mit dem Konto": "contract with the organisation; deleted with the account",
+    "E-Mail-Adresse und Text der Anfrage": "e-mail address and text of the request",
+    "Bearbeitung der Anfrage; E-Mail-Adresse nach 90 Tagen gelöscht": "handling the request; e-mail address deleted after 90 days",
+    "Zugriffsprotokoll": "Access log", "Zeit, Seite, gekürzte IP-Adresse": "time, page, truncated IP address",
+    "Sicherheit des Betriebs; 90 Tage": "operational security; 90 days",
 }

@@ -1,5 +1,5 @@
 """
-Virtual / hybrid B2B matchmaking (LB 2.2.1, spec row A34): event pages, opt-in registration, matching, meeting
+Virtual / hybrid B2B matchmaking: event pages, opt-in registration, matching, meeting
 requests, automatic slot scheduling, video rooms, personal agenda (.ics), organiser dashboard, follow-up survey.
 
 Roles: organiser = admin account (web.auth.require_admin). Participants have no account: each gets a secret link

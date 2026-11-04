@@ -19,8 +19,10 @@ an der laufenden Installation gemessen.
   automatisch.
 - **Sie bringen Firmen ins Gespräch.** Das virtuelle oder hybride Matchmaking macht Vorschläge mit Begründung, plant
   die Termine automatisch, öffnet Videoräume und wertet am Ende eine Umfrage zu Nutzen und Umsatzchancen aus.
-- **Sie haben kein Datenschutzrisiko.** Gespeichert werden nur Unternehmen, Kontaktseiten und Funktionspostfächer.
-  Es gibt keine Personendaten und keine gekauften Listen.
+- **Datenschutz ist eingebaut.** Im Verzeichnis gibt es keine Personendaten: nur Unternehmen, Kontaktseiten und
+  Funktionspostfächer, keine gekauften Listen. Matchmaking, Nutzerkonten und Support speichern Name, Funktion und
+  E-Mail-Adresse mit Einwilligung bzw. auf Vertragsgrundlage und mit Löschfrist (Matchmaking: 12 Monate nach der
+  Veranstaltung).
 
 | Suche mit Filtern | Profil mit Quellen | Auf dem Telefon |
 |---|---|---|
@@ -32,13 +34,13 @@ an der laufenden Installation gemessen.
 
 ## Was Sie verlangen → läuft hier schon
 
-Gemessen am 03.11.2026 an der laufenden Installation (`/api/health`, `/api/v1`).
+Gemessen am 04.11.2026 an der laufenden Installation; Abfragen und Ausgaben: [`nachweis/2026-11-04/`](nachweis/2026-11-04/).
 
 | Typische Anforderung | Stand |
 |---|---|
 | mindestens 3.000 Unternehmensprofile | **4.787 registergeprüfte Unternehmen** (EUDAMED, EMA, LEI), 9.744 insgesamt suchbar |
-| Kontaktdaten mit Rechtsgrundlage | **4.118** davon mit Kontaktweg (Kontaktseite, Website oder Funktionspostfach), keine Personendaten |
-| Tätigkeitsschwerpunkt und Produkte | Branche mit Begründung; Produktgruppen nach EU-Nomenklatur (EMDN) aus EUDAMED; Arzneimittel aus EMA. Der Abruf läuft noch und füllt sich |
+| Kontaktdaten mit Rechtsgrundlage | **4.118** davon mit Kontaktweg (Kontaktseite, Website oder Funktionspostfach), im Verzeichnis keine Personendaten |
+| Tätigkeitsschwerpunkt und Produkte | Branche mit Begründung; Produktgruppen nach EU-Nomenklatur (EMDN) aus EUDAMED, heute für 2.015 Firmen (der Abruf läuft noch); Arzneimittel aus EMA |
 | Volltextsuche, Boolesche Operatoren, Filter | UND/ODER/NICHT, Klammern, Phrasen, Wortanfang; Filter Branche, Bundesland, Produktgruppe, Größe, Umsatz, Rolle |
 | Suchprofile und Suchhistorie, 3–8 Nutzerkonten | namentliche Konten, Admins mit zweitem Faktor (TOTP), Zugriffsprotokoll |
 | Export Daten und Grafiken: Excel, PDF, JPG, CSV | ja, dazu JSON und eine REST-API mit englischer Dokumentation |
@@ -46,7 +48,7 @@ Gemessen am 03.11.2026 an der laufenden Installation (`/api/health`, `/api/v1`).
 | Einbettung per iframe im Corporate Design | `?embed=1`, Farben, Schrift und Logo per Theme-Datei |
 | Matchmaking mit internationalen Kontakten | Plattform eingebaut; internationale Firmenbasis mit **6.450 Unternehmen aus 80 Ländern** (EMA, CORDIS) |
 | Support, Statusseite, monatlicher SLA-Bericht | Ticketformular mit sofortiger Ticketnummer, Statusseite, Bericht automatisch |
-| tägliche Backups, 30 Tage, georedundant, Monitoring | Skripte und Timer im Repository (`ops/`), Betriebshandbuch |
+| tägliche Backups, 30 Tage, georedundant, Monitoring | Skripte und Timer im Repository (`ops/`); auf der Demo laufen Backup, Wiederherstellungstest und Selbstprüfung |
 
 ## In zwei Minuten selbst prüfen
 
@@ -63,7 +65,7 @@ Gemessen am 03.11.2026 an der laufenden Installation (`/api/health`, `/api/v1`).
   fast ganz.
 - **Biotechnologie und digitale Gesundheit** sind dünn besetzt, weil es für beide kein Pflichtregister gibt.
   Verbandslisten übernehmen wir bewusst nicht (Datenbankherstellerrecht).
-- **Bevollmächtigte und Importeure** gehören nicht immer zur Branche. In einer Stichprobe waren es 15 von 20.
+- **Bevollmächtigte und Importeure** gehören nicht immer zur Branche. In einer Stichprobe vom 02.11.2026 waren es 15 von 20 (nachgezählt gegen den heutigen Stand: 14 von 19, siehe `nachweis/`).
 - Die internationale Firmenbasis enthält nur Unternehmen aus EU-Registern. Gewonnen werden Teilnehmende über
   Einladungen mit Einwilligung, nie über Kalt-E-Mails.
 - Prototyp, betrieben von einer Person. Der Betrieb ist automatisiert (Monitoring, Neustart, Backups, Standby).
@@ -77,7 +79,7 @@ Gemessen am 03.11.2026 an der laufenden Installation (`/api/health`, `/api/v1`).
   EUDAMED-Akteure und -Produkte (EU-Kommission), EMA Article-57-Daten, GLEIF Golden Copy (CC0), CORDIS (CC BY 4.0),
   Zuschläge öffentlicher Aufträge (TED, Bekanntmachungsservice), Websites der Firmen (nur Kontaktseite, Erreichbarkeit
   und Beschäftigtenzahl; robots.txt wird beachtet, § 44b UrhG).
-- **Keine Personendaten:** Die verantwortliche Person aus EUDAMED (PRRC) wird vor dem Schreiben entfernt. E-Mail-Adressen
+- **Keine Personendaten im Verzeichnis:** Die verantwortliche Person aus EUDAMED (PRRC) wird vor dem Schreiben entfernt. E-Mail-Adressen
   bleiben nur, wenn sie Funktionspostfächer sind. Einzelkaufleute, Apotheken und Namen ohne Rechtsform fliegen raus.
 - **Entity Resolution ohne Ähnlichkeitswerte:** nur exakte Schlüssel (USt-IdNr., Handelsregister + PLZ-Region,
   Name + Ort, LEI). Jede Verknüpfung speichert ihre Regel.

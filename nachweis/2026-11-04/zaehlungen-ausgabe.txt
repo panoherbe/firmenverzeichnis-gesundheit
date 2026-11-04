@@ -1,0 +1,19 @@
+companies total | register-verified | verified tier A | verified tier B
+9744 | 4787 | 3399 | 1388
+verified with contact path (website, contact page or company mailbox) | with contact page link
+4118 | 2351
+verified with size class | with EMDN product group | with employee figure (all)
+292 | 2015 | 390
+verified by sector
+medtech | 4582
+pharma | 397
+digital_health | 141
+biotech | 33
+international base: companies | countries | by source
+6450 | 80
+cordis | 3711
+ema | 2739
+quality sample v1 (hand check): tier | in health industry | of decided
+A | 43 | 44
+B | 14 | 19
+C | 4 | 9

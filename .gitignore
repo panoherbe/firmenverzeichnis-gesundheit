@@ -10,4 +10,5 @@ var/
 __pycache__/
 .venv/
 .DS_Store
-docs/bid/bilder/
+# generated screenshots for documentation
+docs/*/bilder/

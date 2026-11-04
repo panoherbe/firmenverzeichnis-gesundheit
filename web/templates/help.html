@@ -14,7 +14,7 @@ details { border-bottom:1px solid var(--line); padding:8px 0; } summary { cursor
 <nav class="helpnav" aria-label="{{ _('Hilfe') }}">
   <a href="#start">{{ _("Schnellstart") }}</a><a href="#suche">{{ _("Suchen") }}</a><a href="#filter">{{ _("Filter") }}</a>
   <a href="#profil">{{ _("Profil") }}</a><a href="#export">{{ _("Export") }}</a><a href="#konto">{{ _("Konto") }}</a>
-  <a href="#video">{{ _("Videos") }}</a><a href="#glossar">{{ _("Glossar") }}</a><a href="#faq">FAQ</a>
+  <a href="#video">{{ _("Videos") }}</a><a href="#glossar">{{ _("Glossar") }}</a><a href="#datenschutz">{{ _("Datenschutz") }}</a><a href="#faq">FAQ</a>
 </nav>
 
 <section class="h" id="start">
@@ -91,6 +91,19 @@ details { border-bottom:1px solid var(--line); padding:8px 0; } summary { cursor
 <dt>LEI</dt><dd>{{ _("Legal Entity Identifier: weltweite Kennung für Unternehmen, offen veröffentlicht von GLEIF.") }}</dd>
 <dt>CORDIS</dt><dd>{{ _("Datenbank der EU-Forschungsförderung (Horizont Europa).") }}</dd>
 </dl>
+</section>
+
+<section class="h" id="datenschutz">
+<h2>{{ _("Datenschutz") }}</h2>
+<table>
+<thead><tr><th>{{ _("Bereich") }}</th><th>{{ _("Welche Daten") }}</th><th>{{ _("Grundlage und Löschung") }}</th></tr></thead>
+<tbody>
+<tr><td>{{ _("Verzeichnis, Suche, Export, API") }}</td><td>{{ _("nur Unternehmen: Name, Rechtsform, Anschrift, Registernummern, Website, Kontaktseite, Funktionspostfach") }}</td><td>{{ _("öffentliche Register; keine Personendaten") }}</td></tr>
+<tr><td>{{ _("Matchmaking") }}</td><td>{{ _("Name, Funktion und E-Mail-Adresse der teilnehmenden Person, Interessen, Gesprächstermine, Umfrageantworten") }}</td><td>{{ _("Einwilligung bei der Anmeldung; gelöscht 12 Monate nach der Veranstaltung oder jederzeit auf Wunsch") }}</td></tr>
+<tr><td>{{ _("Nutzerkonten") }}</td><td>{{ _("Name und E-Mail-Adresse, gespeicherte Suchen, Suchverlauf") }}</td><td>{{ _("Vertrag mit der Organisation; gelöscht mit dem Konto") }}</td></tr>
+<tr><td>{{ _("Support") }}</td><td>{{ _("E-Mail-Adresse und Text der Anfrage") }}</td><td>{{ _("Bearbeitung der Anfrage; E-Mail-Adresse nach 90 Tagen gelöscht") }}</td></tr>
+<tr><td>{{ _("Zugriffsprotokoll") }}</td><td>{{ _("Zeit, Seite, gekürzte IP-Adresse") }}</td><td>{{ _("Sicherheit des Betriebs; 90 Tage") }}</td></tr>
+</tbody></table>
 </section>
 
 <section class="h" id="faq">

@@ -2,17 +2,16 @@
 DNS-over-HTTPS fallback resolver.
 
 WHY THIS EXISTS
-The ETL host (datanuc) sits behind a WireGuard VPN that pushes a nameserver
-(a private resolver) which does not answer for public names, and outbound port 53 is
-blocked — 1.1.1.1, 8.8.8.8 and the LAN router all time out. But ROUTING to
-public IPs works fine (https://1.1.1.1 returns 301).
+Some ETL hosts have no usable DNS: the configured nameserver does not answer
+for public names and outbound port 53 is blocked, while ROUTING to public IPs
+works fine (https://1.1.1.1 returns 301).
 
 Fixing that properly means editing the host's DNS configuration, which is a
-system-level change to a VPN-connected machine and explicitly out of scope.
+system-level change and out of scope for this project.
 So this resolves names the same way the rest of the world is reachable: over
 HTTPS, in-process, touching nothing outside this Python process.
 
-    resolved oeffentlichevergabe.de -> 185.158.224.128   (verified on datanuc)
+    resolved oeffentlichevergabe.de -> 185.158.224.128   (verified on such a host)
 
 It is a no-op wherever system DNS already works, so the same code runs
 unchanged on a normal machine. TLS verification is untouched: we only supply

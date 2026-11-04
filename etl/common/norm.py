@@ -69,7 +69,7 @@ PART_SPLIT = re.compile(r"\s*(?:;|/|,(?!\s*(?:co\b|kg\b|ag\b))|\bund\b(?!\s*co)|
 
 def split_group(name: str) -> list[str] | None:
     """
-    Tender winners are often bidding consortia ("BG TEVA GmbH, ratiopharm GmbH, AbZ-Pharma GmbH") or lists of
+    Award winners are often bidding consortia ("BG TEVA GmbH, ratiopharm GmbH, AbZ-Pharma GmbH") or lists of
     several winners. Returns the member companies that carry a legal form, or None if `name` is a single entity.
     A GbR consortium itself is never a company in the directory.
     """

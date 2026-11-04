@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# From the Mac: ship a code change to a server and restart the app (no bootstrap). Units/timers are re-copied.
+# From the operator's workstation: ship a code change to a server and restart the app (no bootstrap). Units/timers are re-copied.
 #   ops/server/deploy.sh root@<ip>
 # Restart takes ~2 s; the monitor tolerates it (down alert only after 2 failed minutes).
 set -euo pipefail

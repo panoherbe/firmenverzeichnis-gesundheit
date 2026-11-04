@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Scheduled data refresh on the PRIMARY (tender A9 quarterly updates, A31 quarterly cleanup).
+# Scheduled data refresh on the PRIMARY (monthly data update, quarterly cleanup).
 #
 #   ops/refresh.sh monthly     2nd of each month 00:30 Europe/Berlin (firmen-refresh-monthly.timer):
 #                              pre-refresh dump -> fetch EUDAMED, EMA, GLEIF -> etl.load schema + all -> etl.resolve
@@ -9,10 +9,10 @@
 #
 # A failed fetch keeps the previous raw snapshot (etl.load always reads the newest raw per source), so a refresh with
 # one broken source still rebuilds consistently from older data for that source — the log line says which one failed.
-# EUDAMED is slow and rate-limited (~1 day for the full detail fetch, see handover §7), so the unit has no timeout.
-# The tender corpus (source `corpus`) is only fetchable on datanuc; its raw snapshot is copied by hand (BETRIEB.md §9).
+# EUDAMED is slow and rate-limited (~1 day for the full detail fetch), so the unit has no timeout.
+# The procurement awards (source `corpus`) come from a separate database; their raw snapshot is copied by hand.
 # Revert: the pre-refresh dump `firmen-<ts>-pre-refresh.dump` -> ops/restore_test.sh standby <dump> with the app
-# stopped (see BETRIEB.md §9). Result line: $BACKUP_DIR/refresh.jsonl (travels to the standby with the backups).
+# stopped. Result line: $BACKUP_DIR/refresh.jsonl (travels to the standby with the backups).
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 # shellcheck source=ops/lib.sh
@@ -52,7 +52,7 @@ monthly() {
   if [ "$before" -gt 0 ] && [ $(( (before - after) * 100 / before )) -gt "$MAXDROP" ]; then
     ok=false
     "$PY" -c "import sys; from ops.alert import send_alert; send_alert('Datenaktualisierung auffällig', sys.argv[1], level='P3')" \
-      "Verifizierte Firmen $before -> $after (mehr als $MAXDROP % weniger). Prüfen; Revert: BETRIEB.md §9" || true
+      "Verifizierte Firmen $before -> $after (mehr als $MAXDROP % weniger). Prüfen; Revert: pre-refresh-Dump zurückspielen" || true
   fi
   log_json "$LOG" ok=$ok kind=monthly verified_before="$before" verified_after="$after" \
            failed_fetch="${failed% }" seconds="$(( $(date +%s) - t0 ))"

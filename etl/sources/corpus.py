@@ -1,5 +1,5 @@
 """
-Winners of German health-sector awards from the `ausschreibungen` tender corpus (read-only).
+Winners of German health-sector awards from a public procurement notice database (TED / Bekanntmachungsservice), read-only.
 Health = main CPV 33* (medical equipment, pharmaceuticals, personal care) or 4818* (medical software).
 One CSV row per winner org with award counts, value, CPV families and buyer count.
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Failover: make the STANDBY the live server. NOT automatic — a human (Pano or the deputy) runs it after the P1 alarm,
+# Failover: make the STANDBY the live server. NOT automatic — a human (the operator or a deputy) runs it after the P1 alarm,
 # from the phone over SSH if needed. Reason: an automatic switch on a monitor's opinion risks split-brain (both servers
 # taking tickets/accounts) and silently loses everything since the last dump. Recovery target is 24 h; this takes
 # ~5 minutes plus the time until someone reacts (P1 reaction target 8 h).
@@ -16,7 +16,7 @@
 #   5. enable the app site in Caddy (Let's Encrypt issues the certificate as soon as traffic arrives here)
 #   6. alert "failover done"
 # Data loss: everything written on the old primary after its last dump (tickets, accounts, saved searches) — the
-# directory data itself is rebuilt from registers anyway. Failback: BETRIEB.md §7.
+# directory data itself is rebuilt from registers anyway. Failback: the same steps in the other direction, after a fresh dump.
 #
 # Env (/srv/firmen/app/.env): FAILOVER_METHOD (floating_ip|dns), HCLOUD_TOKEN (Hetzner Cloud API token, project
 # scoped, read+write), FLOATING_IP_ID, THIS_SERVER_ID, DOMAIN.
@@ -64,7 +64,7 @@ promote() {
   caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile && systemctl reload caddy
   echo "--- 6. check"
   sleep 3; curl -fsS -m 10 http://127.0.0.1:8601/api/health && echo
-  as_firmen "$PY" -c "from ops.alert import send_alert; send_alert('Failover ausgeführt', 'Standby ist jetzt live. Altes Primärsystem NICHT wieder starten, bevor Failback geplant ist (BETRIEB.md §7).', level='P2', key='failover')" || true
+  as_firmen "$PY" -c "from ops.alert import send_alert; send_alert('Failover ausgeführt', 'Standby ist jetzt live. Altes Primärsystem NICHT wieder starten, bevor Failback geplant ist.', level='P2', key='failover')" || true
   echo "done. The external monitor now watches this server through ${DOMAIN:-the domain}; the old primary must stay down."
 }
 

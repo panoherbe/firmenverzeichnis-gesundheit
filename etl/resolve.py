@@ -12,7 +12,7 @@ Join keys, strongest first:
   lei            the record matched the same GLEIF entity (register+plz2, name+plz, name+city; for records without
                  postcode: the name is carried by exactly one active German LEI and the city's first word agrees)
   name_distinct  identical normalised name that is DISTINCTIVE: it has a word outside the generic/surname list below
-                 and at most one active German LEI carries it. Needed because the tender corpus spells one seat
+                 and at most one active German LEI carries it. Needed because procurement notices spell one seat
                  many ways ("Laichingen", "Lachingen", "Laichinigen" for ALIUD PHARMA, measured 2026-11-02).
                  Exact name equality, not a similarity score; wrong merges are measured in the quality sample.
   name_unique    a record WITHOUT location (EMA, consortium members) joins the one located cluster with that name;
@@ -32,7 +32,7 @@ active in EUDAMED, EMA marketing-authorisation holder, or an active LEI in GLEIF
 Hexal AG, Aliud Pharma, 1 A Pharma, Eisai GmbH carry no active German LEI.)
 
 Tier: A = manufacturer / MA holder (EUDAMED MF/PR, EMA MAH); B = EUDAMED authorised rep / importer only;
-C = public-sector supplier or EU health-research participant only (tender corpus, CORDIS).
+C = public-sector supplier or EU health-research participant only (public procurement awards, CORDIS).
 CORDIS participants count as verified: the Commission validates every participant as a legal entity.
 
     python -m etl.resolve

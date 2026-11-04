@@ -9,7 +9,7 @@
 #                                        can take over with yesterday's data (refuses after promotion)
 #
 # Checks: sha256 matches; pg_restore exits 0; company, source_record and source counts equal the counts recorded at
-# dump time; company >= RESTORE_MIN_COMPANIES (default 3000 = tender minimum of profiles).
+# dump time; company >= RESTORE_MIN_COMPANIES (default 3000 = minimum number of profiles we expect).
 # Result line (read by ops/sla_report.py): $BACKUP_DIR/restore_test.jsonl (scratch) or standby_restore.jsonl.
 # Needs: DATABASE_URL whose role may CREATE DATABASE (bootstrap grants CREATEDB to role firmen), PG_BIN optional.
 set -euo pipefail

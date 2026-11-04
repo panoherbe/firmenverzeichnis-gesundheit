@@ -1,7 +1,7 @@
 """
 Daily retention job on the PRIMARY (firmen-prune.timer, 04:45 Europe/Berlin):
 
-- access_log rows older than ACCESS_LOG_DAYS (default 90; tender A25 access logging, GDPR storage limitation)
+- access_log rows older than ACCESS_LOG_DAYS (default 90; access logging, GDPR storage limitation)
 - requester e-mails of support tickets resolved more than SUPPORT_RETENTION_DAYS (default 90) ago
 - var/ops/alerts.jsonl trimmed to the last 400 days
 

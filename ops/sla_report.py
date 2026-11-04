@@ -1,5 +1,5 @@
 """
-Monthly SLA report (tender LB §2.1 "monatliche Berichterstattung über die SLA-Einhaltung").
+Monthly SLA report: availability, ticket reaction times and backups of one calendar month.
 
 Runs on the STANDBY on the 1st of each month at 06:00 Europe/Berlin (firmen-sla-report.timer), where everything it
 needs is local: the monitor's SQLite (availability, incidents), the nightly-restored database (tickets up to the
@@ -10,7 +10,7 @@ night before), and the backup result lines pulled from the primary.
 
 Writes var/reports/sla-YYYY-MM.{md,html,pdf} (REPORT_DIR). The PDF is written with a tiny built-in writer (stdlib only,
 Courier, cp1252) — plain but sendable. No requester e-mails or names appear in the report.
-Sending it to the customer is a human step (Pano), see docs/bid/BETRIEB.md §5.
+Sending it to the customer is a human step (the operator).
 
 Measured vs. assumed: every number below comes from a log line or a table row; where a source is missing the report
 says "keine Daten" instead of assuming success.

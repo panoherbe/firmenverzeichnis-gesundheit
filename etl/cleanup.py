@@ -1,5 +1,5 @@
 """
-Quarterly cleanup by the documented criteria (docs/bid/DATENPFLEGE.md §3). Runs after etl.resolve + etl.enrich and is
+Quarterly cleanup by fixed, documented criteria (codes B1–B8 below). Runs after etl.resolve + etl.enrich and is
 deterministic: etl.resolve rebuilds `company` from the registers, so this step re-derives every mark each run.
 
   B1  no reachable contact path in two consecutive check cycles (site_check: the last two distinct days both not ok,

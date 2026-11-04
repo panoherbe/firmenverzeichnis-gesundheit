@@ -115,7 +115,7 @@ APP_EN = {
     "Kontaktweg": "Contact path", "Daten exportieren": "Export data", "Profil als PDF": "Profile as PDF",
     "Unternehmen im Verzeichnis": "companies in the directory",
     "Unternehmen der deutschen Gesundheitswirtschaft aus amtlichen Registern": "Companies of the German health industry from official registers",
-    "Keine personenbezogenen Daten.": "No personal data.", "Prototyp": "Prototype",
+    "Im Verzeichnis keine personenbezogenen Daten.": "No personal data in the directory.", "Datenschutz": "Privacy", "Prototyp": "Prototype",
     # statistics
     "nach Branche": "by sector", "nach Bundesland": "by federal state", "nach Größenklasse": "by size class",
     "nach Produktgruppe (Medizintechnik)": "by product group (medical technology)",
@@ -143,7 +143,7 @@ app = FastAPI(
     title="German Health Industry Directory – API",
     description=("Read-only REST API of the directory of German health-industry companies (medical technology, "
                  "pharmaceuticals, biotechnology, digital health). Data come from official registers (EUDAMED, EMA, "
-                 "GLEIF, CORDIS) and public procurement notices; legal entities only, no personal data. Every record "
+                 "GLEIF, CORDIS) and public procurement notices; the directory holds legal entities only, no personal data. Every record "
                  "lists its sources. Search syntax: AND/OR/NOT, \"phrases\", prefix*. Licence: see /quellen."),
     version="1.0", docs_url=None, redoc_url=None)  # own /api/docs page: Swagger UI would load from a CDN
 app.mount("/static", StaticFiles(directory=str(Path(__file__).parent / "static")), name="static")
@@ -424,8 +424,10 @@ def export_rows(f: dict) -> list[dict]:
     return rows
 
 
-ATTRIBUTION = ("Quellen: Europäische Kommission (EUDAMED, TED, CORDIS), European Medicines Agency (Art. 57), "
-               "GLEIF (CC0), oeffentlichevergabe.de; eigene Auswertung. Keine personenbezogenen Daten.")
+ATTRIBUTION = ("Quellen: Europäische Kommission – EUDAMED und TED (Weiterverwendung nach Beschluss 2011/833/EU), "
+               "CORDIS (CC BY 4.0); Source: European Medicines Agency (Art. 57); GLEIF (CC0); oeffentlichevergabe.de "
+               "(dl-de/by-2-0); Websites der Unternehmen (Kontaktseite, Beschäftigtenzahl); eigene Auswertung. "
+               "Keine personenbezogenen Daten.")
 
 
 def ef(q="", sector="", tier="", region="", size="", revenue="", product="", contact=False, alle=False):

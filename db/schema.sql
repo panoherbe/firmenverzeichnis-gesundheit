@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS source (
     note         text
 );
 
--- One row per entity per source, normalised. raw_path/raw_sha256 point at the file on datanuc.
+-- One row per entity per source, normalised. raw_path/raw_sha256 point at the file on the ETL host.
 CREATE TABLE IF NOT EXISTS source_record (
     source          text NOT NULL REFERENCES source(id),
     source_id       text NOT NULL,
@@ -81,7 +81,7 @@ CREATE INDEX IF NOT EXISTS company_name_trgm_idx ON company USING gin (name gin_
 
 -- A = manufacturer / marketing-authorisation holder (EUDAMED MF/PR, EMA MAH)
 -- B = authorised representative / importer only (EUDAMED AR/IM)
--- C = supplier to public buyers only (tender corpus; distributors, service firms, manufacturers not yet confirmed)
+-- C = supplier to public buyers only (procurement award notices; distributors, service firms, manufacturers not yet confirmed)
 ALTER TABLE company ADD COLUMN IF NOT EXISTS tier text;
 CREATE INDEX IF NOT EXISTS company_tier_idx ON company (tier);
 
@@ -109,12 +109,12 @@ CREATE TABLE IF NOT EXISTS quality_check (
 INSERT INTO source (id, title, url, licence, attribution, share_alike, note) VALUES
  ('eudamed', 'EUDAMED – Actor registration (European Commission)', 'https://ec.europa.eu/tools/eudamed',
   'Re-use under Commission Decision 2011/833/EU (assumed; EUDAMED-specific notice not found)',
-  'Quelle: Europäische Kommission, EUDAMED', false, 'PRRC person data stripped before raw write'),
+  'Quelle: Europäische Kommission, EUDAMED (Weiterverwendung nach Beschluss 2011/833/EU)', false, 'PRRC person data stripped before raw write'),
  ('ema', 'EMA – Article 57 product data', 'https://www.ema.europa.eu/en/human-regulatory-overview/post-authorisation/data-medicines-iso-idmp-standards-post-authorisation/public-data-article-57-database',
   'EMA legal notice: reproduction authorised with source acknowledged (assumed, verify)',
-  'Quelle: European Medicines Agency, Article 57 database', false, 'MAH names only'),
+  'Source: European Medicines Agency (Article 57 database)', false, 'MAH names only'),
  ('corpus', 'Öffentliche Aufträge (TED + Bekanntmachungsservice), eigene Auswertung', 'https://ted.europa.eu',
-  'TED: re-use under Decision 2011/833/EU; BKMS: open data', 'Quelle: TED / oeffentlichevergabe.de, eigene Auswertung', false, 'Award winners with health CPV'),
+  'TED: re-use under Decision 2011/833/EU; BKMS: open data', 'Quelle: TED, Europäische Union (Beschluss 2011/833/EU); oeffentlichevergabe.de (dl-de/by-2-0); eigene Auswertung', false, 'Award winners with health CPV'),
  ('cordis', 'CORDIS – Horizon-Europe-Projekte (Europäische Kommission)', 'https://cordis.europa.eu/about/legal',
   'CC BY 4.0', 'Quelle: Europäische Kommission, CORDIS (CC BY 4.0)', false, 'German companies in health projects'),
  ('gleif', 'GLEIF – LEI Golden Copy', 'https://www.gleif.org/en/lei-data/gleif-golden-copy', 'CC0 1.0',

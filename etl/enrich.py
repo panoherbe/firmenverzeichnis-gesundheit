@@ -12,7 +12,7 @@ Enrich `company` after etl.resolve with facts from the newest raw runs (idempote
 
 Employee figures from websites: regex over the visible text of home/about/career pages; the number must sit next to
 "Mitarbeiter*/Mitarbeitende/Beschäftigte/employees/staff". Precision is measured on a hand-checked sample before
-the field is shown (handover §5a; sample 1 of 2026-11-03: 18/25 right, errors mostly company-history figures,
+the field is shown (sample 1 of 2026-11-03: 18/25 right, errors mostly company-history figures,
 so a figure with a year in the 90 characters before it is skipped unless "heute/currently/…" is there too;
 sample 2 after that rule: 27/30 right, 95 % CI ≈ 74–97 %); a figure from a group page ("weltweit", "worldwide", "Gruppe", "group") is kept
 but marked as group-level and not used for the size class.
@@ -174,6 +174,16 @@ def main() -> None:
     with conn.cursor() as cur:
         cur.executemany("UPDATE company SET " + ", ".join(f"{c} = %({c})s" for c in cols) + " WHERE id = %(id)s",
                         [{**{c: u.get(c) for c in cols}, "id": cid} for cid, u in up.items() if u])
+    # city names without umlauts ("Munchen", "Muenchen" from GLEIF/EUDAMED) take the umlaut spelling that the
+    # registers use for the same name; a city with no umlaut variant in any source stays as it is
+    key = "replace(replace(replace(translate(replace(lower({0}), 'ß', 'ss'), 'äöü', 'aou'), 'ae', 'a'), 'oe', 'o'), 'ue', 'u')"
+    n_city = conn.execute(f"""
+        WITH v AS (SELECT city, count(*) AS n FROM source_record WHERE city ~ '[äöüÄÖÜß]' GROUP BY city),
+             k AS (SELECT DISTINCT ON ({key.format('city')}) {key.format('city')} AS k, city FROM v
+                   ORDER BY {key.format('city')}, n DESC)
+        UPDATE company c SET city = k.city FROM k
+        WHERE c.city !~ '[äöüÄÖÜß]' AND {key.format('c.city')} = k.k""").rowcount
+    print(f"  cities: {n_city} spelled with umlauts as in the registers")
     conn.execute("""UPDATE company SET search = search ||
         setweight(to_tsvector('simple', coalesce((SELECT string_agg(e->>1, ' ') FROM jsonb_array_elements(emdn) e), '') || ' ' ||
                                         coalesce(array_to_string(products, ' '), '')), 'C')

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Daily database backup (tender LB §2.1: daily automatic backups, 30 days retention, geo-redundant copy).
+# Daily database backup (our target: one automatic dump per day, kept 30 days, plus copies at two other sites).
 #
 #   ops/backup.sh dump [tag]   PRIMARY, 02:30 Europe/Berlin (firmen-backup.timer): pg_dump -> $BACKUP_DIR,
 #                              sha256 + row-count sidecar, `pg_restore --list` sanity check, 30-day rotation

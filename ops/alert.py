@@ -1,5 +1,5 @@
 """
-One alert function for everything that must reach Pano's phone: the monitor (site down / recovered), the support
+One alert function for everything that must reach the operator's phone: the monitor (site down / recovered), the support
 form (P1/P2 tickets) and failed systemd jobs (OnFailure=).
 
     from ops.alert import send_alert
@@ -10,7 +10,7 @@ Channels (env, all optional, never hardcoded — put them in the server's .env):
     NTFY_TOPIC   topic name (long random string; the topic name IS the secret on ntfy.sh)
     NTFY_URL     server, default https://ntfy.sh (or a self-hosted ntfy)
     NTFY_TOKEN   access token, only if the ntfy server requires one
-    TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID   bot from @BotFather, chat id of Pano's chat with the bot
+    TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID   bot from @BotFather, chat id of the operator's chat with the bot
 
 Levels: P1 (ntfy priority 5 = "urgent": rings through Do-Not-Disturb if the ntfy app allows it), P2 (priority 4),
 P3/info (priority 3), ok (recovered, priority 3). Telegram cannot force a ring; ntfy is the phone-alarm channel,

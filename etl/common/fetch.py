@@ -1,4 +1,4 @@
-"""One polite HTTP client for every collector. Installs the DoH resolver first (datanuc has no DNS)."""
+"""One polite HTTP client for every collector. Installs the DoH resolver first (for hosts without DNS)."""
 
 from __future__ import annotations
 

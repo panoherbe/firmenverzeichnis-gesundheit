@@ -1,4 +1,4 @@
-"""Connections: our own database (`firmen`) and the read-only tender corpus (`ausschreibungen`)."""
+"""Connections: our own database (`firmen`) and the read-only public procurement notice database (TED / Bekanntmachungsservice)."""
 
 from __future__ import annotations
 
@@ -12,13 +12,13 @@ from etl.common.env import load_env
 
 def connect() -> psycopg.Connection:
     load_env()
-    # autocommit: psycopg3 otherwise never commits unless told to (trap in the ausschreibungen handover)
+    # autocommit: psycopg3 otherwise never commits unless told to (a trap learned the hard way)
     return psycopg.connect(os.environ["DATABASE_URL"], autocommit=True)
 
 
 def connect_corpus() -> psycopg.Connection:
     """
-    Read-only session on the tender corpus. Either CORPUS_DATABASE_URL, or CORPUS_ENV_FILE pointing at another
+    Read-only session on the procurement notice database. Either CORPUS_DATABASE_URL, or CORPUS_ENV_FILE pointing at another
     project's .env whose DATABASE_URL is used (so the password lives in one place only). We never write there.
     """
     load_env()

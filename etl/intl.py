@@ -15,7 +15,7 @@ Sources and rules (one row per source record; the UI groups rows with equal name
   eudamed_intl raw/eudamed_intl/<day>/list_*.json from etl.sources.eudamed_intl. Active actors, country != DE.
 Person filter for all: names flagged by norm.is_natural_person are dropped, and a name must carry a recognisable
 company form (LEGAL_ENTITY) - sole traders without a form are left out. Measured coverage: none yet (no raw data
-on the Mac); count after the first server run.
+on the operator's workstation); count after the first server run.
 No person names, e-mails or phone numbers are stored.
 """
 

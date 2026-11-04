@@ -223,7 +223,7 @@ def check() -> int:
             if not maint and down_min > P1_AFTER_MIN and not inc["p1_alerted"]:
                 send_alert("P1: Verzeichnis seit über 5 min down",
                            f"{BASE}: {err}. Reaktion innerhalb 8 h nötig. Erste Schritte: ssh primary → "
-                           "systemctl status firmen-app caddy postgresql; Failover: docs/bid/BETRIEB.md §7",
+                           "systemctl status firmen-app caddy postgresql; Failover: ops/failover.sh",
                            level="P1", key=f"incident:{inc['id']}")
                 c.execute("UPDATE incidents SET p1_alerted = 1 WHERE id = ?", (inc["id"],))
         elif inc:

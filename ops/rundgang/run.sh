@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Records the walkthrough on datanuc against the running app (127.0.0.1:8601) and encodes it.
+# Records the walkthrough on the ETL host against the running app (127.0.0.1:8601) and encodes it.
 #   bash ops/rundgang/run.sh            → var/rundgang/{rundgang.mp4,rundgang.gif,poster.png,bilder/*.png,kapitel.json}
 # The demo admin gets a temporary random password for the organiser view and a new random one afterwards;
 # neither is printed. Needs the image rundgang-aufnahme:1.56.0 (Dockerfile.aufnahme) and ffmpeg on the host.

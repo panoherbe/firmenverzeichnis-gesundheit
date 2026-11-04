@@ -142,7 +142,7 @@ def load_ema(conn) -> None:
     replace(conn, "ema", rows)
 
 
-# --- Tender corpus -------------------------------------------------------------------------------------------------
+# --- Procurement awards --------------------------------------------------------------------------------------------
 
 def load_corpus(conn) -> None:
     path = latest_dir("corpus") / "health_winners.csv"

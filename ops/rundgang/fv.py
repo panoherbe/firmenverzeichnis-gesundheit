@@ -1,9 +1,9 @@
 """Walkthrough for the teaser repo and buyer presentations: search, filter, profile, English, statistics with export,
 saved searches, matchmaking (event, personal agenda, organiser view), phone, measured numbers.
 
-Runs in the recorder image (Dockerfile.aufnahme, Playwright 1.56) with --network host against the app on datanuc.
+Runs in the recorder image (Dockerfile.aufnahme, Playwright 1.56) with --network host against the app on the ETL host.
 Numbers on the cards are read from the running API at recording time, never typed in.
-Writes frames + frames.txt to $AUS and screenshots to $AUS/bilder (also used in docs/bid/bilder/).
+Writes frames + frames.txt to $AUS and screenshots to $AUS/bilder.
 
   env: APP_URL, AUS, DEMO_PW (test account), ADMIN_EMAIL + ADMIN_PW + ADMIN_TOTP (temporary, organiser view),
        MM_EVENT (slug), MM_TOKEN (agenda link of a fictional participant), INTL_N, INTL_COUNTRIES
@@ -94,7 +94,7 @@ def main():
         rg.halte(3.4)
         rg.bild('profil')
         rg.scrolle(520, 0.8)
-        rg.untertitel('Jede Angabe nennt ihre Quelle und Lizenz. Keine Personendaten, nur Funktionspostfächer und Kontaktseiten.')
+        rg.untertitel('Jede Angabe nennt ihre Quelle und Lizenz. Im Verzeichnis keine Personendaten: nur Funktionspostfächer und Kontaktseiten.')
         rg.halte(3.0)
         page.evaluate('window.scrollTo(0, 0)')
         with page.expect_navigation():

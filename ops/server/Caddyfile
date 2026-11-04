@@ -31,7 +31,7 @@
 }
 
 (access_log) {
-	# Access log for tender A25 (together with the app's access_log table). IPs masked to /24 (IPv4) and /48 (IPv6),
+	# Access log (together with the app's access_log table). IPs masked to /24 (IPv4) and /48 (IPv6),
 	# cookies and tokens removed; kept 90 days (roll_keep_for 2160h).
 	log {
 		output file /var/log/caddy/access.log {

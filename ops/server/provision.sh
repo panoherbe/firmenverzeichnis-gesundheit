@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
-# From the Mac: one command per server after buying it (Hetzner Cloud, Ubuntu 24.04, your SSH key added at creation).
+# From the operator's workstation: one command per server after buying it (Hetzner Cloud, Ubuntu 24.04, your SSH key added at creation).
 #
 #   ops/server/provision.sh primary root@<primary-ip> [--seed path/to/firmen.dump]
 #   ops/server/provision.sh standby root@<standby-ip>
 #
-# Copies the code (same excludes as ops/sync.sh) to /srv/firmen/app, the filled `.env.<role>` from the repo root to
+# Copies the code (excluding .git, .env*, .venv, .wheels, raw, var) to /srv/firmen/app, the filled `.env.<role>` from the repo root to
 # /srv/firmen/app/.env, runs ops/server/bootstrap.sh <role>, and with --seed restores an initial database dump
-# (make it on datanuc: `docker exec firmen-db pg_dump -U firmen -Fc firmen > seed.dump`, copy it to the Mac).
-# Also copy the raw snapshots the monthly refresh does not fetch (corpus, cordis) — see docs/bid/BETRIEB.md §9.
-# ONE ssh/rsync call at a time (Pano's rule for all boxes); nothing runs in parallel.
+# (make it on the ETL host: `docker exec firmen-db pg_dump -U firmen -Fc firmen > seed.dump`, copy it to the workstation).
+# Also copy the raw snapshots the monthly refresh does not fetch (corpus, cordis) into raw/ on the server.
+# ONE ssh/rsync call at a time (some hosts block IPs on bursts of SSH logins); nothing runs in parallel.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 ROLE=${1:?primary|standby}; HOST=${2:?root@ip}; SEED=""

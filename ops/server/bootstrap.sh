@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Bootstrap a fresh Hetzner Ubuntu 24.04 server as PRIMARY or STANDBY. Idempotent: safe to run again after a change.
-# Normally called by ops/server/provision.sh from the Mac; by hand (as root, code already in /srv/firmen/app):
+# Normally called by ops/server/provision.sh from the operator's workstation; by hand (as root, code already in /srv/firmen/app):
 #
 #   /srv/firmen/app/ops/server/bootstrap.sh primary|standby
 #   /srv/firmen/app/ops/server/bootstrap.sh authorize-standby "<standby's ssh public key>"   # on the PRIMARY

@@ -1,5 +1,5 @@
 """
-Support desk for the SLA (tender LB §2.1): public ticket form, secret status link, automatic acknowledgement,
+Support desk for our service level (SLA): public ticket form, secret status link, automatic acknowledgement,
 phone alert for P1/P2, admin list with measurable reaction times, and the public /status page.
 
 Routes:
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS support_ticket (
   created_at timestamptz NOT NULL DEFAULT now(),
   due_at timestamptz NOT NULL,                  -- reaction deadline in business hours
   ack_sent_at timestamptz,                      -- automatic acknowledgement e-mail (not a reaction)
-  alert_sent_at timestamptz,                    -- phone alert to the contractor (P1/P2)
+  alert_sent_at timestamptz,                    -- phone alert to the operator (P1/P2)
   first_reaction_at timestamptz,                -- first human action: the SLA measure
   resolved_at timestamptz,
   email_purged_at timestamptz);

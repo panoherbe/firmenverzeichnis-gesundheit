@@ -71,7 +71,7 @@ footer { padding:16px 20px; color:var(--muted); font-size:12px; border-top:1px s
 {% endif %}
 <main id="main">{% block main %}{% endblock %}</main>
 <footer>{{ _("Unternehmen der deutschen Gesundheitswirtschaft aus amtlichen Registern") }} (EUDAMED, EMA, GLEIF, CORDIS)
-{{ _("und öffentlichen Auftragsbekanntmachungen.") }} {{ _("Keine personenbezogenen Daten.") }}
+{{ _("und öffentlichen Auftragsbekanntmachungen.") }} {{ _("Im Verzeichnis keine personenbezogenen Daten.") }} <a href="/hilfe#datenschutz">{{ _("Datenschutz") }}</a>.
 {% if th.provider %}{{ th.provider }} · {% endif %}<a href="/quellen{% if embed %}?embed=1{% endif %}">{{ _("Quellen & Lizenzen") }}</a> · <a href="/support">{{ _("Support") }}</a> · <a href="/status">{{ _("Status") }}</a> · <a href="/hilfe">{{ _("Hilfe") }}</a></footer>
 <div id="tour" role="dialog" aria-live="polite"></div>
 <script src="/static/app.js" defer></script>

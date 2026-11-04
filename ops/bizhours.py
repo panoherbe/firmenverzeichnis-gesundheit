@@ -1,13 +1,12 @@
 """
 Business-hours calendar for SLA deadlines: Mo–Fr 08:00–17:00 Europe/Berlin, excluding the statutory public holidays
-of Hamburg (the contractor's seat; tender LB §2.1 "ausgenommen gesetzliche Feiertage am Sitz des Auftragnehmers").
+of Hamburg (the operator's seat).
 
 Hamburg holidays (FeiertagsG HH): Neujahr, Karfreitag, Ostermontag, 1. Mai, Christi Himmelfahrt, Pfingstmontag,
 Tag der Deutschen Einheit (3.10.), Reformationstag (31.10., since 2018), 1. and 2. Weihnachtstag.
 24.12. and 31.12. are NOT statutory holidays and count as normal working days.
 
-Reaction targets (LB §2.1), counted in business hours (interpretation, to be confirmed with the customer in the
-Betriebsanleitung, see docs/bid/BETRIEB.md):
+Our reaction targets, counted in business hours (the exact reading is agreed with each customer):
     P1 8 h · P2 12 h · P3 24 h · routine 3 working days = 27 business hours (3 × 9 h)
 
     python -m ops.bizhours 2026-12-23T16:00 P1     # prints the deadline
