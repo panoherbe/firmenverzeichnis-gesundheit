@@ -133,6 +133,9 @@ def main():
         rg.bild('matchmaking-veranstaltung')
         page.goto(APP + f'/matchmaking/p/{os.environ["MM_TOKEN"]}?lang=de')
         page.wait_for_selector('h1')
+        # the personal link is a secret (it is the participant's access): never show a real one in the video
+        page.evaluate("""() => { const i = document.getElementById('mylink');
+            if (i) { i.value = 'https://firmen.panoherbe.com/matchmaking/p/••••••••••••'; } }""")
         rg.untertitel('Jede teilnehmende Firma bekommt Vorschläge mit Begründung, fragt Gespräche an, und der Termin wird '
                       'automatisch eingeplant – mit Videoraum und Kalenderdatei.')
         rg.halte(4.2)
@@ -159,7 +162,7 @@ def main():
         handy_ctx = browser.new_context(viewport={'width': 390, 'height': 780}, device_scale_factor=2, locale='de-DE',
                                         is_mobile=True, has_touch=True)
         hp = handy_ctx.new_page()
-        hp.goto(APP + '/?lang=de&q=Hörgerät*')
+        hp.goto(APP + '/?lang=de&q=Endoskop*')
         hp.wait_for_selector('table.res')
         tel = rg.bilder / 'mobil.png'
         hp.screenshot(path=str(tel))

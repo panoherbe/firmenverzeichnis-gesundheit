@@ -104,4 +104,6 @@ EN = {
     "Sicherheit des Betriebs; 90 Tage": "operational security; 90 days",
     "Das Verzeichnis enthält nur Unternehmen mit Rechtsform, keine Einzelkaufleute und keine persönlichen E-Mail-Adressen. Jedes Feld ist auf eine Quelle zurückführbar.":
         "The directory holds companies with a legal form only, no sole traders and no personal e-mail addresses. Every field can be traced to a source.",
+    "Anbieter": "Provider", "Impressum": "Imprint", "Datenschutzhinweise": "Privacy notice",
+    "Kurzüberblick; die vollständigen Hinweise nach Art. 13 DSGVO:": "Short overview; the full notice under Art. 13 GDPR:",
 }

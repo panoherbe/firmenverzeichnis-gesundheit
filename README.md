@@ -49,6 +49,51 @@ Gemessen am 04.11.2026 an der laufenden Installation; Abfragen und Ausgaben: [`n
 | Geschäftskontakte anbahnen | Matchmaking eingebaut; internationale Firmenbasis mit **6.450 Unternehmen aus 80 Ländern** (EMA, CORDIS) |
 | verlässlicher Betrieb | Ticketformular mit sofortiger Ticketnummer, Statusseite, monatlicher SLA-Bericht; tägliche Backups mit Wiederherstellungstest und Kopie an einen zweiten Standort (Skripte in `ops/`; auf der Demo laufen Backup, Wiederherstellungstest und Selbstprüfung) |
 
+## In zwei Minuten selbst prüfen
+
+1. Demo öffnen: **[firmen.panoherbe.com](https://firmen.panoherbe.com)** (Testzugang für gespeicherte Suchen auf Anfrage: kontakt@panoherbe.com).
+2. „Endoskop*“ suchen, links „Baden-Württemberg“ wählen und ein Profil öffnen.
+3. Oben rechts auf **EN** schalten.
+4. Über „Statistik“ ein Diagramm als JPG herunterladen.
+5. Unter „Matchmaking“ die Beispielveranstaltung öffnen. Sie ist fiktiv, die Teilnehmenden sind erfunden.
+
+## Ehrliche Grenzen
+
+- **Größenklassen** (Beschäftigte) gibt es heute für 292 registergeprüfte Firmen (6 %). Die Zahlen sind Angaben
+  der Firmen auf ihrer eigenen Website. Eine Stichprobe von 30 war in 27 Fällen richtig. **Umsatzklassen** fehlen
+  fast ganz.
+- **Biotechnologie und digitale Gesundheit** sind dünn besetzt, weil es für beide kein Pflichtregister gibt.
+  Verbandslisten übernehmen wir bewusst nicht (Datenbankherstellerrecht).
+- **Bevollmächtigte und Importeure** gehören nicht immer zur Branche. In einer Stichprobe vom 02.11.2026 waren es 15 von 20 (nachgezählt gegen den heutigen Stand: 14 von 19, siehe `nachweis/`).
+- Die internationale Firmenbasis enthält nur Unternehmen aus EU-Registern. Gewonnen werden Teilnehmende über
+  Einladungen mit Einwilligung, nie über Kalt-E-Mails.
+- Prototyp, betrieben von einer Person. Der Betrieb ist automatisiert (Monitoring, Neustart, Backups, Standby);
+  auf der Demo laufen Neustart, tägliches Backup und Wiederherstellungstest, ein Standby-Server noch nicht.
+  Störungen der Priorität 1 gehen als Alarm aufs Telefon.
+- Videoräume für Matchmaking-Gespräche laufen in der Demo über meet.jit.si (Drittanbieter); für den Betrieb ist ein
+  eigener Jitsi-Server vorgesehen.
+
+## Text des Rundgangs
+
+Das Video hat keinen Ton; die Untertitel stehen hier zum Nachlesen (58 Sekunden, Karten verkürzt).
+
+- **0:00** Prototyp · läuft heute Firmenverzeichnis Gesundheitswirtschaft 4.787 Unternehmen aus Medizintechnik, Pharma, Biotech und digitaler Gesundheit – aus amtlichen …
+- **0:04** Ein Suchfeld für alles: Produkt, Firma, Ort, Postleitzahl oder Registernummer.
+- **0:09** UND, ODER, NICHT, Klammern und Wortanfänge funktionieren – auf Deutsch und Englisch.
+- **0:12** Filter lassen sich kombinieren; die Zahl in Klammern zeigt vorher, wie viele Treffer bleiben.
+- **0:15** Zwei Klicks bis zum Profil: Kontaktseite, Produkte nach EU-Nomenklatur, Register- und Steuernummern.
+- **0:19** Jede Angabe nennt ihre Quelle und Lizenz. Im Verzeichnis keine Personendaten: nur Funktionspostfächer und Kontaktseiten.
+- **0:23** Dasselbe Profil auf Englisch – für Interessenten im Ausland. Oberfläche und Profile sind zweisprachig.
+- **0:26** Statistik zur aktuellen Auswahl. Jede Grafik geht als JPG oder PNG heraus, die Seite als PDF, die Trefferliste als Excel, CSV oder PDF.
+- **0:30** Namentliche Konten für das Team, Administratoren mit zweitem Faktor.
+- **0:31** Suchen mit allen Filtern speichern und wieder aufrufen; der Suchverlauf ist immer da.
+- **0:34** Virtuelles Matchmaking: Veranstaltungsseite mit Programm und Anmeldung, hier ein fiktives Beispiel.
+- **0:38** Jede teilnehmende Firma bekommt Vorschläge mit Begründung, fragt Gespräche an, und der Termin wird automatisch eingeplant – mit Videoraum und Kalenderdatei.
+- **0:42** Die Veranstalterin sieht Anmeldungen, Gespräche und nach der Veranstaltung die Umfrage zu Zufriedenheit, Nutzen und Umsatzchancen.
+- **0:46** Mobil Auf dem Telefon Dieselbe Suche im Browser des Telefons. Einbettung per iframe in jede Website, Farben und Logo nach Corporate Design. …
+- **0:49** Gemessen am 04.11.2026 Was heute schon läuft 4.787 registergeprüfte Unternehmen (EUDAMED, EMA, LEI) 4.118 davon mit Kontaktweg: Kontaktseite, Website oder …
+- **0:54** Selbst prüfen In zwei Minuten ausprobieren Demo öffnen, „Endoskop*“ suchen, ein Profil öffnen, oben auf EN schalten. Quellcode offen, AGPL-3.0. …
+
 ---
 
 ## Technik

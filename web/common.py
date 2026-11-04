@@ -25,6 +25,16 @@ from etl.common.env import load_env
 load_env()
 DSN = os.environ["DATABASE_URL"]
 
+# operator of this installation (imprint § 5 DDG, privacy notice Art. 13 GDPR); a customer installation sets its own
+OPERATOR = {
+    "name": os.environ.get("OPERATOR_NAME", "Panagiotis Herbe"),
+    "address": os.environ.get("OPERATOR_ADDRESS", "Stockhausenstr. 10, 22305 Hamburg, Deutschland"),
+    "email": os.environ.get("OPERATOR_EMAIL", "kontakt@panoherbe.com"),
+    "imprint_url": os.environ.get("IMPRINT_URL", "https://www.panoherbe.com/impressum"),
+    "authority": os.environ.get("PRIVACY_AUTHORITY", "Der Hamburgische Beauftragte für Datenschutz und "
+                                "Informationsfreiheit, Ludwig-Erhard-Str. 22, 20459 Hamburg"),
+}
+
 LANG: contextvars.ContextVar[str] = contextvars.ContextVar("lang", default="de")
 EN: dict[str, str] = {}
 
@@ -55,4 +65,4 @@ def db():
 
 
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
-templates.env.globals.update(_=_, lang=lang)
+templates.env.globals.update(_=_, lang=lang, OPERATOR=OPERATOR)

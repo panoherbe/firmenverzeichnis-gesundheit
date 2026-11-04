@@ -320,6 +320,18 @@ def sources(request: Request, embed: bool = False):
     return templates.TemplateResponse(request, "sources.html", dict(rows=rows, gleif=gleif, embed=embed))
 
 
+@app.get("/datenschutz", response_class=HTMLResponse)
+def privacy(request: Request, embed: bool = False):
+    return templates.TemplateResponse(request, "privacy.html", dict(embed=embed))
+
+
+@app.get("/impressum")
+def imprint():
+    from fastapi.responses import RedirectResponse
+    from web.common import OPERATOR
+    return RedirectResponse(OPERATOR["imprint_url"], status_code=302)
+
+
 @app.get("/hilfe", response_class=HTMLResponse)
 def help_page(request: Request, embed: bool = False):
     return templates.TemplateResponse(request, "help.html", dict(embed=embed))

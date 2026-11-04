@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Datenschutz") }} – {{ _("Firmenverzeichnis Gesundheitswirtschaft") }}{% endblock %}
+{% block css %}section.p { max-width:860px; } section.p h2 { font-size:17px; } section.p td { font-size:14px; }{% endblock %}
+{% block main %}
+<section class="p">
+{% if lang() == 'en' %}
+<h1>Privacy notice</h1>
+<p>Information under Art. 13 GDPR for this installation. As of 4 November 2026.</p>
+<h2>1. Controller</h2>
+<p>{{ OPERATOR.name }}, {{ OPERATOR.address }}, e-mail <a href="mailto:{{ OPERATOR.email }}">{{ OPERATOR.email }}</a>.
+No data protection officer is required. Imprint: <a href="{{ OPERATOR.imprint_url }}">{{ OPERATOR.imprint_url }}</a>.</p>
+<h2>2. What is processed, why, on which legal basis, for how long</h2>
+<table>
+<thead><tr><th>Area</th><th>Data</th><th>Purpose and legal basis</th><th>Retention</th></tr></thead>
+<tbody>
+<tr><td>Directory, search, exports, API</td><td>companies only (name, legal form, address, register numbers, website, contact page, company mailbox) from public registers</td><td>information about companies; no personal data</td><td>–</td></tr>
+<tr><td>Visiting the site</td><td>time, page, status, browser type, IP address shortened to /24 (IPv4) or /48 (IPv6)</td><td>secure operation, abuse detection; Art. 6(1)(f) GDPR</td><td>90 days</td></tr>
+<tr><td>Cookies</td><td>language and design choice; session cookie only after sign-in</td><td>technically necessary (§ 25(2) TDDDG); no tracking, no analytics</td><td>language 1 year, design 1 day, session 8 hours</td></tr>
+<tr><td>User accounts (customer staff)</td><td>name, e-mail, role, saved searches, search history, sign-ins</td><td>performance of the contract with the organisation, Art. 6(1)(b) GDPR, and its legitimate interest, Art. 6(1)(f)</td><td>until the account is deleted</td></tr>
+<tr><td>Matchmaking</td><td>name, job title and e-mail of the participant, organisation, interests, meeting slots, survey answers</td><td>consent at registration, Art. 6(1)(a) GDPR; withdrawable at any time with effect for the future</td><td>12 months after the event, or earlier on request (self-deletion on the personal page)</td></tr>
+<tr><td>Support requests</td><td>e-mail address and text of the request</td><td>handling the request, Art. 6(1)(b) or (f) GDPR</td><td>e-mail address deleted after 90 days</td></tr>
+</tbody></table>
+<h2>3. Recipients</h2>
+<p>Hosting: Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen, data centres in Germany (data processor under Art. 28 GDPR).
+Video rooms for matchmaking meetings open only when you click the room link; the room runs at the configured Jitsi
+service (for this demo meet.jit.si, operated by 8x8, Inc., USA), whose privacy notice then applies. Nothing is passed on
+otherwise; there is no transfer to third countries by this application.</p>
+<h2>4. Your rights</h2>
+<p>Access (Art. 15), rectification (Art. 16), erasure (Art. 17), restriction (Art. 18), data portability (Art. 20),
+objection to processing based on Art. 6(1)(f) (Art. 21) and withdrawal of consent (Art. 7(3)). Write to
+<a href="mailto:{{ OPERATOR.email }}">{{ OPERATOR.email }}</a>. You may complain to a supervisory authority (Art. 77),
+for example: {{ OPERATOR.authority }}.</p>
+<h2>5. No automated decisions</h2>
+<p>Matching suggestions only propose possible meetings; nobody is decided about automatically (Art. 22 GDPR does not apply).</p>
+{% else %}
+<h1>Datenschutzhinweise</h1>
+<p>Informationen nach Art. 13 DSGVO für diese Installation. Stand 04.11.2026.</p>
+<h2>1. Verantwortlicher</h2>
+<p>{{ OPERATOR.name }}, {{ OPERATOR.address }}, E-Mail <a href="mailto:{{ OPERATOR.email }}">{{ OPERATOR.email }}</a>.
+Ein Datenschutzbeauftragter ist nicht vorgeschrieben. Impressum: <a href="{{ OPERATOR.imprint_url }}">{{ OPERATOR.imprint_url }}</a>.</p>
+<h2>2. Was verarbeitet wird, wozu, auf welcher Grundlage, wie lange</h2>
+<table>
+<thead><tr><th>Bereich</th><th>Daten</th><th>Zweck und Rechtsgrundlage</th><th>Speicherdauer</th></tr></thead>
+<tbody>
+<tr><td>Verzeichnis, Suche, Export, API</td><td>nur Unternehmen (Name, Rechtsform, Anschrift, Registernummern, Website, Kontaktseite, Funktionspostfach) aus öffentlichen Registern</td><td>Information über Unternehmen; keine Personendaten</td><td>–</td></tr>
+<tr><td>Aufruf der Website</td><td>Zeit, Seite, Status, Browsertyp, IP-Adresse gekürzt auf /24 (IPv4) bzw. /48 (IPv6)</td><td>sicherer Betrieb, Missbrauchserkennung; Art. 6 Abs. 1 lit. f DSGVO</td><td>90 Tage</td></tr>
+<tr><td>Cookies</td><td>Sprach- und Designwahl; Sitzungscookie nur nach Anmeldung</td><td>technisch erforderlich (§ 25 Abs. 2 TDDDG); kein Tracking, keine Analyse</td><td>Sprache 1 Jahr, Design 1 Tag, Sitzung 8 Stunden</td></tr>
+<tr><td>Nutzerkonten (Beschäftigte des Kunden)</td><td>Name, E-Mail, Rolle, gespeicherte Suchen, Suchverlauf, Anmeldungen</td><td>Erfüllung des Vertrags mit der Organisation, Art. 6 Abs. 1 lit. b DSGVO, und deren berechtigtes Interesse, lit. f</td><td>bis zur Löschung des Kontos</td></tr>
+<tr><td>Matchmaking</td><td>Name, Funktion und E-Mail der teilnehmenden Person, Organisation, Interessen, Gesprächstermine, Umfrageantworten</td><td>Einwilligung bei der Anmeldung, Art. 6 Abs. 1 lit. a DSGVO; jederzeit für die Zukunft widerrufbar</td><td>12 Monate nach der Veranstaltung, auf Wunsch früher (Selbstlöschung auf der persönlichen Seite)</td></tr>
+<tr><td>Support-Anfragen</td><td>E-Mail-Adresse und Text der Anfrage</td><td>Bearbeitung der Anfrage, Art. 6 Abs. 1 lit. b oder f DSGVO</td><td>E-Mail-Adresse nach 90 Tagen gelöscht</td></tr>
+</tbody></table>
+<h2>3. Empfänger</h2>
+<p>Hosting: Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen, Rechenzentren in Deutschland (Auftragsverarbeiter
+nach Art. 28 DSGVO). Videoräume für Matchmaking-Gespräche öffnen sich erst, wenn Sie auf den Raum-Link klicken; der Raum
+läuft beim eingestellten Jitsi-Dienst (in dieser Demo meet.jit.si, betrieben von 8x8, Inc., USA), dessen
+Datenschutzhinweise dann gelten. Sonst wird nichts weitergegeben; diese Anwendung übermittelt keine Daten in Drittländer.</p>
+<h2>4. Ihre Rechte</h2>
+<p>Auskunft (Art. 15), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung (Art. 18), Datenübertragbarkeit
+(Art. 20), Widerspruch gegen Verarbeitung nach Art. 6 Abs. 1 lit. f (Art. 21) und Widerruf einer Einwilligung
+(Art. 7 Abs. 3). Schreiben Sie an <a href="mailto:{{ OPERATOR.email }}">{{ OPERATOR.email }}</a>. Sie können sich bei
+einer Aufsichtsbehörde beschweren (Art. 77), zum Beispiel: {{ OPERATOR.authority }}.</p>
+<h2>5. Keine automatisierten Entscheidungen</h2>
+<p>Die Matching-Vorschläge schlagen nur mögliche Gespräche vor; über niemanden wird automatisiert entschieden
+(Art. 22 DSGVO greift nicht).</p>
+{% endif %}
+</section>
+{% endblock %}
