@@ -426,7 +426,7 @@ def export_rows(f: dict) -> list[dict]:
 
 ATTRIBUTION = ("Quellen: Europäische Kommission – EUDAMED und TED (Weiterverwendung nach Beschluss 2011/833/EU), "
                "CORDIS (CC BY 4.0); Source: European Medicines Agency (Art. 57); GLEIF (CC0); oeffentlichevergabe.de "
-               "(dl-de/by-2-0); Websites der Unternehmen (Kontaktseite, Beschäftigtenzahl); eigene Auswertung. "
+               "(amtliche Bekanntmachungen); Websites der Unternehmen (Kontaktseite, Beschäftigtenzahl); eigene Auswertung. "
                "Keine personenbezogenen Daten.")
 
 

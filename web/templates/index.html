@@ -65,7 +65,7 @@ aside.filters .chk { font-size:13px; color:var(--fg); font-weight:400; margin-to
       {% for k, v in REVENUES.items() %}<option value="{{ k }}" {% if revenue == k %}selected{% endif %}>{{ _(v) }} ({{ facets.revenue.get(k, 0) }})</option>{% endfor %}</select>
     <label for="tier">{{ _("Rolle") }}</label>
     <select form="sf" id="tier" name="tier" data-autosubmit><option value="">{{ _("alle") }}</option>
-      {% for k, v in TIERS.items() %}<option value="{{ k }}" {% if tier == k %}selected{% endif %}>{{ _(v) }} ({{ facets.tier.get(k, 0) }})</option>{% endfor %}</select>
+      {% for k, v in TIERS.items() %}{% if facets.tier.get(k) or tier == k %}<option value="{{ k }}" {% if tier == k %}selected{% endif %}>{{ _(v) }} ({{ facets.tier.get(k, 0) }})</option>{% endif %}{% endfor %}</select>
     <label class="chk"><input form="sf" type="checkbox" name="contact" value="true" {% if contact %}checked{% endif %} data-autosubmit> {{ _("nur mit Kontaktweg") }}</label>
     <label class="chk"><input form="sf" type="checkbox" name="alle" value="true" {% if alle %}checked{% endif %} data-autosubmit> {{ _("auch nicht registergeprüfte") }}</label>
     <noscript><button form="sf" type="submit" style="margin-top:10px">{{ _("Filter anwenden") }}</button></noscript>

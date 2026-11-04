@@ -31,6 +31,7 @@ import hashlib
 import hmac
 import json
 import os
+import datetime as dt
 import re
 import secrets
 import shutil
@@ -114,6 +115,10 @@ STATUSES = {"neu": "Neu", "in_bearbeitung": "In Bearbeitung", "wartet": "Wartet 
 EMAIL_RE = re.compile(r"^[^@\s]{1,64}@[^@\s]{1,190}\.[A-Za-z]{2,24}$")
 
 register({
+    "Anwendung": "Application", "läuft": "running", "Datenbank": "Database", "erreichbar": "reachable",
+    "nicht erreichbar": "not reachable", "Registergeprüfte Unternehmen": "Register-verified companies",
+    "Datenstand": "Data as of", "Letzte Datensicherung": "Last backup",
+    "Diese Seite zeigt, was die Anwendung selbst prüft. Störung melden:": "This page shows what the application checks itself. Report an incident:",
     "Support": "Support", "Support-Anfrage": "Support request", "Anfrage senden": "Send request",
     "Kategorie": "Category", "Priorität": "Priority", "Betreff": "Subject", "Beschreibung": "Description",
     "Ihre E-Mail-Adresse (dienstlich)": "Your e-mail address (work)",
@@ -418,7 +423,18 @@ def status_page(request: Request):
         return FileResponse(f, media_type="text/html; charset=utf-8", headers={"Cache-Control": "max-age=30"})
     if os.environ.get("STATUS_URL"):
         return RedirectResponse(os.environ["STATUS_URL"], status_code=302)
-    return HTMLResponse(f"<p>{_('Status nicht verfügbar.')}</p>", status_code=404)
+    # no external monitor on this host: report what the app itself can see (app, database, data stand, last backup)
+    try:
+        with db() as conn:
+            r = conn.execute("SELECT count(*) FILTER (WHERE verified) AS n, max(built_at) AS built FROM company").fetchone()
+        db_ok = True
+    except Exception:  # noqa: BLE001  the status page must render even when the database is down
+        r, db_ok = {"n": None, "built": None}, False
+    backups = sorted(Path(os.environ.get("BACKUP_DIR", "/nonexistent")).glob("firmen-2*.dump"), key=lambda p: p.stat().st_mtime)  # timestamped backups, not seeds
+    last_backup = dt.datetime.fromtimestamp(backups[-1].stat().st_mtime) if backups else None
+    return templates.TemplateResponse(request, "status.html", dict(db_ok=db_ok, n=r["n"], built=r["built"],
+                                                                  last_backup=last_backup, embed=False),
+                                      status_code=200 if db_ok else 503)
 
 
 @router.get("/status.json")

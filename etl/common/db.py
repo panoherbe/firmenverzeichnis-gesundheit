@@ -12,14 +12,14 @@ from etl.common.env import load_env
 
 def connect() -> psycopg.Connection:
     load_env()
-    # autocommit: psycopg3 otherwise never commits unless told to (a trap learned the hard way)
+    # autocommit: psycopg3 otherwise never commits unless told to
     return psycopg.connect(os.environ["DATABASE_URL"], autocommit=True)
 
 
 def connect_corpus() -> psycopg.Connection:
     """
-    Read-only session on the procurement notice database. Either CORPUS_DATABASE_URL, or CORPUS_ENV_FILE pointing at another
-    project's .env whose DATABASE_URL is used (so the password lives in one place only). We never write there.
+    Read-only session on the procurement notice database. Either CORPUS_DATABASE_URL, or CORPUS_ENV_FILE pointing at an env
+    file whose DATABASE_URL is used (so the password lives in one place only). We never write there.
     """
     load_env()
     url = os.environ.get("CORPUS_DATABASE_URL")

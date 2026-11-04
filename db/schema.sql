@@ -107,17 +107,18 @@ CREATE TABLE IF NOT EXISTS quality_check (
 );
 
 INSERT INTO source (id, title, url, licence, attribution, share_alike, note) VALUES
- ('eudamed', 'EUDAMED – Actor registration (European Commission)', 'https://ec.europa.eu/tools/eudamed',
-  'Re-use under Commission Decision 2011/833/EU (assumed; EUDAMED-specific notice not found)',
-  'Quelle: Europäische Kommission, EUDAMED (Weiterverwendung nach Beschluss 2011/833/EU)', false, 'PRRC person data stripped before raw write'),
- ('ema', 'EMA – Article 57 product data', 'https://www.ema.europa.eu/en/human-regulatory-overview/post-authorisation/data-medicines-iso-idmp-standards-post-authorisation/public-data-article-57-database',
-  'EMA legal notice: reproduction authorised with source acknowledged (assumed, verify)',
-  'Source: European Medicines Agency (Article 57 database)', false, 'MAH names only'),
- ('corpus', 'Öffentliche Aufträge (TED + Bekanntmachungsservice), eigene Auswertung', 'https://ted.europa.eu',
-  'TED: re-use under Decision 2011/833/EU; BKMS: open data', 'Quelle: TED, Europäische Union (Beschluss 2011/833/EU); oeffentlichevergabe.de (dl-de/by-2-0); eigene Auswertung', false, 'Award winners with health CPV'),
- ('cordis', 'CORDIS – Horizon-Europe-Projekte (Europäische Kommission)', 'https://cordis.europa.eu/about/legal',
-  'CC BY 4.0', 'Quelle: Europäische Kommission, CORDIS (CC BY 4.0)', false, 'German companies in health projects'),
+ ('eudamed', 'EUDAMED – Wirtschaftsakteure und Medizinprodukte (Europäische Kommission)', 'https://ec.europa.eu/tools/eudamed',
+  'Weiterverwendung nach Beschluss 2011/833/EU der Kommission; Inhalte der EU unter CC BY 4.0 (Quellenangabe, Änderungen kenntlich machen)',
+  'Quelle: Europäische Kommission, EUDAMED', false, 'Hersteller, Bevollmächtigte, Importeure; Produktgruppen (EMDN)'),
+ ('ema', 'EMA – Arzneimittel nach Artikel 57', 'https://www.ema.europa.eu/en/human-regulatory-overview/post-authorisation/data-medicines-iso-idmp-standards-post-authorisation/public-data-article-57-database',
+  'Vervielfältigung und Weitergabe auch für kommerzielle Zwecke erlaubt, wenn die EMA als Quelle genannt wird (rechtlicher Hinweis der EMA)',
+  'Source: European Medicines Agency', false, 'Zulassungsinhaber und Arzneimittelnamen'),
+ ('corpus', 'Öffentliche Aufträge (TED, Bekanntmachungsservice oeffentlichevergabe.de)', 'https://ted.europa.eu',
+  'TED: Beschluss 2011/833/EU, CC BY 4.0; oeffentlichevergabe.de: amtliche Bekanntmachungen (§ 5 UrhG). Genutzt werden nur Firmenname und Zuschlagsdaten',
+  'Quelle: TED (Europäische Union); oeffentlichevergabe.de; eigene Auswertung', false, 'Zuschläge mit Gesundheits-CPV'),
+ ('cordis', 'CORDIS – Projekte aus Horizont Europa (Europäische Kommission)', 'https://cordis.europa.eu/about/legal',
+  'CC BY 4.0', 'Quelle: Europäische Kommission, CORDIS (CC BY 4.0)', false, 'Unternehmen in Gesundheitsprojekten'),
  ('gleif', 'GLEIF – LEI Golden Copy', 'https://www.gleif.org/en/lei-data/gleif-golden-copy', 'CC0 1.0',
-  'Quelle: GLEIF (CC0)', false, 'Identity check only')
+  'Quelle: GLEIF (CC0)', false, 'Abgleich von Name, Sitz und Registernummer')
 ON CONFLICT (id) DO UPDATE SET title = EXCLUDED.title, url = EXCLUDED.url, licence = EXCLUDED.licence,
   attribution = EXCLUDED.attribution, share_alike = EXCLUDED.share_alike, note = EXCLUDED.note;

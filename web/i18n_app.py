@@ -102,4 +102,6 @@ EN = {
     "Bearbeitung der Anfrage; E-Mail-Adresse nach 90 Tagen gelöscht": "handling the request; e-mail address deleted after 90 days",
     "Zugriffsprotokoll": "Access log", "Zeit, Seite, gekürzte IP-Adresse": "time, page, truncated IP address",
     "Sicherheit des Betriebs; 90 Tage": "operational security; 90 days",
+    "Das Verzeichnis enthält nur Unternehmen mit Rechtsform, keine Einzelkaufleute und keine persönlichen E-Mail-Adressen. Jedes Feld ist auf eine Quelle zurückführbar.":
+        "The directory holds companies with a legal form only, no sole traders and no personal e-mail addresses. Every field can be traced to a source.",
 }

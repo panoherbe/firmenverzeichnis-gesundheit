@@ -174,6 +174,8 @@ def main() -> None:
     with conn.cursor() as cur:
         cur.executemany("UPDATE company SET " + ", ".join(f"{c} = %({c})s" for c in cols) + " WHERE id = %(id)s",
                         [{**{c: u.get(c) for c in cols}, "id": cid} for cid, u in up.items() if u])
+    # placeholder postcodes from procurement notices ("99999", "00000") are not addresses
+    conn.execute("UPDATE company SET post_code = NULL WHERE post_code IN ('00000', '99999')")
     # city names without umlauts ("Munchen", "Muenchen" from GLEIF/EUDAMED) take the umlaut spelling that the
     # registers use for the same name; a city with no umlaut variant in any source stays as it is
     key = "replace(replace(replace(translate(replace(lower({0}), 'ß', 'ss'), 'äöü', 'aou'), 'ae', 'a'), 'oe', 'o'), 'ue', 'u')"

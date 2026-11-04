@@ -1,8 +1,8 @@
-"""Rundgang: scripted, captioned walkthrough videos for the public teaser repos.
+"""Rundgang: scripted, captioned walkthrough videos of a web application.
 
 A walkthrough is a list of PNG frames, each with a hold duration. Captions, a role chip, a pointer and title cards
 are drawn into the page itself, so the video needs no audio and no subtitle track. `kodieren.sh` turns the frames
-into MP4 (H.264), GIF and poster. Runs inside mcr.microsoft.com/playwright/python (see README.md next to this file).
+into MP4 (H.264), GIF and poster. Runs inside mcr.microsoft.com/playwright/python (image: Dockerfile.aufnahme next to this file).
 
 Frames are captured at device scale factor 2 and scaled down by ffmpeg: text stays sharp in the 1280-px video, and
 README screenshots (`bild()`) come from the same run at full resolution, without the caption overlay.

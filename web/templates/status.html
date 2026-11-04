@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Status") }} – {{ _("Firmenverzeichnis Gesundheitswirtschaft") }}{% endblock %}
+{% block main %}
+<h1>{{ _("Status") }}</h1>
+<table style="max-width:640px">
+<tr><td>{{ _("Anwendung") }}</td><td class="ok">✓ {{ _("läuft") }}</td></tr>
+<tr><td>{{ _("Datenbank") }}</td><td>{% if db_ok %}<span class="ok">✓ {{ _("erreichbar") }}</span>{% else %}✗ {{ _("nicht erreichbar") }}{% endif %}</td></tr>
+{% if n %}<tr><td>{{ _("Registergeprüfte Unternehmen") }}</td><td>{{ "{:,}".format(n).replace(",", ".") }}</td></tr>{% endif %}
+{% if built %}<tr><td>{{ _("Datenstand") }}</td><td>{{ built.strftime("%d.%m.%Y") }}</td></tr>{% endif %}
+<tr><td>{{ _("Letzte Datensicherung") }}</td><td>{{ last_backup.strftime("%d.%m.%Y %H:%M") if last_backup else "–" }}</td></tr>
+</table>
+<p class="small">{{ _("Diese Seite zeigt, was die Anwendung selbst prüft. Störung melden:") }} <a href="/support">{{ _("Support") }}</a></p>
+{% endblock %}

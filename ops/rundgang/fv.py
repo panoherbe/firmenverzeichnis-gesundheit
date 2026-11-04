@@ -1,4 +1,4 @@
-"""Walkthrough for the teaser repo and buyer presentations: search, filter, profile, English, statistics with export,
+"""Captioned walkthrough of the directory: search, filter, profile, English, statistics with export,
 saved searches, matchmaking (event, personal agenda, organiser view), phone, measured numbers.
 
 Runs in the recorder image (Dockerfile.aufnahme, Playwright 1.56) with --network host against the app on the ETL host.

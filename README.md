@@ -32,44 +32,22 @@ an der laufenden Installation gemessen.
 |---|---|---|
 | ![Statistik](medien/bilder/statistik.png) | ![Agenda](medien/bilder/matchmaking-agenda.png) | ![Veranstalter](medien/bilder/matchmaking-dashboard.png) |
 
-## Was Sie verlangen → läuft hier schon
+## Was Sie brauchen → läuft hier schon
 
 Gemessen am 04.11.2026 an der laufenden Installation; Abfragen und Ausgaben: [`nachweis/2026-11-04/`](nachweis/2026-11-04/).
 
-| Typische Anforderung | Stand |
+| Was Sie brauchen | Stand |
 |---|---|
-| mindestens 3.000 Unternehmensprofile | **4.787 registergeprüfte Unternehmen** (EUDAMED, EMA, LEI), 9.744 insgesamt suchbar |
-| Kontaktdaten mit Rechtsgrundlage | **4.118** davon mit Kontaktweg (Kontaktseite, Website oder Funktionspostfach), im Verzeichnis keine Personendaten |
-| Tätigkeitsschwerpunkt und Produkte | Branche mit Begründung; Produktgruppen nach EU-Nomenklatur (EMDN) aus EUDAMED, heute für 2.015 Firmen (der Abruf läuft noch); Arzneimittel aus EMA |
-| Volltextsuche, Boolesche Operatoren, Filter | UND/ODER/NICHT, Klammern, Phrasen, Wortanfang; Filter Branche, Bundesland, Produktgruppe, Größe, Umsatz, Rolle |
-| Suchprofile und Suchhistorie, 3–8 Nutzerkonten | namentliche Konten, Admins mit zweitem Faktor (TOTP), Zugriffsprotokoll |
-| Export Daten und Grafiken: Excel, PDF, JPG, CSV | ja, dazu JSON und eine REST-API mit englischer Dokumentation |
-| Englische Oberfläche und Profile | Umschalter auf jeder Seite |
-| Einbettung per iframe im Corporate Design | `?embed=1`, Farben, Schrift und Logo per Theme-Datei |
-| Matchmaking mit internationalen Kontakten | Plattform eingebaut; internationale Firmenbasis mit **6.450 Unternehmen aus 80 Ländern** (EMA, CORDIS) |
-| Support, Statusseite, monatlicher SLA-Bericht | Ticketformular mit sofortiger Ticketnummer, Statusseite, Bericht automatisch |
-| tägliche Backups, 30 Tage, georedundant, Monitoring | Skripte und Timer im Repository (`ops/`); auf der Demo laufen Backup, Wiederherstellungstest und Selbstprüfung |
-
-## In zwei Minuten selbst prüfen
-
-1. Demo öffnen: **[firmen.panoherbe.com](https://firmen.panoherbe.com)** (Testzugang für gespeicherte Suchen auf Anfrage: kontakt@panoherbe.com).
-2. „Endoskop*“ suchen, links „Baden-Württemberg“ wählen und ein Profil öffnen.
-3. Oben rechts auf **EN** schalten.
-4. Über „Statistik“ ein Diagramm als JPG herunterladen.
-5. Unter „Matchmaking“ die Beispielveranstaltung öffnen. Sie ist fiktiv, die Teilnehmenden sind erfunden.
-
-## Ehrliche Grenzen
-
-- **Größenklassen** (Beschäftigte) gibt es heute für 292 registergeprüfte Firmen (6 %). Die Zahlen sind Angaben
-  der Firmen auf ihrer eigenen Website. Eine Stichprobe von 30 war in 27 Fällen richtig. **Umsatzklassen** fehlen
-  fast ganz.
-- **Biotechnologie und digitale Gesundheit** sind dünn besetzt, weil es für beide kein Pflichtregister gibt.
-  Verbandslisten übernehmen wir bewusst nicht (Datenbankherstellerrecht).
-- **Bevollmächtigte und Importeure** gehören nicht immer zur Branche. In einer Stichprobe vom 02.11.2026 waren es 15 von 20 (nachgezählt gegen den heutigen Stand: 14 von 19, siehe `nachweis/`).
-- Die internationale Firmenbasis enthält nur Unternehmen aus EU-Registern. Gewonnen werden Teilnehmende über
-  Einladungen mit Einwilligung, nie über Kalt-E-Mails.
-- Prototyp, betrieben von einer Person. Der Betrieb ist automatisiert (Monitoring, Neustart, Backups, Standby).
-  Störungen der Priorität 1 gehen als Alarm aufs Telefon.
+| ein großer, geprüfter Bestand | **4.787 registergeprüfte Unternehmen** (EUDAMED, EMA, LEI), 9.744 insgesamt suchbar |
+| ein Kontaktweg zu jedem Unternehmen | **4.118** davon mit Kontaktseite, Website oder Funktionspostfach; im Verzeichnis keine Personendaten |
+| was die Firma macht und herstellt | Branche mit Begründung; Produktgruppen nach EU-Nomenklatur (EMDN) aus EUDAMED, heute für 2.015 Firmen (der Abruf läuft noch); Arzneimittel aus EMA |
+| schnell das Richtige finden | Volltextsuche mit UND/ODER/NICHT, Klammern, Phrasen, Wortanfang; Filter Branche, Bundesland, Produktgruppe, Größe, Umsatz, Rolle |
+| im Team arbeiten | namentliche Konten, gespeicherte Suchen und Suchverlauf, Admins mit zweitem Faktor (TOTP), Zugriffsprotokoll |
+| Daten und Grafiken weiterverwenden | Excel, CSV, PDF, JSON, Diagramme als JPG/PNG, REST-API mit englischer Dokumentation |
+| internationales Publikum | Oberfläche und Profile auf Deutsch und Englisch |
+| in die eigene Website einbetten | `?embed=1`, Farben, Schrift und Logo per Theme-Datei |
+| Geschäftskontakte anbahnen | Matchmaking eingebaut; internationale Firmenbasis mit **6.450 Unternehmen aus 80 Ländern** (EMA, CORDIS) |
+| verlässlicher Betrieb | Ticketformular mit sofortiger Ticketnummer, Statusseite, monatlicher SLA-Bericht; tägliche Backups mit Wiederherstellungstest und Kopie an einen zweiten Standort (Skripte in `ops/`; auf der Demo laufen Backup, Wiederherstellungstest und Selbstprüfung) |
 
 ---
 
@@ -79,6 +57,10 @@ Gemessen am 04.11.2026 an der laufenden Installation; Abfragen und Ausgaben: [`n
   EUDAMED-Akteure und -Produkte (EU-Kommission), EMA Article-57-Daten, GLEIF Golden Copy (CC0), CORDIS (CC BY 4.0),
   Zuschläge öffentlicher Aufträge (TED, Bekanntmachungsservice), Websites der Firmen (nur Kontaktseite, Erreichbarkeit
   und Beschäftigtenzahl; robots.txt wird beachtet, § 44b UrhG).
+- **Datenlizenzen:** EUDAMED, TED und CORDIS: Europäische Kommission bzw. Union, Weiterverwendung nach Beschluss
+  2011/833/EU (CC BY 4.0, Quellenangabe, Änderungen kenntlich). EMA: Vervielfältigung erlaubt mit der Angabe
+  „Source: European Medicines Agency“. GLEIF: CC0. oeffentlichevergabe.de: amtliche Bekanntmachungen, genutzt werden
+  nur Firmenname und Zuschlagsdaten. Die Anwendung nennt die Quelle je Eintrag (`/quellen`, „Herkunft der Daten“).
 - **Keine Personendaten im Verzeichnis:** Die verantwortliche Person aus EUDAMED (PRRC) wird vor dem Schreiben entfernt. E-Mail-Adressen
   bleiben nur, wenn sie Funktionspostfächer sind. Einzelkaufleute, Apotheken und Namen ohne Rechtsform fliegen raus.
 - **Entity Resolution ohne Ähnlichkeitswerte:** nur exakte Schlüssel (USt-IdNr., Handelsregister + PLZ-Region,
