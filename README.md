@@ -50,7 +50,7 @@ Gemessen am 03.11.2026 an der laufenden Installation (`/api/health`, `/api/v1`).
 
 ## In zwei Minuten selbst prüfen
 
-1. Demo und Testzugang auf Anfrage: kontakt@panoherbe.com. Ohne Demo: das Video oben, oder lokal starten (unten, Abschnitt Technik).
+1. Demo öffnen: **[firmen.panoherbe.com](https://firmen.panoherbe.com)** (Testzugang für gespeicherte Suchen auf Anfrage: kontakt@panoherbe.com).
 2. „Endoskop*“ suchen, links „Baden-Württemberg“ wählen und ein Profil öffnen.
 3. Oben rechts auf **EN** schalten.
 4. Über „Statistik“ ein Diagramm als JPG herunterladen.

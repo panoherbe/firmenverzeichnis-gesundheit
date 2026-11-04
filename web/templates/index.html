@@ -31,7 +31,7 @@ aside.filters .chk { font-size:13px; color:var(--fg); font-weight:400; margin-to
     <a href="/?q=Endoskop*{% if embed %}&embed=1{% endif %}">Endoskop*</a>
     <a href="/?q=Implantat ODER Prothese{% if embed %}&embed=1{% endif %}">Implantat ODER Prothese</a>
     <a href="/?q=%22In-vitro%22 NICHT Labor{% if embed %}&embed=1{% endif %}">"In-vitro" NICHT Labor</a>
-    · <a href="/hilfe#suche">{{ _("Suchhilfe") }}</a> · <a href="#" onclick="startTour();return false">{{ _("Kurze Einführung") }}</a>
+    · <a href="/hilfe#suche">{{ _("Suchhilfe") }}</a> · <a href="#" data-tour-start>{{ _("Kurze Einführung") }}</a>
   </div>
   {% set active = [] %}
   <div class="chips">
@@ -49,25 +49,25 @@ aside.filters .chk { font-size:13px; color:var(--fg); font-weight:400; margin-to
 <div class="layout">
   <aside class="filters" aria-label="{{ _('Filter') }}" data-tour="{{ _('Filter grenzen die Liste ein. Die Zahl in Klammern zeigt, wie viele Treffer der Filter ergibt. Alle Filter lassen sich kombinieren.') }}">
     <label for="sector">{{ _("Branche") }}</label>
-    <select form="sf" id="sector" name="sector" onchange="this.form.submit()"><option value="">{{ _("alle") }}</option>
+    <select form="sf" id="sector" name="sector" data-autosubmit><option value="">{{ _("alle") }}</option>
       {% for k, v in SECTORS.items() %}<option value="{{ k }}" {% if sector == k %}selected{% endif %}>{{ _(v) }} ({{ facets.sector.get(k, 0) }})</option>{% endfor %}</select>
     <label for="region">{{ _("Bundesland") }}</label>
-    <select form="sf" id="region" name="region" onchange="this.form.submit()"><option value="">{{ _("alle") }}</option>
+    <select form="sf" id="region" name="region" data-autosubmit><option value="">{{ _("alle") }}</option>
       {% for k, v in REGIONS.items() %}<option value="{{ k }}" {% if region == k %}selected{% endif %}>{{ v }} ({{ facets.region.get(k, 0) }})</option>{% endfor %}</select>
     <label for="product">{{ _("Produktgruppe") }} <span class="tip" tabindex="0" data-tip="{{ _('Europäische Nomenklatur für Medizinprodukte (EMDN) aus den EUDAMED-Registrierungen der Hersteller.') }}">?</span></label>
-    <select form="sf" id="product" name="product" onchange="this.form.submit()"><option value="">{{ _("alle") }}</option>
+    <select form="sf" id="product" name="product" data-autosubmit><option value="">{{ _("alle") }}</option>
       {% for k, v in EMDN.items() %}{% if facets.product.get(k) or product == k %}<option value="{{ k }}" {% if product == k %}selected{% endif %}>{{ k }} · {{ _(v) }} ({{ facets.product.get(k, 0) }})</option>{% endif %}{% endfor %}</select>
     <label for="size">{{ _("Größe (Beschäftigte)") }} <span class="tip" tabindex="0" data-tip="{{ _('EU-KMU-Klassen. Quelle: Angaben der Unternehmen auf ihrer Website, Wikidata und EU-Förderdaten. Nicht für jedes Unternehmen bekannt.') }}">?</span></label>
-    <select form="sf" id="size" name="size" onchange="this.form.submit()"><option value="">{{ _("alle") }}</option>
+    <select form="sf" id="size" name="size" data-autosubmit><option value="">{{ _("alle") }}</option>
       {% for k, v in SIZES.items() %}<option value="{{ k }}" {% if size == k %}selected{% endif %}>{{ _(v) }} ({{ facets.size.get(k, 0) }})</option>{% endfor %}</select>
     <label for="revenue">{{ _("Umsatz") }}</label>
-    <select form="sf" id="revenue" name="revenue" onchange="this.form.submit()"><option value="">{{ _("alle") }}</option>
+    <select form="sf" id="revenue" name="revenue" data-autosubmit><option value="">{{ _("alle") }}</option>
       {% for k, v in REVENUES.items() %}<option value="{{ k }}" {% if revenue == k %}selected{% endif %}>{{ _(v) }} ({{ facets.revenue.get(k, 0) }})</option>{% endfor %}</select>
     <label for="tier">{{ _("Rolle") }}</label>
-    <select form="sf" id="tier" name="tier" onchange="this.form.submit()"><option value="">{{ _("alle") }}</option>
+    <select form="sf" id="tier" name="tier" data-autosubmit><option value="">{{ _("alle") }}</option>
       {% for k, v in TIERS.items() %}<option value="{{ k }}" {% if tier == k %}selected{% endif %}>{{ _(v) }} ({{ facets.tier.get(k, 0) }})</option>{% endfor %}</select>
-    <label class="chk"><input form="sf" type="checkbox" name="contact" value="true" {% if contact %}checked{% endif %} onchange="this.form.submit()"> {{ _("nur mit Kontaktweg") }}</label>
-    <label class="chk"><input form="sf" type="checkbox" name="alle" value="true" {% if alle %}checked{% endif %} onchange="this.form.submit()"> {{ _("auch nicht registergeprüfte") }}</label>
+    <label class="chk"><input form="sf" type="checkbox" name="contact" value="true" {% if contact %}checked{% endif %} data-autosubmit> {{ _("nur mit Kontaktweg") }}</label>
+    <label class="chk"><input form="sf" type="checkbox" name="alle" value="true" {% if alle %}checked{% endif %} data-autosubmit> {{ _("auch nicht registergeprüfte") }}</label>
     <noscript><button form="sf" type="submit" style="margin-top:10px">{{ _("Filter anwenden") }}</button></noscript>
 
     {% if user %}
@@ -85,7 +85,7 @@ aside.filters .chk { font-size:13px; color:var(--fg); font-weight:400; margin-to
     <div class="toolbar">
       <div><strong style="font-size:17px">{{ "{:,}".format(total).replace(",", ".") }}</strong> {{ _("Unternehmen") }}
         <label class="small" style="margin-left:10px">{{ _("Sortierung") }}
-          <select name="sort" form="sf" onchange="this.form.submit()" style="padding:4px">
+          <select name="sort" form="sf" data-autosubmit style="padding:4px">
             <option value="rel" {% if sort == 'rel' %}selected{% endif %}>{{ _("Relevanz") }}</option>
             <option value="name" {% if sort == 'name' %}selected{% endif %}>{{ _("Name") }}</option>
             <option value="awards" {% if sort == 'awards' %}selected{% endif %}>{{ _("Öffentliche Aufträge") }}</option>

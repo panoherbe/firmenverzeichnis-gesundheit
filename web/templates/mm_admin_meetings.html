@@ -27,7 +27,7 @@
   <td>{% if m.starts_at %}{{ mm_dt(m.starts_at, ev.tz, "time") }}–{{ mm_dt(m.ends_at, ev.tz, "time") }}{% else %}<span class="small">{{ _("ohne Termin") }}</span>{% endif %}</td>
   <td>{{ m.a_org or _("(gelöscht)") }} → {{ m.b_org or _("(gelöscht)") }}{% if m.created_by == "organiser" %} <span class="badge">{{ _("Organisation") }}</span>{% endif %}{% if m.message %}<br><span class="small">„{{ m.message|truncate(80) }}“</span>{% endif %}</td>
   <td>{% if m.table_no %}{{ _("Tisch") }} {{ m.table_no }} · {% endif %}<a href="{{ m.room_url }}" target="_blank" rel="noopener noreferrer" class="small">{{ m.room_url|replace("https://", "") }}</a></td>
-  <td><form method="post" action="/matchmaking/admin/{{ ev.id }}/gespraeche/{{ m.id }}"><select name="status" onchange="this.form.submit()">
+  <td><form method="post" action="/matchmaking/admin/{{ ev.id }}/gespraeche/{{ m.id }}"><select name="status" data-autosubmit>
     {% for k, v in MM_STATUS.items() %}<option value="{{ k }}" {% if m.status == k %}selected{% endif %}>{{ _(v) }}</option>{% endfor %}</select><noscript><button>OK</button></noscript></form></td>
 </tr>{% else %}<tr><td colspan="4">–</td></tr>{% endfor %}
 </table></div>

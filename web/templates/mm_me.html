@@ -23,7 +23,7 @@
 {% if msg %}<div class="msg">{{ _(msg) }}</div>{% endif %}
 {% if neu %}<div class="msg">{{ _("Ihre Anmeldung ist eingegangen.") }}</div>{% endif %}
 <div class="help"><b>{{ _("Ihr persönlicher Link") }}</b>
-  <div class="linkbox" style="margin:6px 0"><input id="mylink" type="text" readonly value="{{ link }}"><button type="button" class="sec" onclick="var i=document.getElementById('mylink');i.select();try{navigator.clipboard.writeText(i.value)}catch(e){}">⧉</button></div>
+  <div class="linkbox" style="margin:6px 0"><input id="mylink" type="text" readonly value="{{ link }}"><button type="button" class="sec" data-copy="mylink">⧉</button></div>
   {{ _("Bitte speichern Sie diesen Link (Lesezeichen). Er ist Ihr Zugang – ohne Passwort. Nicht weitergeben.") }}</div>
 {% if started and not survey_done %}<p><a class="btn big" href="/matchmaking/p/{{ me.token }}/umfrage">{{ _("Feedback geben") }}</a></p>{% endif %}
 

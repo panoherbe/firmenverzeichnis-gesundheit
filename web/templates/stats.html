@@ -27,9 +27,9 @@
     {% endfor %}
   </svg>
   <div class="acts noprint">
-    <a href="#" onclick="exportChart('chart-{{ key }}','image/jpeg');return false">{{ _("Grafik als JPG") }}</a>
-    <a href="#" onclick="exportChart('chart-{{ key }}','image/png');return false">{{ _("Grafik als PNG") }}</a>
-    <a href="#" onclick="tableCsv('{{ key }}');return false">{{ _("Tabelle als CSV") }}</a>
+    <a href="#" data-export-chart="chart-{{ key }}" data-type="image/jpeg">{{ _("Grafik als JPG") }}</a>
+    <a href="#" data-export-chart="chart-{{ key }}" data-type="image/png">{{ _("Grafik als PNG") }}</a>
+    <a href="#" data-table-csv="{{ key }}">{{ _("Tabelle als CSV") }}</a>
   </div>
   <script type="application/json" id="data-{{ key }}">{{ s[key] | tojson }}</script>
 </div>

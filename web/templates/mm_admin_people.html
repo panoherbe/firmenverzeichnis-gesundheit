@@ -16,12 +16,12 @@
   <td>{{ p.person_name }}<br><span class="small">{{ p.job_title or "" }} · {{ p.email }}</span></td>
   <td class="hide-s">{% for s in p.sectors %}<span class="tag">{{ _(MM_SECTORS[s]) }}</span>{% endfor %}<br><span class="small">{{ p.markets|join(", ") }}</span></td>
   <td>{{ p.n_meet }}</td>
-  <td><form method="post" action="/matchmaking/admin/{{ ev.id }}/teilnehmende/{{ p.id }}"><select name="status" onchange="this.form.submit()">
+  <td><form method="post" action="/matchmaking/admin/{{ ev.id }}/teilnehmende/{{ p.id }}"><select name="status" data-autosubmit>
     {% for k, v in [("registered", "Angemeldet"), ("confirmed", "Bestätigt"), ("cancelled", "Abgesagt")] %}<option value="{{ k }}" {% if p.status == k %}selected{% endif %}>{{ _(v) }}</option>{% endfor %}</select><noscript><button>OK</button></noscript></form></td>
   <td><form method="post" action="/matchmaking/admin/{{ ev.id }}/teilnehmende/{{ p.id }}" class="row">
     <button name="attended" value="yes" class="{{ '' if p.attended else 'sec' }}" title="{{ _('Ja') }}">✓</button>
     <button name="attended" value="no" class="{{ 'bad' if p.attended == false else 'sec' }}" title="{{ _('Nein') }}">✗</button></form></td>
-  <td class="hide-s"><input type="text" readonly value="{{ base }}/matchmaking/p/{{ p.token }}" style="width:150px;font-size:11px" onclick="this.select()"></td>
+  <td class="hide-s"><input type="text" readonly value="{{ base }}/matchmaking/p/{{ p.token }}" style="width:150px;font-size:11px" data-select></td>
 </tr>
 {% else %}<tr><td colspan="7">–</td></tr>{% endfor %}
 </table></div>

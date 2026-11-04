@@ -59,7 +59,7 @@
   <div class="card noprint">
     <strong>{{ _("Daten exportieren") }}</strong>
     <div class="small" style="margin-top:6px"><a href="/firma/{{ c.id }}/pdf">{{ _("Profil als PDF") }}</a> · <a href="/api/v1/companies/{{ c.id }}">JSON</a> ·
-      <a href="#" onclick="navigator.clipboard.writeText(location.href.split('?')[0]);this.textContent='✓';return false">{{ _("Link kopieren") }}</a></div>
+      <a href="#" data-copy-url>{{ _("Link kopieren") }}</a></div>
   </div>
   {% if similar %}
   <div class="card" style="margin-top:14px">

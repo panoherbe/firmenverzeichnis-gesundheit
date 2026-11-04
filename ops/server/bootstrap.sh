@@ -178,6 +178,7 @@ if [ "$ROLE" = primary ] || [ -e "$APP/var/ops/PROMOTED" ]; then ln -sf /etc/cad
 [ "$ROLE" = standby ] && ln -sf /etc/caddy/sites-available/status.caddy /etc/caddy/sites-enabled/
 install -d -o caddy -g caddy /var/log/caddy
 caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+chown -R caddy:caddy /var/log/caddy  # validate runs as root and creates access.log as root (trap, 2026-11-04)
 systemctl enable caddy && systemctl reload-or-restart caddy
 
 echo "=== 11. systemd units"

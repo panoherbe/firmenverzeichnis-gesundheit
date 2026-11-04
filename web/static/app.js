@@ -45,7 +45,33 @@
     var a = document.createElement('a'); a.download = key + '.csv';
     a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.click();
   };
+  // event handlers live here, not inline: the server's CSP is script-src 'self'
+  document.addEventListener('change', function (e) {
+    if (e.target.hasAttribute('data-autosubmit') && e.target.form) { e.target.form.submit(); }
+  });
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-tour-start],[data-export-chart],[data-table-csv],[data-copy],[data-copy-url],[data-select]');
+    if (!t) { return; }
+    if (t.hasAttribute('data-select')) { t.select(); return; }
+    e.preventDefault();
+    if (t.hasAttribute('data-tour-start')) { window.startTour(); }
+    else if (t.hasAttribute('data-export-chart')) { window.exportChart(t.getAttribute('data-export-chart'), t.getAttribute('data-type')); }
+    else if (t.hasAttribute('data-table-csv')) { window.tableCsv(t.getAttribute('data-table-csv')); }
+    else if (t.hasAttribute('data-copy-url')) { copy(location.href.split('?')[0]); t.textContent = '\u2713'; }
+    else {
+      var el = document.getElementById(t.getAttribute('data-copy'));
+      if (el) { if (el.select) { el.select(); } copy(el.value !== undefined ? el.value : el.innerText); }
+    }
+  });
+  function copy(text) { try { navigator.clipboard.writeText(text); } catch (e) {} }
   document.addEventListener('DOMContentLoaded', function () {
     if (location.hash === '#tour') { window.startTour(); }
+    var tz = document.querySelector('select[data-autotz]');
+    if (tz) {
+      try {
+        var z = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        for (var i = 0; i < tz.options.length; i++) { if (tz.options[i].value === z) { tz.selectedIndex = i; } }
+      } catch (e) {}
+    }
   });
 })();

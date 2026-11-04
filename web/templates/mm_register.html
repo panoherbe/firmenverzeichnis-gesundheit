@@ -50,7 +50,7 @@
     <div><label for="person_name">{{ _("Ihr Name") }} *</label><input id="person_name" type="text" name="person_name" required autocomplete="name"></div>
     <div><label for="job_title">{{ _("Funktion") }}</label><input id="job_title" type="text" name="job_title" autocomplete="organization-title"></div>
     <div><label for="email">{{ _("E-Mail") }} *</label><input id="email" type="email" name="email" required autocomplete="email"></div>
-    <div><label for="tz">{{ _("Ihre Zeitzone") }}</label><select id="tz" name="tz">{% for z in MM_TZS %}<option {% if z == ev.tz %}selected{% endif %}>{{ z }}</option>{% endfor %}</select></div>
+    <div><label for="tz">{{ _("Ihre Zeitzone") }}</label><select id="tz" data-autotz name="tz">{% for z in MM_TZS %}<option {% if z == ev.tz %}selected{% endif %}>{{ z }}</option>{% endfor %}</select></div>
   </div>
   {% if ev.format == "hybrid" %}<label>{{ _("Teilnahme") }}</label>
     <label class="inline"><input type="radio" name="mode" value="online" checked> {{ _("online") }}</label>
@@ -83,7 +83,6 @@
 </fieldset>
 <p><button class="big" type="submit">{{ _("Jetzt anmelden") }}</button> <span class="small">* {{ _("Pflichtfeld") }}</span></p>
 </form>
-<script>(function(){try{var z=Intl.DateTimeFormat().resolvedOptions().timeZone,s=document.getElementById("tz");for(var i=0;i<s.options.length;i++){if(s.options[i].value===z){s.selectedIndex=i;}}}catch(e){}})();</script>
 {% endif %}
 {% endif %}
 </div>
