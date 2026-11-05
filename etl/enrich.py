@@ -165,9 +165,14 @@ def main() -> None:
     # second pass: imprint (§ 5 DDG, names an e-mail) or contact page found by etl.sources.contact_probe
     try:
         n_probe = 0
-        for line in (latest_dir("contact_probe") / "probe.jsonl").open():
+        pdir = latest_dir("contact_probe")
+        # only pages whose text really is an imprint/contact page (keyword plus e-mail or phone), checked 2026-11-05:
+        # 22 of 116 path hits were soft-404s, login pages or script-only pages
+        checked = set(json.loads((pdir / "verified_ok.json").read_text())) if (pdir / "verified_ok.json").exists() else set()
+        for line in (l for name in ("probe.jsonl", "probe2.jsonl") if (pdir / name).exists() for l in (pdir / name).open()):
             r = json.loads(line)
-            if r.get("status") == 200 and r["cid"] in up and not up[r["cid"]].get("contact_url"):
+            if (r.get("status") == 200 and r["cid"] in checked and r["cid"] in up
+                    and not up[r["cid"]].get("contact_url")):
                 up[r["cid"]]["contact_url"] = r["url"]
                 n_probe += 1
         print(f"  contact probe: {n_probe} contact or imprint pages added")
