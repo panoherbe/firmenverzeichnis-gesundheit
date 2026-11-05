@@ -36,6 +36,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse, Response
 
 from etl.common import norm
 from etl.intl import SCHEMA as INTL_SCHEMA
+from web import gate
 from web.auth import current_user, require_admin
 from web.common import _, db, lang, register, templates
 
@@ -746,7 +747,7 @@ def intl_base(request: Request, q: str = "", country: str = "", sector: str = ""
             array_agg(DISTINCT source) AS sources, array_agg(DISTINCT s) FILTER (WHERE s IS NOT NULL) AS sectors
             FROM intl_company LEFT JOIN LATERAL unnest(sectors) s ON true WHERE {w}
             GROUP BY name_norm, country ORDER BY country, min(name) LIMIT %(lim)s""",
-                            {**params, "lim": 20000 if fmt == "csv" else 300}).fetchall()
+                            {**params, "lim": (gate.PREVIEW_ROWS if gate.ENABLED else 20000) if fmt == "csv" else 300}).fetchall()
         by_country = conn.execute(f"SELECT country, count(DISTINCT name_norm) AS n FROM intl_company WHERE {w} "
                                   "GROUP BY 1 ORDER BY 2 DESC", params).fetchall()
     if fmt == "csv":

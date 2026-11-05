@@ -73,7 +73,17 @@ APP_EN = {
     "Matchmaking": "Matchmaking", "Support": "Support", "API": "API",
     "Suchbegriff": "Search term", "Branche": "Sector", "Rolle": "Role", "Bundesland": "Federal state",
     "Größe (Beschäftigte)": "Size (employees)", "Umsatz": "Revenue",
-    "wird zum Vertragsstart freigeschaltet": "switched on at contract start", "Produktgruppe (EMDN)": "Product group (EMDN)",
+    "wird zum Vertragsstart freigeschaltet": "switched on at contract start",
+    "Vorschau: {n} von {total} Treffern, im Vertrag vollständig": "Preview: {n} of {total} hits, complete in the contract",
+    "Für heute genug Profile angesehen": "Enough profiles for today",
+    "Die Vorschau zeigt bis zu {n} Profile am Tag; morgen geht es weiter. Im Vertrag ohne Grenze.": "The preview shows up to {n} profiles a day; more tomorrow. No limit in the contract.",
+    "In der Vorschau lässt sich jede Funktion ausprobieren; den vollständigen Datenbestand gibt es im Vertrag.": "Every function can be tried in the preview; the complete data set comes with the contract.",
+    "Zurück zur Übersicht": "Back to the overview", "Für heute genug gesucht": "Enough searching for today",
+    "Die Vorschau erlaubt viele Suchen am Tag; das Tageskontingent ist erreicht. Morgen geht es weiter.": "The preview allows many searches a day; today's quota is used up. More tomorrow.",
+    "Für heute genug exportiert": "Enough exports for today",
+    "Die Vorschau erlaubt {n} Exporte am Tag mit je bis zu {r} Zeilen; morgen geht es weiter. Im Vertrag ohne Grenze.": "The preview allows {n} exports a day of up to {r} rows each; more tomorrow. No limit in the contract.", "Kurz durchatmen": "One moment, please", "Zur Suche": "To the search",
+    "Vorschau: Blättern bis Seite {n}; alle Zählungen sind vollständig. Vollzugriff im Vertrag.": "Preview: browsing up to page {n}; all counts are complete. Full access in the contract.",
+    "Vorschau-Exporte: bis zu {n} Zeilen je Datei, im Vertrag vollständig.": "Preview exports: up to {n} rows per file, complete in the contract.", "Produktgruppe (EMDN)": "Product group (EMDN)",
     "abgeleitet aus der eigenen Website": "derived from the company's own website", "Umsatzklassen: wird zum Vertragsstart freigeschaltet.": "Revenue classes: switched on at contract start.",
     "Größe": "Size", "EU-KMU-Klassen nach Beschäftigten, aus der Angabe des Unternehmens auf seiner eigenen Website; die Quelle steht im Profil. Nicht für jedes Unternehmen bekannt.": "EU SME classes by employees, from the company's own statement on its website; the source is shown in the profile. Not known for every company.",
     "Suche nach Umsatzgrößenklassen: Funktion gebaut; Umsatzdaten über lizenzierten Datenbezug, Freischaltung zum Vertragsstart.": "Search by revenue size class: built; revenue data from a licensed data supply, switched on at contract start.", "Umsatzklasse": "Revenue class", "Produktgruppe": "Product group",
@@ -186,7 +196,9 @@ async def frame_policy(request: Request, call_next):
     lng = pick_lang(request.query_params.get("lang"), request.cookies.get("lang"), request.headers.get("accept-language"))
     LANG.set(lng)
     if gate.rate_limited(request):
-        resp = HTMLResponse(f"<p>{_('Zu viele Anfragen. Bitte kurz warten.')}</p>", status_code=429)
+        resp = (JSONResponse({"detail": "too many requests, please wait a moment"}, status_code=429)
+                if request.url.path.startswith("/api/") else
+                gate.limit_page(request, _("Kurz durchatmen"), _("Zu viele Anfragen. Bitte kurz warten.")))
     elif gate.needs_access(request):  # closed demo: strangers get the neutral start page only
         if request.url.path == "/":
             resp = gate.landing(request)
@@ -300,6 +312,11 @@ def index(request: Request, q: str = "", sector: str = "", tier: str = "", regio
           revenue: str = "", product: str = "", contact: bool = False, alle: bool = False, sort: str = "rel",
           page: int = Query(1, ge=1), embed: bool = False):
     f = filters(q, sector, tier, region, size, revenue, product, contact, alle)
+    if gate.over(request, "search"):
+        return gate.limit_page(request, _("Für heute genug gesucht"), _(
+            "Die Vorschau erlaubt viele Suchen am Tag; das Tageskontingent ist erreicht. Morgen geht es weiter."))
+    if gate.ENABLED and page > gate.PREVIEW_PAGES:  # closed preview: browse the first pages, counts stay complete
+        page = gate.PREVIEW_PAGES
     total, rows, facets = search(f, limit=25, offset=(page - 1) * 25, order=sort)
     qs = query_string(request, page="")
     if any(v for k, v in request.query_params.items() if k in FILTERS):
@@ -340,6 +357,10 @@ def load_company(cid: str):
 
 @app.get("/firma/{cid}", response_class=HTMLResponse)
 def detail(request: Request, cid: str, embed: bool = False):
+    if gate.over(request, "profile"):
+        return gate.limit_page(request, _("Für heute genug Profile angesehen"), _(
+            "Die Vorschau zeigt bis zu {n} Profile am Tag; morgen geht es weiter. Im Vertrag ohne Grenze.").format(
+            n=gate.PREVIEW_PROFILES))
     c, members, similar = load_company(cid)
     return templates.TemplateResponse(request, "detail.html", dict(c=c, members=members, similar=similar, embed=embed))
 
@@ -433,20 +454,37 @@ def clean(row: dict) -> dict:
 
 
 @app.get("/api/v1/companies")
-def api_list(q: str = "", sector: str = "", tier: str = "", region: str = "", size: str = "", revenue: str = "",
+def api_list(request: Request, q: str = "", sector: str = "", tier: str = "", region: str = "", size: str = "", revenue: str = "",
              product: str = "", contact: bool = False, alle: bool = False,
              limit: int = Query(100, ge=1, le=1000), offset: int = Query(0, ge=0)):
     """Search companies. `q` supports AND/OR/NOT (also UND/ODER/NICHT), brackets, "phrases" and prefix*.
     Filters: sector (medtech, pharma, biotech, digital_health), tier (A, B, C), region (ISO 3166-2, e.g. DE-BW),
     size (micro, small, medium, large), revenue (r1–r4; switched on at contract start, ignored until then), product (EMDN category letter, e.g. Z), contact=true,
     alle=true includes records that are not register-verified."""
-    total, rows, facets = search(filters(q, sector, tier, region, size, revenue, product, contact, alle), limit, offset)
-    return {"total": total, "limit": limit, "offset": offset, "facets": facets, "items": [clean(r) for r in rows]}
+    f = filters(q, sector, tier, region, size, revenue, product, contact, alle)
+    if gate.ENABLED:  # closed preview: pages of at most 25 rows, up to position 125; the total stays visible
+        if gate.over(request, "api"):
+            return JSONResponse({"detail": "Preview: daily API limit reached; full access in the contract.",
+                                 "preview": True}, status_code=429)
+        limit = min(limit, gate.PREVIEW_ROWS)
+        if offset > gate.PREVIEW_OFFSET:
+            total, _r, facets = search(f, 1, 0)
+            return JSONResponse({"total": total, "limit": limit, "offset": offset, "facets": facets, "items": [],
+                                 "preview": True, "detail": f"Preview: offset up to {gate.PREVIEW_OFFSET}; full access "
+                                 "in the contract."}, status_code=403)
+    total, rows, facets = search(f, limit, offset)
+    out = {"total": total, "limit": limit, "offset": offset, "facets": facets, "items": [clean(r) for r in rows]}
+    if gate.ENABLED:
+        out["preview"] = True
+    return out
 
 
 @app.get("/api/v1/companies/{cid}")
-def api_one(cid: str):
+def api_one(request: Request, cid: str):
     """One company with all fields and its sector evidence."""
+    if gate.over(request, "profile"):
+        return JSONResponse({"detail": f"Preview: up to {gate.PREVIEW_PROFILES} profiles a day; full access in the "
+                             "contract.", "preview": True}, status_code=429)
     with db() as conn:
         c = conn.execute("SELECT * FROM company WHERE id = %s AND hidden_reason IS NULL", (cid,)).fetchone()
     if not c:
@@ -458,8 +496,12 @@ def api_one(cid: str):
 
 # ---------- exports ----------
 
-def export_rows(f: dict) -> list[dict]:
-    _t, rows, _f = search(f, limit=100000, offset=0, fields=", ".join(EXPORT_FIELDS))
+def export_rows(f: dict, request: Request | None = None) -> tuple[int, list[dict]]:
+    """(total hits, rows); in the closed preview at most gate.PREVIEW_ROWS rows, every export counted per link."""
+    lim = gate.PREVIEW_ROWS if gate.ENABLED else 100000
+    total, rows, _f = search(f, limit=lim, offset=0, fields=", ".join(EXPORT_FIELDS))
+    if gate.ENABLED and request is not None:
+        request.state.export_over = gate.over(request, "export")
     for r in rows:
         r["sectors"] = ", ".join(_(SECTORS.get(x, x)) for x in r["sectors"])
         r["emdn_groups"] = ", ".join(_(EMDN.get(x, x)) for x in (r["emdn_groups"] or []))
@@ -468,7 +510,24 @@ def export_rows(f: dict) -> list[dict]:
         r["region"] = REGIONS.get(r["region"], r["region"])
         r["tier"] = _(TIERS.get(r["tier"], r["tier"]))
         r["size_class"] = _(SIZES[r["size_class"]]) if r["size_class"] else None
-    return rows
+    return total, rows
+
+
+def preview_note(total: int, n: int) -> str | None:
+    if not gate.ENABLED:
+        return None
+    return _("Vorschau: {n} von {total} Treffern, im Vertrag vollständig").format(
+        n=n, total=f"{total:,}".replace(",", "."))
+
+
+def export_limit(request: Request):
+    return gate.limit_page(request, _("Für heute genug exportiert"), _(
+        "Die Vorschau erlaubt {n} Exporte am Tag mit je bis zu {r} Zeilen; morgen geht es weiter. Im Vertrag ohne "
+        "Grenze.").format(n=gate.PREVIEW_DAILY["export"], r=gate.PREVIEW_ROWS))
+
+
+def export_name(ext: str) -> str:
+    return f'attachment; filename="firmenverzeichnis{"-vorschau" if gate.ENABLED else ""}.{ext}"'
 
 
 ATTRIBUTION = ("Quellen: Europäische Kommission – EUDAMED und TED (Weiterverwendung nach Beschluss 2011/833/EU), "
@@ -483,53 +542,70 @@ def ef(q="", sector="", tier="", region="", size="", revenue="", product="", con
 
 @app.get("/export.csv")
 def export_csv(request: Request):
-    rows = export_rows(ef(**{k: v for k, v in request.query_params.items() if k in FILTERS}))
+    total, rows = export_rows(ef(**{k: v for k, v in request.query_params.items() if k in FILTERS}), request)
+    if getattr(request.state, "export_over", False):
+        return export_limit(request)
     buf = io.StringIO()
+    if note := preview_note(total, len(rows)):
+        buf.write(f"# {note}\n")
     w = csv.DictWriter(buf, fieldnames=EXPORT_FIELDS, delimiter=";")
     w.writeheader()
     w.writerows(rows)
     buf.write(f"# {ATTRIBUTION}\n")
     return Response("﻿" + buf.getvalue(), media_type="text/csv; charset=utf-8",
-                    headers={"Content-Disposition": 'attachment; filename="firmenverzeichnis.csv"'})
+                    headers={"Content-Disposition": export_name("csv")})
 
 
 @app.get("/export.xlsx")
 def export_xlsx(request: Request):
     from openpyxl import Workbook
 
-    rows = export_rows(ef(**{k: v for k, v in request.query_params.items() if k in FILTERS}))
+    total, rows = export_rows(ef(**{k: v for k, v in request.query_params.items() if k in FILTERS}), request)
+    if getattr(request.state, "export_over", False):
+        return export_limit(request)
     wb = Workbook()
     ws = wb.active
     ws.title = "Firmen" if lang() == "de" else "Companies"
+    if note := preview_note(total, len(rows)):
+        ws.title = "Vorschau" if lang() == "de" else "Preview"
+        ws.append([note])
     ws.append(EXPORT_FIELDS)
     for r in rows:
         ws.append([r[k] for k in EXPORT_FIELDS])
-    ws.freeze_panes = "A2"
-    ws.auto_filter.ref = ws.dimensions
+    ws.freeze_panes = "A3" if gate.ENABLED else "A2"
+    ws.auto_filter.ref = f"A{2 if gate.ENABLED else 1}:{ws.cell(1, len(EXPORT_FIELDS)).column_letter}{ws.max_row}"
     wb.create_sheet("Quellen" if lang() == "de" else "Sources").append([ATTRIBUTION])
     buf = io.BytesIO()
     wb.save(buf)
     return Response(buf.getvalue(), media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    headers={"Content-Disposition": 'attachment; filename="firmenverzeichnis.xlsx"'})
+                    headers={"Content-Disposition": export_name("xlsx")})
 
 
 @app.get("/export.pdf")
 def export_pdf(request: Request):
     """Result list as PDF (up to 2,000 rows) — for presentations and print."""
     f = ef(**{k: v for k, v in request.query_params.items() if k in FILTERS})
-    total, rows, _f = search(f, limit=2000, offset=0)
+    total, rows, _f = search(f, limit=gate.PREVIEW_ROWS if gate.ENABLED else 2000, offset=0)
+    if gate.over(request, "export"):
+        return export_limit(request)
     doc = pdf.Doc(_("Firmenverzeichnis Gesundheitswirtschaft"))
     doc.text(f"{total:,}".replace(",", ".") + " " + _("Unternehmen") + (f" · {f['q']}" if f["q"] else ""), 10)
+    if note := preview_note(total, len(rows)):
+        doc.text(note, 10)
     doc.table([_("Name"), _("Ort"), _("Branche"), _("Kontakt")], [
         (r["name"], f"{r['post_code'] or ''} {r['city'] or ''}".strip(), ", ".join(_(SECTORS[s]) for s in r["sectors"]),
          r["domain"] or r["email_role"] or "") for r in rows], [0.42, 0.2, 0.18, 0.2])
     doc.text(ATTRIBUTION, 7)
     return Response(doc.render(), media_type="application/pdf",
-                    headers={"Content-Disposition": 'attachment; filename="firmenverzeichnis.pdf"'})
+                    headers={"Content-Disposition": export_name("pdf")})
 
 
 @app.get("/firma/{cid}/pdf")
-def detail_pdf(cid: str):
+def detail_pdf(request: Request, cid: str):
+    if gate.over(request, "profile"):
+        return gate.limit_page(request, _("Für heute genug Profile angesehen"), _(
+            "Die Vorschau zeigt bis zu {n} Profile am Tag; morgen geht es weiter. Im Vertrag ohne Grenze.").format(
+            n=gate.PREVIEW_PROFILES))
     c, members, _s = load_company(cid)
     doc = pdf.Doc(c["name"])
     kv = [(_("Rechtsform"), c["legal_form"]), (_("Anschrift"), f"{c['street'] or ''}, {c['post_code'] or ''} {c['city'] or ''}"),

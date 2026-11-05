@@ -44,7 +44,28 @@ CREATE TABLE IF NOT EXISTS access_token (
   created_at timestamptz NOT NULL DEFAULT now(), revoked_at timestamptz, last_used timestamptz, uses int NOT NULL DEFAULT 0);
 ALTER TABLE access_token ADD COLUMN IF NOT EXISTS host text;
 ALTER TABLE access_log ADD COLUMN IF NOT EXISTS access_id int;
+CREATE TABLE IF NOT EXISTS access_usage (access_id int NOT NULL, day date NOT NULL, kind text NOT NULL,
+  n int NOT NULL DEFAULT 0, PRIMARY KEY (access_id, day, kind));
 """
+
+# ---------- preview limits (closed demo only) ----------
+# Everything can be tried, but the data set cannot be carried away: exports and API pages hold at most PREVIEW_ROWS
+# rows, the result list pages to PREVIEW_PAGES, the API offset stops at PREVIEW_OFFSET, and one access link opens
+# at most PREVIEW_PROFILES profiles a day. Counts and statistics stay complete. Enforced on the server; usage is
+# counted per access link and day (access_usage). Customer installations (no ACCESS_GATE) have no such limits.
+PREVIEW_ROWS = int(os.environ.get("PREVIEW_ROWS", "25"))
+PREVIEW_PAGES = int(os.environ.get("PREVIEW_PAGES", "5"))
+PREVIEW_OFFSET = int(os.environ.get("PREVIEW_OFFSET", "100"))
+PREVIEW_PROFILES = int(os.environ.get("PREVIEW_PROFILES", "200"))
+# daily caps per link that make collecting the data set through many filter combinations slow (not impossible):
+# 40 exports x 25 + 100 API pages x 25 + 300 result pages x 25 rows a day, mostly overlapping
+PREVIEW_DAILY = {"export": int(os.environ.get("PREVIEW_EXPORTS", "40")), "api": int(os.environ.get("PREVIEW_API", "100")),
+                 "search": int(os.environ.get("PREVIEW_SEARCHES", "300")), "profile": PREVIEW_PROFILES}
+
+
+def over(request: Request, kind: str) -> bool:
+    """Count one use and say whether today's cap for this link is exceeded (closed preview only)."""
+    return ENABLED and count(request, kind) > PREVIEW_DAILY[kind]
 
 register({
     "Zugang": "Access", "Willkommen": "Welcome",
@@ -126,6 +147,22 @@ def access_id(request: Request) -> int | None:
     return aid
 
 
+def count(request: Request, kind: str) -> int:
+    """Add one use of `kind` (profile, export, api) for this access link today; returns today's total."""
+    aid = access_id(request)
+    if not aid:
+        return 0
+    with db() as conn:
+        return conn.execute("""INSERT INTO access_usage (access_id, day, kind, n) VALUES (%s, current_date, %s, 1)
+            ON CONFLICT (access_id, day, kind) DO UPDATE SET n = access_usage.n + 1 RETURNING n""", (aid, kind)).fetchone()["n"]
+
+
+def limit_page(request: Request, title: str, text: str, status: int = 429) -> HTMLResponse:
+    """Friendly page instead of an error when a preview limit is reached."""
+    return templates.TemplateResponse(request, "preview_limit.html", dict(embed=False, title=title, text=text),
+                                      status_code=status)
+
+
 def theme_file(request: Request) -> str | None:
     """Buyer theme for visitors with access on the buyer's address; else the optional ACCESS_THEME_FILE."""
     if not ENABLED or not access_id(request):
@@ -145,6 +182,7 @@ def needs_access(request: Request) -> bool:
 # templates hide navigation that would only bounce a visitor without access back to the start page
 templates.env.globals["gate_locked"] = lambda request: ENABLED and access_id(request) is None
 templates.env.globals["gate_enabled"] = ENABLED
+templates.env.globals.update(PREVIEW_PAGES=PREVIEW_PAGES, PREVIEW_ROWS=PREVIEW_ROWS)
 
 router = APIRouter()
 
