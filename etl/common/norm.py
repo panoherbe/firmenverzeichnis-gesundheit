@@ -167,8 +167,13 @@ ROLE_LOCALPARTS = re.compile(
     r"regulatory|ra|qm|qa|quality|qualitaet|medical|medizinprodukte|mdr|ivdr|vigilance|vigilanz|pv|"
     r"pharmacovigilance|drugsafety|arzneimittelsicherheit|order|orders|bestellung|hello|hallo|team|"
     r"eu[-_.]?(importer|rep|ar)|ear|ec[-_.]?rep|importer|import|export|customer|kundenservice|"
-    r"compliance|legal|admin|buero|praxis|labor|lab|marketing|presse|press|hr|jobs|karriere)"
-    r"([-_.]?[a-z]{0,12})?\d*$"
+    r"compliance|legal|admin|buero|praxis|labor|lab|marketing|presse|press|hr|jobs|karriere|"
+    r"information|administration|bestellungen|contactus|labortechnik|medicaldevices|postmarket|qualitaetsmanagement|"
+    r"qualitaetssicherung|medizinproduktesicherheit|eu[-_.]?representative)"
+    # appendix only after a separator (info-de, regulatory.affairs) or from a fixed list of compound roles (qmb, qmra,
+    # regulatoryaffairs, customerservice, infoeu); "ra"+"mazan" was a person (endcheck 2026-11-05)
+    r"([-_.][a-z]{1,20}|affairs|service|services|care|desk|team|b|mb|ra|rb|re|eu|de|ger|emea|europe|germany|"
+    r"deutschland|office|support|center|centre|line|safety|management|abteilung|box|stelle|gmbh|regulatory|s)?\d*$"
 )
 
 
@@ -178,7 +183,7 @@ def role_email(value: str | None) -> str | None:
         return None
     v = value.strip().lower()
     local, _, dom = v.partition("@")
-    if dom in GENERIC_DOMAINS:
+    if dom in GENERIC_DOMAINS or AUTHORITY_DOMAIN.search("." + dom):  # poststelle@bra.nrw.de is an authority
         return None
     return v if ROLE_LOCALPARTS.match(local) else None
 

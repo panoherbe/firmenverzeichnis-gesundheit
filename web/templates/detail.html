@@ -38,7 +38,7 @@
   <dt>{{ _("Handelsregister") }}</dt><dd>{{ c.register_no or "–" }}</dd>
   <dt>LEI</dt><dd>{% if c.lei %}<a href="https://search.gleif.org/#/record/{{ c.lei }}" target="_blank" rel="noopener">{{ c.lei }}</a>{% else %}–{% endif %}</dd>
   <dt>EUDAMED SRN</dt><dd>{{ c.srns | join(", ") or "–" }}</dd>
-  <dt>{{ _("Öffentliche Aufträge") }}</dt><dd>{% if c.public_awards %}{{ c.public_awards }} {{ _("Bekanntmachungen") }}, {{ c.public_buyers }} {{ _("Auftraggeber") }}, {{ _("zuletzt") }} {{ c.public_last_award.strftime("%d.%m.%Y") if c.public_last_award else "–" }}{% else %}–{% endif %}</dd>
+  <dt>{{ _("Öffentliche Aufträge") }}</dt><dd>{% if c.public_awards %}{{ c.public_awards }} {{ _("Bekanntmachung") if c.public_awards == 1 else _("Bekanntmachungen") }}, {{ c.public_buyers }} {{ _("Auftraggeber") }}, {{ _("zuletzt") }} {{ c.public_last_award.strftime("%d.%m.%Y") if c.public_last_award else "–" }}{% else %}–{% endif %}</dd>
   <dt>{{ _("Begründung Branche") }}</dt><dd class="small">{% for k, v in c.sector_evidence.items() %}{{ _(SECTORS[k]) }}: {{ v | join(", ") }}<br>{% endfor %}</dd>
 </dl>
 
@@ -50,7 +50,7 @@
 <tr><td>{{ m.title }}</td><td>{{ m.name }}{% if m.city %}, {{ m.city }}{% endif %}{% if m.srn %} <span class="small">{{ m.srn }}</span>{% endif %}{% if m.n > 1 %} <span class="small">({{ m.n }}×)</span>{% endif %}
   {% if m.source == 'eudamed' and m.source_id %}<br><a class="small" href="https://ec.europa.eu/tools/eudamed/#/screen/search-eo/{{ m.source_id }}" target="_blank" rel="noopener">{{ _("Eintrag in EUDAMED") }} ↗</a>
   {% elif m.source == 'ema' %}<br><a class="small" href="https://www.ema.europa.eu/en/human-regulatory-overview/post-authorisation/data-medicines-iso-idmp-standards-post-authorisation/public-data-article-57-database" target="_blank" rel="noopener">{{ _("EMA-Datenbank Artikel 57") }} ↗</a>{% endif %}</td>
-<td class="hide-s small">{{ m.rule }}</td><td class="hide-s small">{{ m.licence }}</td></tr>
+<td class="hide-s small">{{ m.rule | rule_label }}</td><td class="hide-s small">{{ m.licence }}</td></tr>
 {% endfor %}
 {% if c.lei %}<tr><td>GLEIF – LEI Golden Copy</td><td>{{ c.lei }}<br><a class="small" href="https://search.gleif.org/#/record/{{ c.lei }}" target="_blank" rel="noopener">{{ _("Eintrag bei GLEIF") }} ↗</a></td><td class="hide-s small">{{ _("Name/Register/Ort") }}</td><td class="hide-s small">CC0 1.0</td></tr>{% endif %}
 </tbody>

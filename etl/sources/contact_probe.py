@@ -80,9 +80,30 @@ def check() -> None:
     ok: dict[str, str] = {}
     reasons: dict[str, int] = {}
 
+    robots: dict[str, urllib.robotparser.RobotFileParser] = {}
+    rlock = threading.Lock()
+
+    def allowed(url: str) -> bool:
+        """robots.txt of the page's host, fetched once per host (endcheck 2026-11-05: the check fetched without it)."""
+        host = urlparse(url).scheme + "://" + urlparse(url).netloc
+        with rlock:
+            rp = robots.get(host)
+        if rp is None:
+            rp = urllib.robotparser.RobotFileParser()
+            try:
+                r = c.get(host + "/robots.txt")
+                rp.parse(r.text.splitlines() if r.status_code == 200 else [])
+            except httpx.HTTPError:
+                rp.parse([])
+            with rlock:
+                robots[host] = rp
+        return rp.can_fetch(USER_AGENT, url)
+
     def one(item):
         cid, url = item
         try:
+            if not allowed(url):
+                return cid, url, "robots"
             html = c.get(url).text
         except Exception:  # noqa: BLE001
             return cid, url, "fetch"

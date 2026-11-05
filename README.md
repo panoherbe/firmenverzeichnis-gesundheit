@@ -39,7 +39,7 @@ Gemessen am 05.11.2026 an der laufenden Installation; Abfragen und Ausgaben: [`n
 | Was Sie brauchen | Stand |
 |---|---|
 | ein großer, geprüfter Bestand | **4.787 registergeprüfte Unternehmen** (EUDAMED, EMA, LEI), 9.744 insgesamt suchbar |
-| ein Kontaktweg zu jedem Unternehmen | **4.144** davon mit Funktionspostfach oder Kontakt-/Impressumsseite, 222 nur mit Website, 421 noch ohne; im Verzeichnis keine Personendaten |
+| ein Kontaktweg zu jedem Unternehmen | **4.139** davon mit Funktionspostfach oder Kontakt-/Impressumsseite, 226 nur mit Website, 422 noch ohne; im Verzeichnis keine Personendaten |
 | was die Firma macht und herstellt | Branche mit Begründung; Produktkennung für 2.013 Firmen: Produktgruppen nach EU-Nomenklatur (EMDN) aus EUDAMED für 1.734, Arzneimittel aus EMA für 331 |
 | schnell das Richtige finden | Volltextsuche mit UND/ODER/NICHT, Klammern, Phrasen, Wortanfang; Filter Branche, Bundesland, Produktgruppe, Größe, Umsatz, Rolle |
 | im Team arbeiten | namentliche Konten, gespeicherte Suchen und Suchverlauf, Admins mit zweitem Faktor (TOTP), Zugriffsprotokoll |
@@ -64,7 +64,7 @@ Gemessen am 05.11.2026 an der laufenden Installation; Abfragen und Ausgaben: [`n
   fast ganz.
 - **Biotechnologie und digitale Gesundheit** sind dünn besetzt, weil es für beide kein Pflichtregister gibt.
   Verbandslisten übernehmen wir bewusst nicht (Datenbankherstellerrecht).
-- **Bevollmächtigte und Importeure** gehören nicht immer zur Branche. In einer Stichprobe vom 02.11.2026 waren es 15 von 20 (nachgezählt gegen den heutigen Stand: 14 von 19, siehe `nachweis/`). **421** registergeprüfte Firmen haben noch keinen Kontaktweg und 222 nur eine Website; sie werden bei jeder Aktualisierung neu gesucht..
+- **Bevollmächtigte und Importeure** gehören nicht immer zur Branche. In einer Stichprobe vom 02.11.2026 waren es 15 von 20 (nachgezählt gegen den heutigen Stand: 14 von 19, siehe `nachweis/`). **422** registergeprüfte Firmen haben noch keinen Kontaktweg und 226 nur eine Website; sie werden bei jeder Aktualisierung neu gesucht.
 - Die internationale Firmenbasis enthält nur Unternehmen aus EU-Registern. Gewonnen werden Teilnehmende über
   Einladungen mit Einwilligung, nie über Kalt-E-Mails.
 - Prototyp, betrieben von einer Person. Der Betrieb ist automatisiert (Monitoring, Neustart, Backups, Standby);
@@ -91,7 +91,7 @@ Das Video hat keinen Ton; die Untertitel stehen hier zum Nachlesen (58 Sekunden,
 - **0:38** Jede teilnehmende Firma bekommt Vorschläge mit Begründung, fragt Gespräche an, und der Termin wird automatisch eingeplant – mit Videoraum und Kalenderdatei.
 - **0:42** Die Veranstalterin sieht Anmeldungen, Gespräche und nach der Veranstaltung die Umfrage zu Zufriedenheit, Nutzen und Umsatzchancen.
 - **0:46** Mobil Auf dem Telefon Dieselbe Suche im Browser des Telefons. Einbettung per iframe in jede Website, Farben und Logo nach Corporate Design. …
-- **0:49** Gemessen am 05.11.2026 Was heute schon läuft 4.787 registergeprüfte Unternehmen (EUDAMED, EMA, LEI) 4.144 davon mit Funktionspostfach oder …
+- **0:49** Gemessen am 05.11.2026 Was heute schon läuft 4.787 registergeprüfte Unternehmen (EUDAMED, EMA, LEI) 4.139 davon mit Funktionspostfach oder …
 - **0:54** Selbst prüfen In zwei Minuten ausprobieren Demo öffnen, „Endoskop*“ suchen, ein Profil öffnen, oben auf EN schalten. Quellcode offen, AGPL-3.0. …
 
 ---

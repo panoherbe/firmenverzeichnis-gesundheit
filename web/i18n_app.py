@@ -110,4 +110,8 @@ EN = {
     "Eintrag bei GLEIF": "Entry at GLEIF",
     "Kontaktweg fehlt: keine Kontaktseite und kein Funktionspostfach gefunden. Wird bei jeder Aktualisierung neu gesucht.":
         "Contact path missing: no contact page and no company mailbox found. Searched again with every update.",
+    "Registereintrag": "register entry", "über verknüpften Eintrag": "via a linked record", "Name und Ort": "name and city",
+    "Name und PLZ": "name and postcode", "Name und PLZ-Region": "name and postcode region",
+    "Handelsregister und PLZ-Region": "trade register and postcode region", "eindeutiger Name": "unique name",
+    "Bekanntmachung": "notice",
 }

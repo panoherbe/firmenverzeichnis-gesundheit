@@ -40,6 +40,8 @@ register({
     "Nur Demodaten. Änderungen werden jede Nacht zurückgesetzt. Nutzerverwaltung und Protokolle sind für Demo-Konten gesperrt.":
         "Demo data only. Changes are reset every night. User management and logs are locked for demo accounts.",
     "In der Demo gesperrt.": "Locked in the demo.",
+    "Was Sie hier eintragen (auch eine Anmeldung zur Beispielveranstaltung), sehen alle Testenden bis zum nächtlichen Zurücksetzen. Bitte keine echten Personendaten eingeben.":
+        "Whatever you enter here (including a registration for the example event) is visible to all testers until the nightly reset. Please do not enter real personal data.",
 })
 
 router = APIRouter()

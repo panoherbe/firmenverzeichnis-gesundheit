@@ -1,7 +1,7 @@
 companies total | register-verified | verified tier A | verified tier B
 9744 | 4787 | 3399 | 1388
 verified: e-mail (company mailbox) or contact/imprint page | website only | no contact path | with contact/imprint page link
-4144 | 222 | 421 | 2919
+4139 | 226 | 422 | 2920
 verified with size class | with product identifier (EMDN group or EMA product) | EMDN | EMA | employee figure (all)
 422 | 2013 | 1734 | 331 | 636
 verified by sector

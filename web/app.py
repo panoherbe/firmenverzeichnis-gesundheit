@@ -153,6 +153,11 @@ templates.env.globals.update(SECTORS=SECTORS, TIERS=TIERS, REGIONS=REGIONS, SIZE
 templates.env.globals["current_user"] = auth.current_user
 templates.env.globals["theme"] = theme
 templates.env.filters["urldecode"] = unquote_plus
+RULE_LABELS = {"anchor": "Registereintrag", "transitive": "über verknüpften Eintrag", "vat": "USt-IdNr.",
+               "name+city": "Name und Ort", "name+plz": "Name und PLZ", "name+plz2": "Name und PLZ-Region",
+               "name+cityhead": "Name und Ort", "register+plz2": "Handelsregister und PLZ-Region", "lei": "LEI",
+               "name_distinct": "eindeutiger Name", "name_unique": "eindeutiger Name", "name_only": "Name"}
+templates.env.filters["rule_label"] = lambda r: ", ".join(dict.fromkeys(_(RULE_LABELS.get(x.strip(), x.strip())) for x in (r or "").split(",")))
 templates.env.filters["qs_with"] = lambda params, **kw: urlencode({**dict(params), **kw})
 app.include_router(auth.router)
 for mod in ("matchmaking", "support", "demo"):  # optional modules; the app runs without them

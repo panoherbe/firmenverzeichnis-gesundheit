@@ -1,6 +1,6 @@
 # Nachweis 05.11.2026
 
-Woher die Zahlen in der README kommen. Gemessen am 05.11.2026 gegen 05:00 MEZ an der Datenbank der laufenden
+Woher die Zahlen in der README kommen. Gemessen am 05.11.2026 gegen 17:00 MEZ an der Datenbank der laufenden
 Installation; die öffentliche Demo (https://firmen.panoherbe.com) läuft mit einem Abzug derselben Datenbank.
 
 | Datei | Inhalt |
@@ -14,7 +14,7 @@ Installation; die öffentliche Demo (https://firmen.panoherbe.com) läuft mit ei
 | Zahl in der README | gemessen | Abfrage |
 |---|---|---|
 | 9.744 Unternehmen, 4.787 registergeprüft | 9.744 / 4.787 (Hersteller und Zulassungsinhaber 3.399, Bevollmächtigte und Importeure 1.388) | 1 |
-| 4.144 mit Funktionspostfach oder Kontakt-/Impressumsseite | 4.144; dazu 222 nur mit Website, 421 ohne Kontaktweg; 2.919 mit Link zur Kontakt- oder Impressumsseite | 2 |
+| 4.139 mit Funktionspostfach oder Kontakt-/Impressumsseite | 4.139; dazu 226 nur mit Website, 422 ohne Kontaktweg; 2.920 mit Link zur Kontakt- oder Impressumsseite | 2 |
 | 2.013 mit Produktkennung | 2.013 (EMDN-Produktgruppe 1.734, Arzneimittel aus EMA 331) | 3 |
 | 422 mit Größenklasse | 422 registergeprüfte (636 Firmen mit einer Beschäftigtenzahl insgesamt) | 3 |
 | 6.450 internationale Unternehmen aus 80 Ländern | 6.450 / 80 (CORDIS 3.711, EMA 2.739) | 5 |
@@ -33,8 +33,16 @@ Hat ein Unternehmen im Register (EUDAMED, EMA) keine Website, aber eine E-Mail-A
 Domain zur Website. Gespeichert wird nur die Domain, nie die Adresse; Freemail und Behörden-Domains (z. B. die der
 prüfenden Landesbehörde in EUDAMED) zählen nicht. Auf dieser Website wird die Kontakt- oder Impressumsseite gesucht
 (robots.txt beachtet). Eine so gefundene Seite zählt nur, wenn ihr Text ein Impressum/Kontakt-Stichwort, eine E-Mail-
-Adresse oder Telefonnummer **und** ein unterscheidendes Wort des Firmennamens enthält: 593 von 791 Kandidaten bestanden
-(104 ohne Firmennamen, 61 ohne E-Mail/Telefon, 32 ohne Stichwort, 1 nicht abrufbar). Stichprobe von 20 der so gefundenen
+Adresse oder Telefonnummer **und** ein unterscheidendes Wort des Firmennamens enthält; robots.txt gilt auch für diese
+Prüfabrufe: 594 von 791 Kandidaten bestanden (104 ohne Firmennamen, 60 ohne E-Mail/Telefon, 31 ohne Stichwort,
+1 von robots.txt ausgeschlossen, 1 nicht abrufbar). Ein Teil der bestandenen Firmen hatte schon vorher ein
+Funktionspostfach; neu dazu kamen dadurch rund 150 Firmen mit Kontaktweg.
+
+Korrektur am Nachmittag: Die Regel für Funktionspostfächer ließ nach kurzen Rollenwörtern („ra“) Namen ohne
+Trenner durch (z. B. „ra“ + Nachname) und zählte Poststellen von Behörden mit. Jetzt gilt ein Anhang nur nach
+Trenner oder aus einer festen Liste zusammengesetzter Rollen (qmb, regulatoryaffairs …), Behörden-Domains zählen
+nicht. Dadurch fielen 16 Adressen weg (darunter 5 nach Namen aussehende und 2 Behörden-Poststellen), 5 Rollenadressen
+mit Trenner kamen dazu. Stichprobe von 20 der so gefundenen
 Seiten, von Hand angesehen: 18 sind die Kontaktseite des Unternehmens selbst, 2 die Investor-Relations-Kontaktseite des
 Mutterkonzerns.
 
