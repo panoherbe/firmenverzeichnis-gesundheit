@@ -174,7 +174,7 @@ def main():
 
         rg.karte(faktenkarte(f'Gemessen am {HEUTE}', 'Was heute schon läuft', [
             (punkt(health['verified']), 'registergeprüfte Unternehmen (EUDAMED, EMA, LEI)'),
-            (punkt(kontakt['total']), 'davon mit Kontaktweg: Kontaktseite, Website oder Funktionspostfach'),
+            (punkt(kontakt['total']), 'davon mit Funktionspostfach oder Kontakt-/Impressumsseite'),
             (punkt(int(os.environ.get('INTL_N', '0'))), f'internationale Unternehmen aus {os.environ.get("INTL_COUNTRIES", "?")} Ländern für das Matchmaking'),
             ('0', 'Personendaten im Verzeichnis'),
         ], 'Quelle: /api/health und /api/v1 der laufenden Installation', FUSS[1]), 5.0)

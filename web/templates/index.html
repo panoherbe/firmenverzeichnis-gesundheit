@@ -107,7 +107,7 @@ aside.filters .chk { font-size:13px; color:var(--fg); font-weight:400; margin-to
     {% for r in rows %}
     <tr>
       <td><a class="name" href="/firma/{{ r.id }}{% if embed %}?embed=1{% endif %}" {% if loop.first %}data-tour="{{ _('Ein Klick öffnet das Profil mit Kontaktweg, Produkten, Registernummern und Quellen.') }}"{% endif %}>{{ r.name }}</a>{% if r.verified %} <span class="ok" title="{{ _('registergeprüft') }}">✓</span>{% endif %}
-          <br><span class="small">{% if r.domain %}{{ r.domain }}{% endif %}{% if r.size_class %} · {{ _(SIZES[r.size_class]) }}{% endif %}</span></td>
+          <br><span class="small">{{ _(TIERS.get(r.tier, "")) }}{% if r.domain %} · {{ r.domain }}{% endif %}{% if r.size_class %} · {{ _(SIZES[r.size_class]) }}{% endif %}</span></td>
       <td class="hide-s">{{ r.post_code or "" }} {{ r.city or "" }}<br><span class="small">{{ REGIONS.get(r.region, "") }}</span></td>
       <td>{% for s in r.sectors %}<a class="tag" href="?{{ request.query_params | qs_with(sector=s, page='') }}">{{ _(SECTORS[s]) }}</a>{% endfor %}</td>
       <td class="hide-s">{% for g in (r.emdn_groups or [])[:3] %}<a class="tag" href="?{{ request.query_params | qs_with(product=g, page='') }}" title="{{ _(EMDN.get(g, g)) }}">{{ _(EMDN.get(g, g)) }}</a>{% endfor %}</td>

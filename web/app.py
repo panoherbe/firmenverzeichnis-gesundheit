@@ -221,7 +221,7 @@ def where(q=None, sector=None, tier=None, region=None, size=None, revenue=None, 
         clauses.append("%(product)s = ANY(emdn_groups)")
         params["product"] = product
     if contact:
-        clauses.append("(email_role IS NOT NULL OR contact_url IS NOT NULL OR website IS NOT NULL)")
+        clauses.append("(email_role IS NOT NULL OR contact_url IS NOT NULL)")  # a bare website is no contact path
     return (" WHERE " + " AND ".join(clauses)) if clauses else "", params
 
 
@@ -290,7 +290,7 @@ def load_company(cid: str):
             raise HTTPException(404)
         members = conn.execute("""
             SELECT m.source, string_agg(DISTINCT m.rule, ', ') AS rule, s.name, s.city, s.srn, src.title,
-                   src.licence, count(*) AS n
+                   src.licence, count(*) AS n, min(s.source_id) AS source_id
             FROM company_member m JOIN source_record s USING (source, source_id) JOIN source src ON src.id = m.source
             WHERE m.company_id = %s
             GROUP BY m.source, s.name, s.city, s.srn, src.title, src.licence

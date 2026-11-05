@@ -124,8 +124,9 @@ def main() -> None:
             a["markets"].update(d.get("markets") or [])
     for cid, a in agg.items():
         codes = [c for c, _n in a["emdn"].most_common(12)]
-        up[cid].update(device_count=a["n"], emdn=json.dumps([[c, a["text"][c]] for c in codes]),
-                       emdn_groups=sorted({c[0] for c in codes}), markets=sorted(a["markets"])[:30])
+        # a device list without EMDN codes in the sampled details gives no product groups: NULL, not an empty array
+        up[cid].update(device_count=a["n"], emdn=json.dumps([[c, a["text"][c]] for c in codes]) if codes else None,
+                       emdn_groups=sorted({c[0] for c in codes}) or None, markets=sorted(a["markets"])[:30] or None)
     print(f"  devices: {len(recs)} SRN records, {len(agg)} companies with device data")
 
     # websites
@@ -161,6 +162,18 @@ def main() -> None:
     print(f"  websites: {len(sites)} sites, {sum(1 for u in up.values() if u.get('contact_url'))} contact pages, "
           f"{n_emp} with an employee figure")
 
+    # second pass: imprint (§ 5 DDG, names an e-mail) or contact page found by etl.sources.contact_probe
+    try:
+        n_probe = 0
+        for line in (latest_dir("contact_probe") / "probe.jsonl").open():
+            r = json.loads(line)
+            if r.get("status") == 200 and r["cid"] in up and not up[r["cid"]].get("contact_url"):
+                up[r["cid"]]["contact_url"] = r["url"]
+                n_probe += 1
+        print(f"  contact probe: {n_probe} contact or imprint pages added")
+    except FileNotFoundError:
+        pass
+
     # EMA products
     for cid, names in conn.execute("""
             SELECT m.company_id, array_agg(DISTINCT p) FROM company_member m
@@ -186,9 +199,20 @@ def main() -> None:
         UPDATE company c SET city = k.city FROM k
         WHERE c.city !~ '[äöüÄÖÜß]' AND {key.format('c.city')} = k.k""").rowcount
     print(f"  cities: {n_city} spelled with umlauts as in the registers")
+    groups_de = {"A": "Verabreichung Entnahme", "B": "Hämatologie Transfusion", "C": "Herz Kreislauf Kardiologie",
+                 "D": "Desinfektion Sterilisation", "F": "Dialyse", "G": "Gastroenterologie Urologie Endoskopie",
+                 "H": "Naht Wundverschluss", "J": "aktive Implantate", "K": "minimalinvasive Chirurgie Endoskopie",
+                 "L": "chirurgische Instrumente", "M": "Wundauflagen Verbandmittel", "N": "Nervensystem Neurologie",
+                 "P": "Implantate Prothesen", "Q": "Zahnmedizin Dental HNO Augenheilkunde", "R": "Atemwege Anästhesie",
+                 "S": "Sterilisation", "T": "Schutz Hilfsmittel", "U": "Urogenital", "V": "Medizinprodukte",
+                 "W": "In-vitro-Diagnostik Labor Diagnostika", "Y": "Hilfsmittel Behinderung", "Z": "Medizintechnik Geräte Software"}
+    conn.execute("CREATE TEMP TABLE emdn_de (g text, words text)")
+    with conn.cursor() as cur:
+        cur.executemany("INSERT INTO emdn_de VALUES (%s, %s)", list(groups_de.items()))
     conn.execute("""UPDATE company SET search = search ||
         setweight(to_tsvector('simple', coalesce((SELECT string_agg(e->>1, ' ') FROM jsonb_array_elements(emdn) e), '') || ' ' ||
-                                        coalesce(array_to_string(products, ' '), '')), 'C')
+                                        coalesce(array_to_string(products, ' '), '') || ' ' ||
+                                        coalesce((SELECT string_agg(words, ' ') FROM emdn_de WHERE g = ANY(emdn_groups)), '')), 'C')
         WHERE emdn IS NOT NULL OR products IS NOT NULL""")
     print("  enrich:", conn.execute("""SELECT count(*) FILTER (WHERE verified),
         count(*) FILTER (WHERE verified AND (email_role IS NOT NULL OR contact_url IS NOT NULL OR website IS NOT NULL)),

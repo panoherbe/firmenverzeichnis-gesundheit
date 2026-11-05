@@ -50,7 +50,7 @@ EN = {
         "EU SME classes. From the companies' own websites, Wikidata or EU funding data; the profile names the source. Not known for every company.",
     "Hersteller und Zulassungsinhaber; Bevollmächtigte und Importeure; Lieferanten öffentlicher Auftraggeber.":
         "Manufacturers and marketing authorisation holders; authorised representatives and importers; suppliers to public buyers.",
-    "nur Unternehmen mit Kontaktseite, Website oder Funktionspostfach.": "only companies with a contact page, website or company mailbox.",
+    "nur Unternehmen mit Funktionspostfach oder Kontakt-/Impressumsseite.": "only companies with a company mailbox or a contact/imprint page.",
     "Jedes Profil nennt für jede Angabe die Quelle und ihre Lizenz. Registergeprüft (✓) heißt: Das Unternehmen steht in einem amtlichen Register (EUDAMED, EMA, LEI) mit Rechtsform und Anschrift.":
         "Every profile names the source and licence of each fact. Register-verified (✓) means the company is listed in an official register (EUDAMED, EMA, LEI) with legal form and address.",
     "Jede Trefferliste geht als Excel, CSV, PDF oder JSON heraus. Die Statistikseite zeigt Diagramme zur aktuellen Auswahl; jedes Diagramm geht als JPG oder PNG heraus, die ganze Statistik als PDF.":
@@ -106,4 +106,8 @@ EN = {
         "The directory holds companies with a legal form only, no sole traders and no personal e-mail addresses. Every field can be traced to a source.",
     "Anbieter": "Provider", "Impressum": "Imprint", "Datenschutzhinweise": "Privacy notice",
     "Kurzüberblick; die vollständigen Hinweise nach Art. 13 DSGVO:": "Short overview; the full notice under Art. 13 GDPR:",
+    "Eintrag in EUDAMED": "Entry in EUDAMED", "EMA-Datenbank Artikel 57": "EMA Article 57 database",
+    "Eintrag bei GLEIF": "Entry at GLEIF",
+    "Kontaktweg fehlt: keine Kontaktseite und kein Funktionspostfach gefunden. Wird bei jeder Aktualisierung neu gesucht.":
+        "Contact path missing: no contact page and no company mailbox found. Searched again with every update.",
 }

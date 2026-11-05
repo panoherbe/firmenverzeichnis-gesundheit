@@ -138,8 +138,8 @@ register({
     "Antwortzeiten (Servicezeit Mo–Fr 08–17 Uhr, ohne Feiertage in Hamburg)":
         "Reaction times (service hours Mon–Fri 08:00–17:00 CET, excluding Hamburg public holidays)",
     "8 Stunden": "8 hours", "12 Stunden": "12 hours", "24 Stunden": "24 hours", "3 Arbeitstage": "3 working days",
-    "Bei Priorität 1 und 2 wird der Bereitschaftsdienst sofort per Telefon-Alarm benachrichtigt, auch außerhalb der Servicezeit.":
-        "For priority 1 and 2 the on-call contact is alerted by phone immediately, also outside service hours.",
+    "Bei Priorität 1 und 2 geht sofort ein Telefon-Alarm an den Betreiber.":
+        "For priority 1 and 2 the operator is alerted by phone immediately.",
     "Bitte füllen Sie alle Pflichtfelder aus.": "Please fill in all required fields.",
     "Bitte eine gültige E-Mail-Adresse angeben.": "Please enter a valid e-mail address.",
     "Zu viele Anfragen. Bitte später erneut versuchen.": "Too many requests. Please try again later.",

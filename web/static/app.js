@@ -50,6 +50,8 @@
     if (e.target.hasAttribute('data-autosubmit') && e.target.form) { e.target.form.submit(); }
   });
   document.addEventListener('click', function (e) {
+    var back = e.target.closest('a[data-back]');
+    if (back && history.length > 1 && document.referrer.indexOf(location.host) > -1) { e.preventDefault(); history.back(); return; }
     var t = e.target.closest('[data-tour-start],[data-export-chart],[data-table-csv],[data-copy],[data-copy-url],[data-select]');
     if (!t) { return; }
     if (t.hasAttribute('data-select')) { t.select(); return; }
