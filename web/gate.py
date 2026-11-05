@@ -144,6 +144,7 @@ def needs_access(request: Request) -> bool:
 
 # templates hide navigation that would only bounce a visitor without access back to the start page
 templates.env.globals["gate_locked"] = lambda request: ENABLED and access_id(request) is None
+templates.env.globals["gate_enabled"] = ENABLED
 
 router = APIRouter()
 

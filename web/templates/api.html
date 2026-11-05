@@ -13,6 +13,7 @@ Machine-readable schema: <a href="/openapi.json">/openapi.json</a> (OpenAPI 3). 
 <pre>curl "{{ base }}/api/v1/companies?q=endoscope*&amp;sector=medtech&amp;region=DE-BW&amp;limit=10"
 curl "{{ base }}/api/v1/stats?sector=pharma"
 curl -o list.xlsx "{{ base }}/export.xlsx?product=W"</pre>
+{% if gate_locked is defined and gate_enabled %}<p class="small">Closed preview: these calls work in this browser (your access link set a cookie); from the command line they return 401. In the contract, access to the API is set up as agreed.</p>{% endif %}
 <p class="small">Search syntax in <code>q</code>: AND/OR/NOT (also UND/ODER/NICHT), brackets, "phrases", prefix*. Pagination with
 <code>limit</code> (max 1000) and <code>offset</code>; responses include <code>total</code> and facet counts.</p>
 <h2>Endpoints</h2>
