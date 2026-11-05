@@ -87,7 +87,9 @@ def load_eudamed(conn) -> None:
             "eudamed", uuid, det_path if det else page, det_sha if det else sha, a["name"],
             street=street, post_code=norm.post_code(addr.get("postalZone") or a.get("postalZone")),
             city=(addr.get("cityName") or a.get("cityName") or "").strip() or None,
-            website=norm.website(det.get("website")), domain=norm.domain(det.get("website")),
+            website=norm.website(det.get("website")),
+            # no website in the register: the domain of the actor's own register e-mail leads to its website
+            domain=norm.domain(det.get("website")) or norm.company_domain_from_email(det.get("electronicMail") or a.get("electronicMail")),
             email_role=norm.role_email(det.get("electronicMail") or a.get("electronicMail")),
             vat=norm.vat(det.get("europeanVatNumber")),
             register_no=norm.register_no(det.get("tradeRegister")),
@@ -116,7 +118,10 @@ def load_ema(conn) -> None:
         product, _subst, _route, country, holder, psmf, _mail, _tel = row[:8]
         if not holder:
             continue
-        m = mah.setdefault(holder.strip(), {"products_de": 0, "products_all": 0, "psmf": set(), "names": set()})
+        m = mah.setdefault(holder.strip(), {"products_de": 0, "products_all": 0, "psmf": set(), "names": set(),
+                                            "domains": {}})
+        if (d := norm.company_domain_from_email(str(_mail or ""))):
+            m["domains"][d] = m["domains"].get(d, 0) + 1
         m["products_all"] += 1
         if product and len(m["names"]) < 40:
             m["names"].add(str(product).strip()[:80])
@@ -136,7 +141,8 @@ def load_ema(conn) -> None:
                                               "AG & Co. KG", "SE & Co. KG", "SE & Co. KGaA", "AG & Co. KGaA",
                                               "GmbH & Co. KGaA"}):
             continue
-        rows.append(record("ema", norm.name_norm(holder) + "|" + holder, path, sha, holder, roles=["MAH"],
+        dom = max(m["domains"], key=m["domains"].get) if m["domains"] else None  # most frequent contact domain
+        rows.append(record("ema", norm.name_norm(holder) + "|" + holder, path, sha, holder, roles=["MAH"], domain=dom,
                            facts={"products_de": m["products_de"], "products_all": m["products_all"],
                                   "psmf_de": "Germany" in m["psmf"], "products": sorted(m["names"])}))
     replace(conn, "ema", rows)

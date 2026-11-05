@@ -28,7 +28,7 @@ from fastapi.responses import HTMLResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from markupsafe import Markup
 
-from web import auth, i18n_app, pdf
+from web import auth, demo, i18n_app, pdf
 from web.common import LANG, _, db, lang, pick_lang, register, templates
 from web.query import parse
 
@@ -155,7 +155,7 @@ templates.env.globals["theme"] = theme
 templates.env.filters["urldecode"] = unquote_plus
 templates.env.filters["qs_with"] = lambda params, **kw: urlencode({**dict(params), **kw})
 app.include_router(auth.router)
-for mod in ("matchmaking", "support"):  # optional modules; the app runs without them
+for mod in ("matchmaking", "support", "demo"):  # optional modules; the app runs without them
     try:
         app.include_router(__import__(f"web.{mod}", fromlist=["router"]).router)
     except ImportError:
@@ -169,7 +169,10 @@ async def frame_policy(request: Request, call_next):
     t0 = time.monotonic()
     lng = pick_lang(request.query_params.get("lang"), request.cookies.get("lang"), request.headers.get("accept-language"))
     LANG.set(lng)
-    resp = await call_next(request)
+    if demo.blocked(request):  # demo accounts on a demo installation: no user management, logs, support admin
+        resp = HTMLResponse(f"<p>{_('In der Demo gesperrt.')}</p><p><a href='/'>←</a></p>", status_code=403)
+    else:
+        resp = await call_next(request)
     if request.query_params.get("lang") in ("de", "en"):
         resp.set_cookie("lang", lng, max_age=365 * 86400, samesite="lax")
     if request.query_params.get("theme"):

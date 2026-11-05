@@ -100,6 +100,7 @@ def main() -> None:
     conn = connect()
     conn.execute(COLUMNS)
     companies = {r[0]: r for r in conn.execute("SELECT id, srns, lei FROM company").fetchall()}
+    website_of = dict(conn.execute("SELECT id, website FROM company").fetchall())
     by_srn = {s: cid for cid, srns, _l in companies.values() for s in (srns or [])}
     up: dict[str, dict] = {cid: {} for cid in companies}
 
@@ -169,6 +170,10 @@ def main() -> None:
         # only pages whose text really is an imprint/contact page (keyword plus e-mail or phone), checked 2026-11-05:
         # 22 of 116 path hits were soft-404s, login pages or script-only pages
         checked = set(json.loads((pdir / "verified_ok.json").read_text())) if (pdir / "verified_ok.json").exists() else set()
+        # a contact link from a website reached only through a register e-mail domain counts only if it passed the check
+        for cid, u in up.items():
+            if u.get("contact_url") and not website_of.get(cid) and cid not in checked:
+                u.pop("contact_url")
         for line in (l for name in ("probe.jsonl", "probe2.jsonl") if (pdir / name).exists() for l in (pdir / name).open()):
             r = json.loads(line)
             if (r.get("status") == 200 and r["cid"] in checked and r["cid"] in up

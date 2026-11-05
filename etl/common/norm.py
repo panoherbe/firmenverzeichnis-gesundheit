@@ -121,6 +121,19 @@ GENERIC_DOMAINS = {
 }
 
 
+# e-mail domains of authorities and public bodies (EUDAMED validators, Länder offices): never a company's domain
+AUTHORITY_DOMAIN = re.compile(r"(\.bund\.de|\.bwl\.de|\.nrw\.de|\.bayern\.de|\.berlin\.de|\.hamburg\.de|"
+                              r"\.niedersachsen\.de|\.hessen\.de|\.sachsen\.de|\.thueringen\.de|\.brandenburg\.de|"
+                              r"\.landsh\.de|\.rlp\.de|\.saarland\.de|\.mv-regierung\.de|\.sachsen-anhalt\.de|"
+                              r"\.bremen\.de|\.europa\.eu|\.gov(\.[a-z]{2})?)$")
+
+
+def company_domain_from_email(email: str | None) -> str | None:
+    """Domain of a company's register e-mail (the address itself is not kept), unless free mail or an authority."""
+    d = domain(email) if email and "@" in email else None
+    return None if not d or AUTHORITY_DOMAIN.search("." + d) else d
+
+
 def domain(url: str | None) -> str | None:
     if not url:
         return None

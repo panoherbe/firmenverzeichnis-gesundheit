@@ -7,6 +7,11 @@ allows it. Raw before parse: raw/contact_probe/<day>/probe.jsonl {cid, url, kind
 
     python -m etl.sources.contact_probe fetch            # first pass
     python -m etl.sources.contact_probe fetch --retry    # second pass over the still missing ones (probe2.jsonl)
+    python -m etl.sources.contact_probe check            # content check of every candidate -> verified_ok.json
+
+The check (2026-11-05): a candidate counts only if the page text has an imprint/contact keyword, an e-mail address or
+a phone number, and a distinctive word of the company name (no legal form, at least 4 letters). It covers the probe
+hits and every contact link found on a website reached through a register e-mail domain (no website in the register).
 """
 
 from __future__ import annotations
@@ -41,7 +46,67 @@ def variants(url: str) -> list[str]:
     return list(dict.fromkeys([url] + [f"{sch}://{w}{host}/" for sch in ("https", "http") for w in ("www.", "")]))
 
 
+KW = re.compile(r"impressum|imprint|kontakt|contact|legal notice|angaben gem", re.I)
+CT = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+|\btel\.?|telefon|phone|\+49", re.I)
+STOP = {"gmbh", "mbh", "co", "kg", "ag", "se", "kgaa", "ohg", "ug", "haftungsbeschränkt", "und", "the", "and", "für",
+        "deutschland", "germany", "gesellschaft", "medical", "medizintechnik", "pharma", "health", "care", "service",
+        "services", "group", "holding", "international", "vertrieb", "technik", "systems", "products", "produkte"}
+
+
+def name_words(name: str) -> list[str]:
+    words = re.findall(r"[a-zäöüß]{4,}", name.lower())
+    return [w for w in words if w not in STOP] or [w for w in words if w not in {"gmbh", "kgaa"}]
+
+
+def check() -> None:
+    resolver.install()
+    pdir = latest_dir("contact_probe")
+    wdir = latest_dir("websites")
+    with connect() as conn:
+        comp = {cid: (name, website) for cid, name, website in
+                conn.execute("SELECT id, name, website FROM company WHERE verified AND hidden_reason IS NULL").fetchall()}
+    cands: dict[str, str] = {}
+    for line in (wdir / "sites.jsonl").open():
+        j = json.loads(line)
+        if j.get("contact") and j["cid"] in comp and not comp[j["cid"]][1]:  # site reached via e-mail domain
+            cands[j["cid"]] = j["contact"]
+    for name in ("probe.jsonl", "probe2.jsonl"):
+        if (pdir / name).exists():
+            for line in (pdir / name).open():
+                r = json.loads(line)
+                if r.get("status") == 200 and r["cid"] in comp:
+                    cands.setdefault(r["cid"], r["url"])
+    c = httpx.Client(headers={"User-Agent": USER_AGENT}, timeout=15, follow_redirects=True)
+    ok: dict[str, str] = {}
+    reasons: dict[str, int] = {}
+
+    def one(item):
+        cid, url = item
+        try:
+            html = c.get(url).text
+        except Exception:  # noqa: BLE001
+            return cid, url, "fetch"
+        text = re.sub(r"<[^>]+>", " ", re.sub(r"<(script|style)[^>]*>.*?</\1>", " ", html, flags=re.S | re.I)).lower()
+        if not KW.search(text):
+            return cid, url, "no keyword"
+        if not CT.search(text):
+            return cid, url, "no e-mail/phone"
+        if not any(w in text for w in name_words(comp[cid][0])):
+            return cid, url, "company name missing"
+        return cid, url, "ok"
+
+    with ThreadPoolExecutor(max_workers=12) as pool:
+        for cid, url, why in pool.map(one, cands.items()):
+            reasons[why] = reasons.get(why, 0) + 1
+            if why == "ok":
+                ok[cid] = url
+    (pdir / "verified_ok.json").write_text(json.dumps(ok, indent=0))
+    print(f"  check: {len(cands)} candidates, {reasons}")
+
+
 def main() -> None:
+    if sys.argv[1:2] == ["check"]:
+        return check()
     if sys.argv[1:2] != ["fetch"]:
         sys.exit(__doc__)
     retry = "--retry" in sys.argv

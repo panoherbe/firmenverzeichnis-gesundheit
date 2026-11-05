@@ -1,13 +1,13 @@
 companies total | register-verified | verified tier A | verified tier B
 9744 | 4787 | 3399 | 1388
 verified: e-mail (company mailbox) or contact/imprint page | website only | no contact path | with contact/imprint page link
-3993 | 125 | 669 | 2445
+4144 | 222 | 421 | 2919
 verified with size class | with product identifier (EMDN group or EMA product) | EMDN | EMA | employee figure (all)
-292 | 2013 | 1734 | 331 | 390
+422 | 2013 | 1734 | 331 | 636
 verified by sector
 medtech | 4582
 pharma | 397
-digital_health | 141
+digital_health | 142
 biotech | 33
 international base: companies | countries | by source
 6450 | 80

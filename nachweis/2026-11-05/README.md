@@ -14,9 +14,9 @@ Installation; die öffentliche Demo (https://firmen.panoherbe.com) läuft mit ei
 | Zahl in der README | gemessen | Abfrage |
 |---|---|---|
 | 9.744 Unternehmen, 4.787 registergeprüft | 9.744 / 4.787 (Hersteller und Zulassungsinhaber 3.399, Bevollmächtigte und Importeure 1.388) | 1 |
-| 3.993 mit Funktionspostfach oder Kontakt-/Impressumsseite | 3.993; dazu 125 nur mit Website, 669 ohne Kontaktweg; 2.445 mit Link zur Kontakt- oder Impressumsseite | 2 |
+| 4.144 mit Funktionspostfach oder Kontakt-/Impressumsseite | 4.144; dazu 222 nur mit Website, 421 ohne Kontaktweg; 2.919 mit Link zur Kontakt- oder Impressumsseite | 2 |
 | 2.013 mit Produktkennung | 2.013 (EMDN-Produktgruppe 1.734, Arzneimittel aus EMA 331) | 3 |
-| 292 mit Größenklasse | 292 registergeprüfte (390 Firmen mit einer Beschäftigtenzahl insgesamt) | 3 |
+| 422 mit Größenklasse | 422 registergeprüfte (636 Firmen mit einer Beschäftigtenzahl insgesamt) | 3 |
 | 6.450 internationale Unternehmen aus 80 Ländern | 6.450 / 80 (CORDIS 3.711, EMA 2.739) | 5 |
 | Stichprobe Hersteller 43 von 44 | 43/44 | 6 |
 | Stichprobe Importeure 15 von 20 | am 02.11. 15/20; gegen die heutigen Firmen-IDs 14/19, weil ein Stichprobeneintrag inzwischen mit einem anderen zusammengeführt wurde | 6 |
@@ -26,6 +26,17 @@ waren 1.354. Seitdem ist der EUDAMED-Abruf fertig, und für 219 Profile nur mit 
 Impressumsseite nachgesucht (zwei Läufe, robots.txt beachtet). Gezählt wird eine gefundene Seite nur, wenn ihr Text
 wirklich eine Impressums- oder Kontaktseite ist (Stichwort und E-Mail-Adresse oder Telefon): 94 von 116 Treffern;
 die übrigen 22 waren Login-Seiten, „Seite nicht gefunden“ mit Status 200 oder Seiten, deren Inhalt nur per Skript lädt.
+
+## Kontaktwege über die Register-E-Mail (05.11.2026, Nachmittag)
+
+Hat ein Unternehmen im Register (EUDAMED, EMA) keine Website, aber eine E-Mail-Adresse der eigenen Firma, führt deren
+Domain zur Website. Gespeichert wird nur die Domain, nie die Adresse; Freemail und Behörden-Domains (z. B. die der
+prüfenden Landesbehörde in EUDAMED) zählen nicht. Auf dieser Website wird die Kontakt- oder Impressumsseite gesucht
+(robots.txt beachtet). Eine so gefundene Seite zählt nur, wenn ihr Text ein Impressum/Kontakt-Stichwort, eine E-Mail-
+Adresse oder Telefonnummer **und** ein unterscheidendes Wort des Firmennamens enthält: 593 von 791 Kandidaten bestanden
+(104 ohne Firmennamen, 61 ohne E-Mail/Telefon, 32 ohne Stichwort, 1 nicht abrufbar). Stichprobe von 20 der so gefundenen
+Seiten, von Hand angesehen: 18 sind die Kontaktseite des Unternehmens selbst, 2 die Investor-Relations-Kontaktseite des
+Mutterkonzerns.
 
 ## Stichproben: wie sie gemacht wurden
 

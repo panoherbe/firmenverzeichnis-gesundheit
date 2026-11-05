@@ -1,0 +1,7 @@
+[Unit]
+Description=Firmenverzeichnis demo: nightly reset to the seed data (demo installations only)
+After=postgresql.service
+
+[Service]
+Type=oneshot
+ExecStart=/srv/firmen/app/ops/demo_reset.sh

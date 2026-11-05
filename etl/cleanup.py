@@ -2,8 +2,8 @@
 Quarterly cleanup by fixed, documented criteria (codes B1–B8 below). Runs after etl.resolve + etl.enrich and is
 deterministic: etl.resolve rebuilds `company` from the registers, so this step re-derives every mark each run.
 
-  B1  no reachable contact path in two consecutive check cycles (site_check: the last two distinct days both not ok,
-      and no company mailbox)                                   → hidden, reason 'B1'
+  B1  no reachable contact path in two consecutive check cycles (site_check: the last two distinct check days, at
+      least 60 days apart, both not ok, and no company mailbox)                                   → hidden, reason 'B1'
   B2/B4/B6  inactive in EUDAMED / gone from EMA / seat abroad   → already excluded by etl.load (active DE records only)
   B3  lapsed/retired LEI                                       → a LEI never verifies alone (tiers A/B need EUDAMED or
       EMA), so a lapsed LEI cannot keep a profile alive; GLEIF loads ACTIVE entities only
@@ -49,6 +49,8 @@ def main() -> None:
                      GROUP BY company_id HAVING count(*) = 2 AND NOT bool_or(ok))
         UPDATE company c SET hidden_reason = 'B1' FROM bad
         WHERE c.id = bad.company_id AND c.email_role IS NULL AND (SELECT count(*) FROM last) = 2
+          -- a check cycle is a quarterly run: two checks a few days apart are one cycle, not two (bug of 2026-11-05)
+          AND (SELECT max(checked) - min(checked) FROM last) >= 60
         RETURNING c.id, c.name""").fetchall()
     b7 = conn.execute("""
         UPDATE company c SET hidden_reason = 'B7' FROM suppression s

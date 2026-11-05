@@ -1,0 +1,9 @@
+[Unit]
+Description=Nightly demo reset (demo installations only; not enabled by bootstrap)
+
+[Timer]
+OnCalendar=*-*-* 04:10:00 Europe/Berlin
+Persistent=true
+
+[Install]
+WantedBy=timers.target
