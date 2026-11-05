@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS access_token (
   created_at timestamptz NOT NULL DEFAULT now(), revoked_at timestamptz, last_used timestamptz, uses int NOT NULL DEFAULT 0);
 ALTER TABLE access_token ADD COLUMN IF NOT EXISTS host text;
 ALTER TABLE access_log ADD COLUMN IF NOT EXISTS access_id int;
+ALTER TABLE company ADD COLUMN IF NOT EXISTS preview_locked boolean;
 CREATE TABLE IF NOT EXISTS access_usage (access_id int NOT NULL, day date NOT NULL, kind text NOT NULL,
   n int NOT NULL DEFAULT 0, PRIMARY KEY (access_id, day, kind));
 """
@@ -53,19 +54,45 @@ CREATE TABLE IF NOT EXISTS access_usage (access_id int NOT NULL, day date NOT NU
 # rows, the result list pages to PREVIEW_PAGES, the API offset stops at PREVIEW_OFFSET, and one access link opens
 # at most PREVIEW_PROFILES profiles a day. Counts and statistics stay complete. Enforced on the server; usage is
 # counted per access link and day (access_usage). Customer installations (no ACCESS_GATE) have no such limits.
-PREVIEW_ROWS = int(os.environ.get("PREVIEW_ROWS", "25"))
+PREVIEW_ROWS = int(os.environ.get("PREVIEW_ROWS", "100"))
 PREVIEW_PAGES = int(os.environ.get("PREVIEW_PAGES", "5"))
 PREVIEW_OFFSET = int(os.environ.get("PREVIEW_OFFSET", "100"))
-PREVIEW_PROFILES = int(os.environ.get("PREVIEW_PROFILES", "200"))
-# daily caps per link that make collecting the data set through many filter combinations slow (not impossible):
-# 40 exports x 25 + 100 API pages x 25 + 300 result pages x 25 rows a day, mostly overlapping
-PREVIEW_DAILY = {"export": int(os.environ.get("PREVIEW_EXPORTS", "40")), "api": int(os.environ.get("PREVIEW_API", "100")),
+PREVIEW_PROFILES = int(os.environ.get("PREVIEW_PROFILES", "100"))
+# caps per link, per day and over the link's whole lifetime: normal testing never reaches them, collecting the data
+# set does (contact and register fields are shown only in the first PREVIEW_FULL rows of an export or API page)
+PREVIEW_DAILY = {"export": int(os.environ.get("PREVIEW_EXPORTS", "15")), "api": int(os.environ.get("PREVIEW_API", "50")),
                  "search": int(os.environ.get("PREVIEW_SEARCHES", "300")), "profile": PREVIEW_PROFILES}
+PREVIEW_TOTAL = {"export": int(os.environ.get("PREVIEW_EXPORTS_TOTAL", "100")),
+                 "api": int(os.environ.get("PREVIEW_API_TOTAL", "300")),
+                 "search": int(os.environ.get("PREVIEW_SEARCHES_TOTAL", "3000")),
+                 "profile": int(os.environ.get("PREVIEW_PROFILES_TOTAL", "800"))}
+PREVIEW_FULL = int(os.environ.get("PREVIEW_FULL", "5"))
+TEASE_FIELDS = ("email_role", "contact_url", "vat", "register_no", "lei", "srns", "domain")
+IN_CONTRACT = "im Vertrag"
 
 
 def over(request: Request, kind: str) -> bool:
-    """Count one use and say whether today's cap for this link is exceeded (closed preview only)."""
-    return ENABLED and count(request, kind) > PREVIEW_DAILY[kind]
+    """Count one use; True when today's or the lifetime cap for this link is exceeded (closed preview only)."""
+    if not ENABLED:
+        return False
+    if count(request, kind) > PREVIEW_DAILY[kind]:
+        return True
+    with db() as conn:
+        total = conn.execute("SELECT coalesce(sum(n), 0) AS n FROM access_usage WHERE access_id = %s AND kind = %s",
+                             (access_id(request), kind)).fetchone()["n"]
+    return total > PREVIEW_TOTAL[kind]
+
+
+def tease(rows: list[dict]) -> list[dict]:
+    """Preview: contact and register fields only for the fully shown companies (ops/demo_subset.py marks the others
+    `preview_locked`, their fields are already empty on the demo host); the columns stay so the format can be checked."""
+    if ENABLED:
+        for r in rows:
+            if r.pop("preview_locked", False):
+                for k in TEASE_FIELDS:
+                    if k in r:
+                        r[k] = IN_CONTRACT
+    return rows
 
 register({
     "Zugang": "Access", "Willkommen": "Welcome",

@@ -15,6 +15,7 @@ Corporate design: env THEME_FILE points at a JSON file {"name", "logo", "accent"
 from __future__ import annotations
 
 import csv
+import datetime as dt
 import io
 import json
 import os
@@ -74,11 +75,20 @@ APP_EN = {
     "Suchbegriff": "Search term", "Branche": "Sector", "Rolle": "Role", "Bundesland": "Federal state",
     "Größe (Beschäftigte)": "Size (employees)", "Umsatz": "Revenue",
     "wird zum Vertragsstart freigeschaltet": "switched on at contract start",
-    "Vorschau: {n} von {total} Treffern, im Vertrag vollständig": "Preview: {n} of {total} hits, complete in the contract",
+    "Vorschau mit ausgewählten Unternehmen: Kontakt- und Registerangaben bei einem Teil vollständig, sonst „im Vertrag“. Gesamtbestand im Vertrag.": "Preview with selected companies: contact and register data complete for some of them, otherwise 'in the contract'. Full data set in the contract.",
+    "im Vertrag": "in the contract", "Vorschau: Exporte mit der Auswahl; Kontakt- und Registerangaben bei einem Teil vollständig, Gesamtbestand im Vertrag.": "Preview: exports contain the selection; contact and register data complete for some, full data set in the contract.", "Unternehmensverzeichnis Gesundheitswirtschaft": "Directory of the German Health Industry", "Ein Verzeichnis der deutschen Medizintechnik-, Pharma-, Biotech- und Digital-Health-Unternehmen aus amtlichen Registern, mit Suche, Export, API und virtuellem Matchmaking.": "A directory of German medical technology, pharma, biotech and digital health companies from official registers, with search, export, API and virtual matchmaking.", "Diese Installation ist eine geschlossene Vorschau; der Zugang kommt per persönlichem Link.": "This installation is a closed preview; access is by personal link.", "Zugang oder Fragen:": "Access or questions:",
+    "Medizintechnik, Pharma, Biotechnologie, digitale Gesundheit; abgeleitet aus Register (EUDAMED, EMA) und Firmenangaben.": "Medical technology, pharma, biotech, digital health; derived from registers (EUDAMED, EMA) and company information.",
+    "Sitz des Unternehmens laut Register.": "Registered seat of the company.",
+    "Umsatzgrößenklassen; Daten über lizenzierten Datenbezug, Freischaltung zum Vertragsstart.": "Revenue size classes; data from a licensed supply, switched on at contract start.",
+    "Rolle im Register: Hersteller bzw. Zulassungsinhaber, Bevollmächtigter oder Importeur.": "Role in the register: manufacturer or marketing-authorisation holder, authorised representative or importer.",
+    "Funktionspostfach oder Kontakt-/Impressumsseite des Unternehmens.": "Company role mailbox or contact/imprint page.",
+    "Auch Unternehmen, die nur aus öffentlichen Zuschlägen bekannt und nicht in einem amtlichen Register bestätigt sind.": "Also companies known only from public contract awards and not confirmed in an official register.",
+    "Die Plattform läuft bereits im vollen Betrieb. Diese Vorschau zeigt den Aufbau des Registers an 100 ausgewählten Unternehmen, 10 davon vollständig mit Kontakt- und Registerangaben. Alle in der Leistungsbeschreibung geforderten Angaben stehen zum Vertragsbeginn bereit.": "The platform is already in full operation. This preview shows the structure of the register with 100 selected companies, 10 of them complete with contact and register data. All data required by the specification are available at contract start.",
+    "Kontaktseite und Funktionspostfach": "Contact page and role mailbox", "Hilfe, Glossar, Einführung": "Help, glossary, introduction", "In-vitro-Diagnostika": "In-vitro diagnostics", "Treffer in der Auswahl": "hits in the selection", "Unternehmen in der Auswahl": "companies in the selection", "Auswahl": "selection",
     "Für heute genug Profile angesehen": "Enough profiles for today",
     "Die Vorschau zeigt bis zu {n} Profile am Tag; morgen geht es weiter. Im Vertrag ohne Grenze.": "The preview shows up to {n} profiles a day; more tomorrow. No limit in the contract.",
     "In der Vorschau lässt sich jede Funktion ausprobieren; den vollständigen Datenbestand gibt es im Vertrag.": "Every function can be tried in the preview; the complete data set comes with the contract.",
-    "Zurück zur Übersicht": "Back to the overview", "Für heute genug gesucht": "Enough searching for today",
+    "Zurück zur Übersicht": "Back to the overview", "Trefferliste": "Result list", "Treffer": "hits", "Stand": "as of", "Unternehmen mit Angabe": "companies with a figure", "alle registergeprüften Unternehmen": "all register-verified companies", "Quellen und Lizenzen": "Sources and licences", "Suche": "Search", "Für heute genug gesucht": "Enough searching for today",
     "Die Vorschau erlaubt viele Suchen am Tag; das Tageskontingent ist erreicht. Morgen geht es weiter.": "The preview allows many searches a day; today's quota is used up. More tomorrow.",
     "Für heute genug exportiert": "Enough exports for today",
     "Die Vorschau erlaubt {n} Exporte am Tag mit je bis zu {r} Zeilen; morgen geht es weiter. Im Vertrag ohne Grenze.": "The preview allows {n} exports a day of up to {r} rows each; more tomorrow. No limit in the contract.", "Kurz durchatmen": "One moment, please", "Zur Suche": "To the search",
@@ -167,8 +177,10 @@ app = FastAPI(
                  "lists its sources. Search syntax: AND/OR/NOT, \"phrases\", prefix*. Licence: see /quellen."),
     version="1.0", docs_url=None, redoc_url=None)  # own /api/docs page: Swagger UI would load from a CDN
 app.mount("/static", StaticFiles(directory=str(Path(__file__).parent / "static")), name="static")
-if (Path(__file__).parent.parent / "medien").is_dir():  # walkthrough video and screenshots (help page)
+# walkthrough video and screenshots (help page); not in the closed preview: the video shows the full counts
+if (Path(__file__).parent.parent / "medien").is_dir() and not gate.ENABLED:
     app.mount("/medien", StaticFiles(directory=str(Path(__file__).parent.parent / "medien")), name="medien")
+templates.env.globals.update(chart_title=lambda *a: chart_title(*a), brand=lambda r: brand(r))
 templates.env.globals.update(SECTORS=SECTORS, TIERS=TIERS, REGIONS=REGIONS, SIZES=SIZES, REVENUES=REVENUES, EMDN=EMDN,
                              REVENUE_LOCKED=REVENUE_LOCKED)
 templates.env.globals["current_user"] = auth.current_user
@@ -409,7 +421,16 @@ def stats(f: dict) -> dict:
     for k, m in names.items():
         out[k] = [{"key": r["k"], "label": _(m.get(r["k"], "unbekannt")) if r["k"] else _("unbekannt"), "n": r["n"]}
                   for r in out[k]]
+    # size class: only companies with a figure, their number goes into the chart title (no "unknown" bar)
+    out["size"] = [r for r in out["size"] if r["key"]]
+    out["size_known"] = sum(r["n"] for r in out["size"])
     return out
+
+
+def chart_title(key: str, title: str, s: dict) -> str:
+    if key == "size":
+        return f"{_(title)} ({s['size_known']:,} {_('Unternehmen mit Angabe')})".replace(",", ".")
+    return _(title)
 
 
 CHARTS = [("sector", "nach Branche"), ("region", "nach Bundesland"), ("size", "nach Größenklasse"),
@@ -432,13 +453,15 @@ def api_stats(q: str = "", sector: str = "", tier: str = "", region: str = "", s
 
 
 @app.get("/statistik.pdf")
-def statistics_pdf(q: str = "", sector: str = "", tier: str = "", region: str = "", size: str = "", revenue: str = "",
+def statistics_pdf(request: Request, q: str = "", sector: str = "", tier: str = "", region: str = "", size: str = "", revenue: str = "",
                    product: str = "", contact: bool = False, alle: bool = False):
     s = stats(filters(q, sector, tier, region, size, revenue, product, contact, alle))
-    doc = pdf.Doc(_("Firmenverzeichnis Gesundheitswirtschaft") + " – " + _("Statistik"))
-    doc.text(f"{s['total']:,}".replace(",", ".") + " " + _("Unternehmen") + (f" · {_('Suchbegriff')}: {q}" if q else ""), 10)
+    b = brand(request)
+    doc = pdf.Doc(_("Statistik"), brand=b["name"], accent=b["accent"], footer=b["footer"])
+    doc.text(f"{s['total']:,}".replace(",", ".") + " " + (_("Unternehmen in der Auswahl") if gate.ENABLED else _("Unternehmen")) + (f" · {_('Suchbegriff')}: {q}" if q else "") +
+             f" · {_('Stand')} {dt.date.today():%d.%m.%Y}", 10)
     for key, title in CHARTS:
-        doc.bars(_(title), [(r["label"], r["n"]) for r in s[key]][:16])
+        doc.bars(chart_title(key, title, s), [(r["label"], r["n"]) for r in s[key]][:16])
     doc.text(ATTRIBUTION, 7)
     return Response(doc.render(), media_type="application/pdf",
                     headers={"Content-Disposition": 'attachment; filename="statistik.pdf"'})
@@ -473,9 +496,11 @@ def api_list(request: Request, q: str = "", sector: str = "", tier: str = "", re
                                  "preview": True, "detail": f"Preview: offset up to {gate.PREVIEW_OFFSET}; full access "
                                  "in the contract."}, status_code=403)
     total, rows, facets = search(f, limit, offset)
-    out = {"total": total, "limit": limit, "offset": offset, "facets": facets, "items": [clean(r) for r in rows]}
+    out = {"total": total, "limit": limit, "offset": offset, "facets": facets,
+           "items": [clean(r) for r in gate.tease(rows)]}
     if gate.ENABLED:
         out["preview"] = True
+        out["note"] = "Preview of selected companies; contact and register fields for a part of them, all in the contract."
     return out
 
 
@@ -499,7 +524,8 @@ def api_one(request: Request, cid: str):
 def export_rows(f: dict, request: Request | None = None) -> tuple[int, list[dict]]:
     """(total hits, rows); in the closed preview at most gate.PREVIEW_ROWS rows, every export counted per link."""
     lim = gate.PREVIEW_ROWS if gate.ENABLED else 100000
-    total, rows, _f = search(f, limit=lim, offset=0, fields=", ".join(EXPORT_FIELDS))
+    total, rows, _f = search(f, limit=lim, offset=0,
+                             fields=", ".join(EXPORT_FIELDS + (["preview_locked"] if gate.ENABLED else [])))
     if gate.ENABLED and request is not None:
         request.state.export_over = gate.over(request, "export")
     for r in rows:
@@ -510,14 +536,43 @@ def export_rows(f: dict, request: Request | None = None) -> tuple[int, list[dict
         r["region"] = REGIONS.get(r["region"], r["region"])
         r["tier"] = _(TIERS.get(r["tier"], r["tier"]))
         r["size_class"] = _(SIZES[r["size_class"]]) if r["size_class"] else None
-    return total, rows
+    return total, gate.tease(rows)
+
+
+EXPORT_LABELS = {"id": "ID", "name": "Unternehmen", "legal_form": "Rechtsform", "street": "Straße", "post_code": "PLZ",
+                 "city": "Ort", "region": "Bundesland", "website": "Website", "contact_url": "Kontaktseite",
+                 "email_role": "E-Mail (Funktionspostfach)", "vat": "USt-IdNr.", "register_no": "Handelsregister",
+                 "lei": "LEI", "srns": "EUDAMED SRN", "sectors": "Branche", "emdn_groups": "Produktgruppe (EMDN)",
+                 "emdn_source": "Quelle Produktgruppe", "size_class": "Größenklasse", "employees": "Beschäftigte (rund)",
+                 "tier": "Rolle", "public_awards": "Öffentliche Zuschläge", "public_last_award": "Letzter Zuschlag",
+                 "verified": "Registergeprüft", "sources": "Quellen"}
+EXPORT_WIDTHS = {"name": 42, "street": 26, "city": 18, "region": 20, "website": 30, "contact_url": 36,
+                 "email_role": 30, "sectors": 22, "emdn_groups": 34, "tier": 26, "sources": 30, "srns": 22}
+
+
+def brand(request: Request) -> dict:
+    """Name, colour and footer of the current design (the buyer's theme under its own address, else the default)."""
+    th = theme(request)
+    footer = " · ".join(x for x in (str(th.get("preview_notice") or ""), str(th.get("provider") or "")) if x)
+    return {"name": str(th.get("name") or "") or _("Firmenverzeichnis Gesundheitswirtschaft"),
+            "accent": str(th.get("accent") or "#0b5cad"), "footer": footer}
+
+
+def filter_text(f: dict) -> str:
+    parts = [f"{_('Suche')}: {f['q']}"] if f.get("q") else []
+    for k, m in (("sector", SECTORS), ("region", REGIONS), ("tier", TIERS), ("size", SIZES), ("product", EMDN)):
+        if f.get(k):
+            parts.append(_(m.get(f[k], f[k])))
+    if f.get("contact"):
+        parts.append(_("nur mit Kontaktweg"))
+    return " · ".join(parts) or _("alle registergeprüften Unternehmen")
 
 
 def preview_note(total: int, n: int) -> str | None:
     if not gate.ENABLED:
         return None
-    return _("Vorschau: {n} von {total} Treffern, im Vertrag vollständig").format(
-        n=n, total=f"{total:,}".replace(",", "."))
+    return _("Vorschau mit ausgewählten Unternehmen: Kontakt- und Registerangaben bei einem Teil vollständig, "
+             "sonst „im Vertrag“. Gesamtbestand im Vertrag.")
 
 
 def export_limit(request: Request):
@@ -526,8 +581,12 @@ def export_limit(request: Request):
         "Grenze.").format(n=gate.PREVIEW_DAILY["export"], r=gate.PREVIEW_ROWS))
 
 
-def export_name(ext: str) -> str:
-    return f'attachment; filename="firmenverzeichnis{"-vorschau" if gate.ENABLED else ""}.{ext}"'
+def export_name(ext: str, f: dict | None = None) -> str:
+    """Speaking file name: Gesundheitswirtschaft_<search>_<date>[_Vorschau].<ext> (ASCII only)."""
+    tr = str.maketrans({"ä": "ae", "ö": "oe", "ü": "ue", "ß": "ss", "Ä": "Ae", "Ö": "Oe", "Ü": "Ue"})
+    q = re.sub(r"[^A-Za-z0-9]+", "-", ((f or {}).get("q") or "").translate(tr)).strip("-")[:30]
+    parts = ["Gesundheitswirtschaft", q, f"{dt.date.today():%Y-%m-%d}", "Vorschau" if gate.ENABLED else ""]
+    return f'attachment; filename="{"_".join(p for p in parts if p)}.{ext}"'
 
 
 ATTRIBUTION = ("Quellen: Europäische Kommission – EUDAMED und TED (Weiterverwendung nach Beschluss 2011/833/EU), "
@@ -553,32 +612,81 @@ def export_csv(request: Request):
     w.writerows(rows)
     buf.write(f"# {ATTRIBUTION}\n")
     return Response("﻿" + buf.getvalue(), media_type="text/csv; charset=utf-8",
-                    headers={"Content-Disposition": export_name("csv")})
+                    headers={"Content-Disposition": export_name("csv", request.query_params)})
 
 
 @app.get("/export.xlsx")
 def export_xlsx(request: Request):
+    """Excel with a title block, labelled columns, the design's colour, bands, filter and clickable links."""
     from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Font, PatternFill
+    from openpyxl.utils import get_column_letter
 
-    total, rows = export_rows(ef(**{k: v for k, v in request.query_params.items() if k in FILTERS}), request)
+    f = ef(**{k: v for k, v in request.query_params.items() if k in FILTERS})
+    total, rows = export_rows(f, request)
     if getattr(request.state, "export_over", False):
         return export_limit(request)
+    b = brand(request)
+    accent = b["accent"].lstrip("#").upper()
     wb = Workbook()
     ws = wb.active
-    ws.title = "Firmen" if lang() == "de" else "Companies"
-    if note := preview_note(total, len(rows)):
-        ws.title = "Vorschau" if lang() == "de" else "Preview"
-        ws.append([note])
-    ws.append(EXPORT_FIELDS)
-    for r in rows:
+    ws.title = "Unternehmen" if lang() == "de" else "Companies"
+    ncol = len(EXPORT_FIELDS)
+    ws.append([b["name"]])
+    ws["A1"].font = Font(size=15, bold=True, color=accent)
+    ws.append([f"{filter_text(f)} · {total:,} {_('Treffer in der Auswahl') if gate.ENABLED else _('Treffer')} · {_('Stand')} {dt.date.today():%d.%m.%Y}".replace(",", ".")])
+    ws["A2"].font = Font(size=10, color="5A5F66")
+    note = preview_note(total, len(rows))
+    ws.append([note or ""])
+    ws["A3"].font = Font(size=10, bold=True, color="B45309")
+    head_row = 5
+    ws.append([])
+    ws.append([_(EXPORT_LABELS.get(k, k)) for k in EXPORT_FIELDS])
+    for c in ws[head_row]:
+        c.font = Font(bold=True, color="FFFFFF")
+        c.fill = PatternFill("solid", fgColor=accent)
+        c.alignment = Alignment(vertical="center", wrap_text=True)
+    ws.row_dimensions[head_row].height = 30
+    band = PatternFill("solid", fgColor="EEF2F6")
+    link = Font(color=accent, underline="single")
+    for i, r in enumerate(rows):
         ws.append([r[k] for k in EXPORT_FIELDS])
-    ws.freeze_panes = "A3" if gate.ENABLED else "A2"
-    ws.auto_filter.ref = f"A{2 if gate.ENABLED else 1}:{ws.cell(1, len(EXPORT_FIELDS)).column_letter}{ws.max_row}"
-    wb.create_sheet("Quellen" if lang() == "de" else "Sources").append([ATTRIBUTION])
+        row = head_row + 1 + i
+        for col, k in enumerate(EXPORT_FIELDS, 1):
+            cell = ws.cell(row, col)
+            if i % 2:
+                cell.fill = band
+            v = r.get(k)
+            if isinstance(v, str) and v != gate.IN_CONTRACT and k in ("website", "contact_url") and v.startswith("http"):
+                cell.hyperlink, cell.font = v, link
+            elif isinstance(v, str) and k == "email_role" and "@" in v:
+                cell.hyperlink, cell.font = f"mailto:{v}", link
+            elif v == gate.IN_CONTRACT:
+                cell.font = Font(italic=True, color="8A8F98")
+    for col, k in enumerate(EXPORT_FIELDS, 1):
+        ws.column_dimensions[get_column_letter(col)].width = EXPORT_WIDTHS.get(k, 14)
+    ws.freeze_panes = ws.cell(head_row + 1, 3)
+    ws.auto_filter.ref = f"A{head_row}:{get_column_letter(ncol)}{head_row + len(rows)}"
+    ws.oddFooter.center.text = b["footer"] or b["name"]
+    ws.oddHeader.left.text = b["name"]
+    ws.page_setup.orientation = "landscape"
+    ws.sheet_properties.pageSetUpPr.fitToPage = True
+    ws.page_setup.fitToWidth, ws.page_setup.fitToHeight = 1, 0
+    src = wb.create_sheet("Quellen" if lang() == "de" else "Sources")
+    src.append([_("Quellen und Lizenzen")])
+    src["A1"].font = Font(size=13, bold=True, color=accent)
+    src.append([ATTRIBUTION])
+    src["A2"].alignment = Alignment(wrap_text=True, vertical="top")
+    src.column_dimensions["A"].width = 120
+    src.row_dimensions[2].height = 80
+    if b["footer"]:
+        src.append([])
+        src.append([b["footer"]])
+        src["A4"].font = Font(size=9, color="5A5F66")
     buf = io.BytesIO()
     wb.save(buf)
     return Response(buf.getvalue(), media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                    headers={"Content-Disposition": export_name("xlsx")})
+                    headers={"Content-Disposition": export_name("xlsx", f)})
 
 
 @app.get("/export.pdf")
@@ -586,10 +694,13 @@ def export_pdf(request: Request):
     """Result list as PDF (up to 2,000 rows) — for presentations and print."""
     f = ef(**{k: v for k, v in request.query_params.items() if k in FILTERS})
     total, rows, _f = search(f, limit=gate.PREVIEW_ROWS if gate.ENABLED else 2000, offset=0)
+    rows = gate.tease(rows)
     if gate.over(request, "export"):
         return export_limit(request)
-    doc = pdf.Doc(_("Firmenverzeichnis Gesundheitswirtschaft"))
-    doc.text(f"{total:,}".replace(",", ".") + " " + _("Unternehmen") + (f" · {f['q']}" if f["q"] else ""), 10)
+    b = brand(request)
+    doc = pdf.Doc(_("Trefferliste"), brand=b["name"], accent=b["accent"], footer=b["footer"])
+    doc.text(f"{total:,}".replace(",", ".") + " " + (_("Unternehmen in der Auswahl") if gate.ENABLED else _("Unternehmen")) + " · " + filter_text(f) +
+             f" · {_('Stand')} {dt.date.today():%d.%m.%Y}", 10)
     if note := preview_note(total, len(rows)):
         doc.text(note, 10)
     doc.table([_("Name"), _("Ort"), _("Branche"), _("Kontakt")], [
@@ -597,7 +708,7 @@ def export_pdf(request: Request):
          r["domain"] or r["email_role"] or "") for r in rows], [0.42, 0.2, 0.18, 0.2])
     doc.text(ATTRIBUTION, 7)
     return Response(doc.render(), media_type="application/pdf",
-                    headers={"Content-Disposition": export_name("pdf")})
+                    headers={"Content-Disposition": export_name("pdf", f)})
 
 
 @app.get("/firma/{cid}/pdf")
@@ -607,7 +718,8 @@ def detail_pdf(request: Request, cid: str):
             "Die Vorschau zeigt bis zu {n} Profile am Tag; morgen geht es weiter. Im Vertrag ohne Grenze.").format(
             n=gate.PREVIEW_PROFILES))
     c, members, _s = load_company(cid)
-    doc = pdf.Doc(c["name"])
+    b = brand(request)
+    doc = pdf.Doc(c["name"], brand=b["name"], accent=b["accent"], footer=b["footer"])
     kv = [(_("Rechtsform"), c["legal_form"]), (_("Anschrift"), f"{c['street'] or ''}, {c['post_code'] or ''} {c['city'] or ''}"),
           (_("Branche"), ", ".join(_(SECTORS[s]) for s in c["sectors"])), (_("Website"), c["website"]),
           (_("Kontaktseite"), c.get("contact_url")), (_("E-Mail (Funktionspostfach)"), c["email_role"]),

@@ -82,15 +82,15 @@ details[open] summary { margin-bottom:6px; }
 <p>{{ _("Angemeldete Nutzer speichern jede Suche mit allen Filtern unter einem Namen und finden sie unter „Mein Konto“ wieder, zusammen mit dem Suchverlauf. Administratoren melden sich mit einem zweiten Faktor (Authenticator-App) an und verwalten die Nutzerkonten.") }}</p>
 </section>
 
-<section class="h" id="video">
+{% if not gate_enabled %}<section class="h" id="video">
 <h2>{{ _("Videos") }}</h2>
 <p>{{ _("Rundgang mit Untertiteln, ohne Ton.") }}</p>
-{% for v, t in [("rundgang", "Rundgang durch das Verzeichnis")] %}
+{% for v, t in ([] if gate_enabled else [("rundgang", "Rundgang durch das Verzeichnis")]) %}
 <h3 style="font-size:15px">{{ _(t) }}</h3>
 <video controls preload="none" poster="/medien/poster.png"><source src="/medien/{{ v }}.mp4" type="video/mp4">
 </video>
 {% endfor %}
-</section>
+</section>{% endif %}
 
 <section class="h" id="glossar">
 <h2>{{ _("Glossar") }}</h2>

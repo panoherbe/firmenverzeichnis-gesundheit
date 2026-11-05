@@ -38,7 +38,7 @@ Gemessen am 05.11.2026 an der laufenden Installation; Abfragen und Ausgaben: [`n
 
 | Was Sie brauchen | Stand |
 |---|---|
-| ein großer, geprüfter Bestand | **4.787 registergeprüfte Unternehmen** (EUDAMED, EMA, LEI), 9.744 insgesamt suchbar |
+| ein großer, geprüfter Bestand | **4.787 registergeprüfte Unternehmen** (EUDAMED, EMA, LEI), 9.744 im Gesamtbestand |
 | ein Kontaktweg zu jedem Unternehmen | **3.964** davon mit geprüftem Kontaktweg (Funktionspostfach mit MX-Eintrag auf einer Domain der Firma, oder Kontakt-/Impressumsseite mit Kontaktangabe; Stand 05.11. nachts), 303 nur mit Website, 520 noch ohne; im Verzeichnis keine Personendaten |
 | was die Firma macht und herstellt | Branche mit Begründung; Produktkennung für 2.013 Firmen: Produktgruppen nach EU-Nomenklatur (EMDN) aus EUDAMED für 1.734, Arzneimittel aus EMA für 331 |
 | schnell das Richtige finden | Volltextsuche mit UND/ODER/NICHT, Klammern, Phrasen, Wortanfang; Filter Branche, Bundesland, Produktgruppe, Größe, Umsatz, Rolle |

@@ -31,9 +31,18 @@
     var svg = document.getElementById(id), xml = new XMLSerializer().serializeToString(svg);
     var vb = svg.viewBox.baseVal, scale = 2, img = new Image();
     img.onload = function () {
-      var c = document.createElement('canvas'); c.width = vb.width * scale; c.height = vb.height * scale;
+      // branded image: coloured band with product name and chart title, the chart, a footer line with the date
+      var top = 70 * scale, foot = 34 * scale, d = svg.dataset, accent = d.accent || '#0b5cad';
+      var c = document.createElement('canvas'); c.width = vb.width * scale; c.height = vb.height * scale + top + foot;
       var ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
-      ctx.drawImage(img, 0, 0, c.width, c.height);
+      ctx.fillStyle = accent; ctx.fillRect(0, 0, c.width, 30 * scale);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold ' + 13 * scale + 'px Arial, Helvetica, sans-serif';
+      ctx.fillText(d.brand || '', 14 * scale, 20 * scale);
+      ctx.fillStyle = '#1a1a1a'; ctx.font = 'bold ' + 14 * scale + 'px Arial, Helvetica, sans-serif';
+      ctx.fillText(d.title || '', 14 * scale, 56 * scale);
+      ctx.drawImage(img, 0, top, vb.width * scale, vb.height * scale);
+      ctx.fillStyle = '#6b7280'; ctx.font = 10 * scale + 'px Arial, Helvetica, sans-serif';
+      ctx.fillText((d.footer ? d.footer + ' · ' : '') + new Date().toLocaleDateString('de-DE'), 14 * scale, c.height - 12 * scale);
       var a = document.createElement('a'); a.download = id + (type === 'image/jpeg' ? '.jpg' : '.png');
       a.href = c.toDataURL(type, 0.92); a.click();
     };

@@ -52,9 +52,16 @@ def wrap(s: str, size: float, maxw: float) -> list[str]:
     return lines + ([cur] if cur else []) or [""]
 
 
+def rgb(hex_color: str | None) -> tuple[float, float, float]:
+    h = (hex_color or "").lstrip("#")
+    return tuple(int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)) if len(h) == 6 else ACCENT
+
+
 class Doc:
-    def __init__(self, title: str):
+    def __init__(self, title: str, brand: str | None = None, accent: str | None = None, footer: str | None = None):
+        """brand: name in the coloured header band of every page; footer: line at the bottom (provider, notice)."""
         self.title = title
+        self.brand, self.accent, self.footer = brand, rgb(accent), footer
         self.pages: list[list[bytes]] = []
         self.y = 0.0
         self.new_page()
@@ -64,6 +71,10 @@ class Doc:
     def new_page(self) -> None:
         self.pages.append([])
         self.y = H - M
+        if self.brand:  # coloured band with the product name on every page
+            self.rect(0, H - 30, W, 30, self.accent)
+            self.put(M, H - 20, self.brand, 10, bold=True, rgb=(1, 1, 1))
+            self.y = H - M - 14
 
     def need(self, h: float) -> None:
         if self.y - h < M + 20:
@@ -99,7 +110,7 @@ class Doc:
             self.need(h)
             for i, w in enumerate(wrapped):
                 for j, ln in enumerate(w):
-                    self.put(xs[i], self.y - size * 1.2 * (j + 1), ln, size, bold)
+                    self.put(xs[i], self.y - size * 1.2 * (j + 1), ln, size, bold, self.accent if bold else (0, 0, 0))
             self.y -= h
             self.line(M, self.y + 1, W - M, self.y + 1)
 
@@ -119,7 +130,7 @@ class Doc:
         for label, n in data:
             self.y -= 15
             self.put(M, self.y + 3, wrap(label, size, label_w - 8)[0], size)
-            self.rect(M + label_w, self.y + 1, max(1, span * n / top), 10)
+            self.rect(M + label_w, self.y + 1, max(1, span * n / top), 10, self.accent)
             self.put(M + label_w + span * n / top + 5, self.y + 3, f"{n:,}".replace(",", "."), size)
         self.y -= 14
 
@@ -136,7 +147,10 @@ class Doc:
         kids = []
         stamp = dt.date.today().strftime("%d.%m.%Y")
         for i, ops in enumerate(self.pages, 1):
-            foot = b"0.4 0.4 0.4 rg BT /F1 7 Tf %.2f 22 Td (%s) Tj ET" % (M, esc(enc(f"{self.title} · {stamp} · {i}/{len(self.pages)}")))
+            text = f"{self.footer} · " if self.footer else ""
+            foot = (b"0.85 0.87 0.9 RG 0.5 w %.2f 34 m %.2f 34 l S " % (M, W - M) +
+                    b"0.4 0.4 0.4 rg BT /F1 7 Tf %.2f 22 Td (%s) Tj ET" % (
+                        M, esc(enc(f"{text}{self.title} · {stamp} · {i}/{len(self.pages)}"))))
             body = b"\n".join(ops + [foot])
             c = add(b"<< /Length %d >>\nstream\n%s\nendstream" % (len(body), body))
             kids.append(add(b"<< /Type /Page /Parent %d 0 R /MediaBox [0 0 %.2f %.2f] /Contents %d 0 R "

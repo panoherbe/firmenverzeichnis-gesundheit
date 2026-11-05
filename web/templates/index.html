@@ -115,7 +115,7 @@ aside.filters .signin { display:block; margin:14px 4px 0; font-size:13px; }
 <form method="get" action="/" id="sf" role="search" class="hero{% if q or sector or region or tier or size or revenue or product or contact or alle %} compact{% endif %}">
   {% if embed %}<input type="hidden" name="embed" value="1">{% endif %}
   <div class="hero-text">
-    <h1>{{ _("Firmenverzeichnis Gesundheitswirtschaft") }}</h1>
+    {% set th = theme(request) %}<h1>{{ _(th.name) if th.name else _("Firmenverzeichnis Gesundheitswirtschaft") }}</h1>
     <p class="lead">{{ _("Unternehmen der deutschen Gesundheitswirtschaft aus amtlichen Registern") }} (EUDAMED, EMA, GLEIF, CORDIS)</p>
   </div>
   <div class="searchbar">
@@ -126,8 +126,8 @@ aside.filters .signin { display:block; margin:14px 4px 0; font-size:13px; }
   </div>
   <div class="examples">{{ _("Beispiele") }}:
     <a class="ex" href="/?q=Endoskop*{% if embed %}&embed=1{% endif %}">Endoskop*</a>
-    <a class="ex" href="/?q=Implantat ODER Prothese{% if embed %}&embed=1{% endif %}">Implantat ODER Prothese</a>
-    <a class="ex" href="/?q=%22In-vitro%22 NICHT Labor{% if embed %}&embed=1{% endif %}">"In-vitro" NICHT Labor</a>
+    <a class="ex" href="/?q=Implantat* ODER Prothese*{% if embed %}&embed=1{% endif %}">Implantat* ODER Prothese*</a>
+    <a class="ex" href="/?q=%22in vitro%22 NICHT Dental*{% if embed %}&embed=1{% endif %}">"in vitro" NICHT Dental*</a>
     <span class="ex-help"><a href="/hilfe#suche">{{ _("Suchhilfe") }}</a> <a href="#" data-tour-start>{{ _("Kurze Einführung") }}</a></span>
   </div>
   {% set active = [] %}
@@ -139,10 +139,10 @@ aside.filters .signin { display:block; margin:14px 4px 0; font-size:13px; }
    <div class="fcard">
     <div class="fhead" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>{{ _('Filter') }}</div>
     <div class="fgrid">
-    <label for="sector">{{ _("Branche") }}</label>
+    <label for="sector">{{ _("Branche") }} <span class="tip" tabindex="0" data-tip="{{ _('Medizintechnik, Pharma, Biotechnologie, digitale Gesundheit; abgeleitet aus Register (EUDAMED, EMA) und Firmenangaben.') }}">?</span></label>
     <select form="sf" id="sector" name="sector" data-autosubmit><option value="">{{ _("alle") }}</option>
       {% for k, v in SECTORS.items() %}<option value="{{ k }}" {% if sector == k %}selected{% endif %}>{{ _(v) }} ({{ facets.sector.get(k, 0) }})</option>{% endfor %}</select>
-    <label for="region">{{ _("Bundesland") }}</label>
+    <label for="region">{{ _("Bundesland") }} <span class="tip" tabindex="0" data-tip="{{ _('Sitz des Unternehmens laut Register.') }}">?</span></label>
     <select form="sf" id="region" name="region" data-autosubmit><option value="">{{ _("alle") }}</option>
       {% for k, v in REGIONS.items() %}<option value="{{ k }}" {% if region == k %}selected{% endif %}>{{ v }} ({{ facets.region.get(k, 0) }})</option>{% endfor %}</select>
     <label for="product">{{ _("Produktgruppe") }} <span class="tip" tabindex="0" data-tip="{{ _('Europäische Nomenklatur für Medizinprodukte (EMDN) aus den EUDAMED-Registrierungen der Hersteller.') }}">?</span></label>
@@ -151,19 +151,19 @@ aside.filters .signin { display:block; margin:14px 4px 0; font-size:13px; }
     <label for="size">{{ _("Größe (Beschäftigte)") }} <span class="tip" tabindex="0" data-tip="{{ _('EU-KMU-Klassen. Quelle: Angaben der Unternehmen auf ihrer Website, Wikidata und EU-Förderdaten. Nicht für jedes Unternehmen bekannt.') }}">?</span></label>
     <select form="sf" id="size" name="size" data-autosubmit><option value="">{{ _("alle") }}</option>
       {% for k, v in SIZES.items() %}<option value="{{ k }}" {% if size == k %}selected{% endif %}>{{ _(v) }} ({{ facets.size.get(k, 0) }})</option>{% endfor %}</select>
-    <label for="revenue">{{ _("Umsatz") }}{% if REVENUE_LOCKED %} <span aria-hidden="true">🔒</span>{% endif %}</label>
+    <label for="revenue">{{ _("Umsatz") }}{% if REVENUE_LOCKED %} <span aria-hidden="true">🔒</span>{% endif %} <span class="tip" tabindex="0" data-tip="{{ _('Umsatzgrößenklassen; Daten über lizenzierten Datenbezug, Freischaltung zum Vertragsstart.') }}">?</span></label>
     {% if REVENUE_LOCKED %}<select id="revenue" disabled aria-describedby="revenue-note"><option>{{ _("alle") }}</option>
       {% for k, v in REVENUES.items() %}<option>{{ _(v) }}</option>{% endfor %}</select>
     <p class="small" id="revenue-note">{{ _("wird zum Vertragsstart freigeschaltet") }}</p>
     {% else %}<select form="sf" id="revenue" name="revenue" data-autosubmit><option value="">{{ _("alle") }}</option>
       {% for k, v in REVENUES.items() %}<option value="{{ k }}" {% if revenue == k %}selected{% endif %}>{{ _(v) }} ({{ facets.revenue.get(k, 0) }})</option>{% endfor %}</select>{% endif %}
-    <label for="tier">{{ _("Rolle") }}</label>
+    <label for="tier">{{ _("Rolle") }} <span class="tip" tabindex="0" data-tip="{{ _('Rolle im Register: Hersteller bzw. Zulassungsinhaber, Bevollmächtigter oder Importeur.') }}">?</span></label>
     <select form="sf" id="tier" name="tier" data-autosubmit><option value="">{{ _("alle") }}</option>
       {% for k, v in TIERS.items() %}{% if facets.tier.get(k) or tier == k %}<option value="{{ k }}" {% if tier == k %}selected{% endif %}>{{ _(v) }} ({{ facets.tier.get(k, 0) }})</option>{% endif %}{% endfor %}</select>
     </div>
     <div class="fchecks">
-    <label class="chk"><input form="sf" type="checkbox" name="contact" value="true" {% if contact %}checked{% endif %} data-autosubmit> {{ _("nur mit Kontaktweg") }}</label>
-    <label class="chk"><input form="sf" type="checkbox" name="alle" value="true" {% if alle %}checked{% endif %} data-autosubmit> {{ _("auch nicht registergeprüfte") }}</label>
+    <label class="chk"><input form="sf" type="checkbox" name="contact" value="true" {% if contact %}checked{% endif %} data-autosubmit> {{ _("nur mit Kontaktweg") }} <span class="tip" tabindex="0" data-tip="{{ _('Funktionspostfach oder Kontakt-/Impressumsseite des Unternehmens.') }}">?</span></label>
+    <label class="chk"><input form="sf" type="checkbox" name="alle" value="true" {% if alle %}checked{% endif %} data-autosubmit> {{ _("auch nicht registergeprüfte") }} <span class="tip" tabindex="0" data-tip="{{ _('Auch Unternehmen, die nur aus öffentlichen Zuschlägen bekannt und nicht in einem amtlichen Register bestätigt sind.') }}">?</span></label>
     </div>
     <noscript><button form="sf" type="submit" style="margin-top:12px;width:100%">{{ _("Filter anwenden") }}</button></noscript>
    </div>
@@ -181,7 +181,7 @@ aside.filters .signin { display:block; margin:14px 4px 0; font-size:13px; }
 
   <section aria-live="polite">
     <div class="toolbar">
-      <div class="count"><strong class="total">{{ "{:,}".format(total).replace(",", ".") }}</strong> <span>{{ _("Unternehmen") }}</span>
+      <div class="count"><strong class="total">{{ "{:,}".format(total).replace(",", ".") }}</strong> <span>{{ _("Unternehmen in der Auswahl") if gate_enabled else _("Unternehmen") }}</span>
         <label class="sortl">{{ _("Sortierung") }}
           <select name="sort" form="sf" data-autosubmit>
             <option value="rel" {% if sort == 'rel' %}selected{% endif %}>{{ _("Relevanz") }}</option>
@@ -192,7 +192,7 @@ aside.filters .signin { display:block; margin:14px 4px 0; font-size:13px; }
       <div class="exp small" data-tour="{{ _('Die Trefferliste geht als Excel, CSV oder PDF heraus, die Statistik dazu auch als Grafik (JPG/PNG).') }}">{{ _("Treffer als") }}
         <a href="/export.xlsx?{{ qs }}">Excel</a><a href="/export.csv?{{ qs }}">CSV</a><a href="/export.pdf?{{ qs }}">PDF</a>
         <a href="/statistik?{{ qs }}">{{ _("Statistik") }}</a><a href="/api/v1/companies?{{ qs }}">JSON</a></div>
-      {% if gate_enabled %}<p class="small" style="margin:4px 0 0">{{ _("Vorschau-Exporte: bis zu {n} Zeilen je Datei, im Vertrag vollständig.").format(n=PREVIEW_ROWS) }}</p>{% endif %}
+      {% if gate_enabled %}<p class="small" style="margin:4px 0 0">{{ _("Vorschau: Exporte mit der Auswahl; Kontakt- und Registerangaben bei einem Teil vollständig, Gesamtbestand im Vertrag.") }}</p>{% endif %}
     </div>
     {% if user and (q or sector or region or tier or size or revenue or product or contact) %}
     <form method="post" action="/konto/suche" class="savesearch noprint">

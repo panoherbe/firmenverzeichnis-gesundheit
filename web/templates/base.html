@@ -40,6 +40,6 @@
 {{ _("und öffentlichen Auftragsbekanntmachungen.") }} {{ _("Im Verzeichnis keine personenbezogenen Daten.") }}
 {{ _("Anbieter") }}: {{ OPERATOR.name }}, {{ OPERATOR.address }}, <a href="mailto:{{ OPERATOR.email }}">{{ OPERATOR.email }}</a> · <a href="{{ OPERATOR.imprint_url }}" rel="noopener">{{ _("Impressum") }}</a> · <a href="/datenschutz">{{ _("Datenschutz") }}</a>{% if not gate_locked(request) %} · <a href="/quellen{% if embed %}?embed=1{% endif %}">{{ _("Quellen & Lizenzen") }}</a> · <a href="/support">{{ _("Support") }}</a> · <a href="/status">{{ _("Status") }}</a> · <a href="/hilfe">{{ _("Hilfe") }}</a>{% endif %}</div></footer>
 <div id="tour" role="dialog" aria-live="polite"></div>
-<script src="/static/app.js" defer></script>
+<script src="/static/app.js?v=20261105d" defer></script>
 </body>
 </html>

@@ -51,10 +51,11 @@
 <div>
 <div class="card contact" style="margin-bottom:16px">
   <strong>{{ _("Kontaktweg") }}</strong><br>
+  {% if c.preview_locked %}<div class="hint locked" style="margin:6px 0"><span aria-hidden="true">🔒</span> {{ _("Kontaktseite und Funktionspostfach") }}: {{ _("im Vertrag") }}</div>{% endif %}
   {% if c.contact_url %}<a class="btn" href="{{ c.contact_url }}" rel="noopener nofollow" target="_blank">{{ _("Kontaktseite") }} ↗</a>{% endif %}
   {% if c.website %}<a class="btn ghost" href="{{ c.website }}" rel="noopener nofollow" target="_blank">{{ c.domain }} ↗</a>{% endif %}
   {% if c.email_role %}<a class="btn ghost" href="mailto:{{ c.email_role }}">{{ c.email_role }}</a>{% endif %}
-  {% if not (c.contact_url or c.email_role) %}<div class="hint" style="margin-top:6px">{{ _("Kontaktweg fehlt: keine Kontaktseite und kein Funktionspostfach gefunden. Wird bei jeder Aktualisierung neu gesucht.") }}</div>{% endif %}
+  {% if not (c.contact_url or c.email_role or c.preview_locked) %}<div class="hint" style="margin-top:6px">{{ _("Kontaktweg fehlt: keine Kontaktseite und kein Funktionspostfach gefunden. Wird bei jeder Aktualisierung neu gesucht.") }}</div>{% endif %}
   <div class="small" style="margin-top:6px">{{ _("Nur Funktionspostfächer und Kontaktseiten der Unternehmen, keine persönlichen Daten.") }}</div>
 </div>
 <div class="card facts"><dl class="kv">
@@ -68,10 +69,14 @@
       {% if c.employees_source %}<br><span class="small">{{ _("Quelle") }}: {{ _(c.employees_source) }}</span>{% endif %}</dd>{% endif %}
   {% if REVENUE_LOCKED %}<dt>{{ _("Umsatzklasse") }}</dt><dd class="locked"><span aria-hidden="true">🔒</span> {{ _("wird zum Vertragsstart freigeschaltet") }}</dd>
   {% elif c.revenue_class %}<dt>{{ _("Umsatzklasse") }}</dt><dd>{{ _(REVENUES[c.revenue_class]) }}</dd>{% endif %}
+  {% if c.preview_locked %}
+  {% for label in [_("USt-IdNr."), _("Handelsregister"), "LEI", "EUDAMED SRN"] %}<dt>{{ label }}</dt><dd class="locked"><span aria-hidden="true">🔒</span> {{ _("im Vertrag") }}</dd>{% endfor %}
+  {% else %}
   <dt>{{ _("USt-IdNr.") }}</dt><dd>{{ c.vat or "–" }}</dd>
   <dt>{{ _("Handelsregister") }}</dt><dd>{{ c.register_no or "–" }}</dd>
   <dt>LEI</dt><dd>{% if c.lei %}<a href="https://search.gleif.org/#/record/{{ c.lei }}" target="_blank" rel="noopener">{{ c.lei }}</a>{% else %}–{% endif %}</dd>
   <dt>EUDAMED SRN</dt><dd>{{ c.srns | join(", ") or "–" }}</dd>
+  {% endif %}
   <dt>{{ _("Öffentliche Aufträge") }}</dt><dd>{% if c.public_awards %}{{ c.public_awards }} {{ _("Bekanntmachung") if c.public_awards == 1 else _("Bekanntmachungen") }}, {{ c.public_buyers }} {{ _("Auftraggeber") }}, {{ _("zuletzt") }} {{ c.public_last_award.strftime("%d.%m.%Y") if c.public_last_award else "–" }}{% else %}–{% endif %}</dd>
   <dt>{{ _("Begründung Branche") }}</dt><dd class="small">{% for k, v in c.sector_evidence.items() %}{{ _(SECTORS[k]) }}: {{ v | join(", ") }}<br>{% endfor %}</dd>
 </dl></div>

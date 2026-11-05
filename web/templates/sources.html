@@ -8,7 +8,7 @@
 <tbody>
 {% for r in rows %}
 <tr><td><a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title }}</a><br><span class="small">{{ r.note or "" }}</span></td>
-<td>{% if r.id == "gleif" %}{{ gleif }}{% else %}{{ r.n }}{% endif %}</td><td class="small">{{ r.licence }}</td><td class="small">{{ r.attribution }}</td></tr>
+<td>{% if gate_enabled %}{{ _("Auswahl") }}{% elif r.id == "gleif" %}{{ gleif }}{% else %}{{ r.n }}{% endif %}</td><td class="small">{{ r.licence }}</td><td class="small">{{ r.attribution }}</td></tr>
 {% endfor %}
 </tbody>
 </table>
