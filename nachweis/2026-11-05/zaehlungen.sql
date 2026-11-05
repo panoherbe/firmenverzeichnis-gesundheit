@@ -8,6 +8,9 @@ SELECT count(*) FILTER (WHERE email_role IS NOT NULL OR contact_url IS NOT NULL)
        count(*) FILTER (WHERE email_role IS NULL AND contact_url IS NULL AND website IS NOT NULL),
        count(*) FILTER (WHERE email_role IS NULL AND contact_url IS NULL AND website IS NULL),
        count(*) FILTER (WHERE contact_url IS NOT NULL) FROM company WHERE verified AND hidden_reason IS NULL;
+\echo 'contact path split: register role mailbox (mail server checked) | checked contact/imprint page | both'
+SELECT count(*) FILTER (WHERE email_role IS NOT NULL), count(*) FILTER (WHERE contact_url IS NOT NULL),
+       count(*) FILTER (WHERE email_role IS NOT NULL AND contact_url IS NOT NULL) FROM company WHERE verified AND hidden_reason IS NULL;
 \echo 'verified with size class | with product identifier (EMDN group or EMA product) | EMDN | EMA | employee figure (all)'
 SELECT count(*) FILTER (WHERE verified AND size_class IS NOT NULL),
        count(*) FILTER (WHERE verified AND (cardinality(emdn_groups) > 0 OR cardinality(products) > 0)),

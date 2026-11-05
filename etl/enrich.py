@@ -44,6 +44,8 @@ ALTER TABLE company ADD COLUMN IF NOT EXISTS revenue_class text;
 ALTER TABLE company ADD COLUMN IF NOT EXISTS device_count int;
 ALTER TABLE company ADD COLUMN IF NOT EXISTS emdn jsonb;
 ALTER TABLE company ADD COLUMN IF NOT EXISTS emdn_groups text[];
+ALTER TABLE company ADD COLUMN IF NOT EXISTS emdn_source text;
+ALTER TABLE company ADD COLUMN IF NOT EXISTS emdn_evidence text;
 ALTER TABLE company ADD COLUMN IF NOT EXISTS markets text[];
 ALTER TABLE company ADD COLUMN IF NOT EXISTS products text[];
 CREATE TABLE IF NOT EXISTS site_check (company_id text, checked date, ok boolean, PRIMARY KEY (company_id, checked));
@@ -56,6 +58,8 @@ EMP = re.compile(rf"(?:(über|mehr als|rund|ca\.?|circa|etwa|knapp|more than|ove
                  rf"{EMP_WORDS}\b", re.I)
 GROUP = re.compile(r"weltweit|worldwide|global|gruppe|group|konzern|international", re.I)
 YEAR = re.compile(r"\b(19[5-9]\d|20[0-2]\d)\b")
+RATIO = re.compile(r"\d\s*(?:in|von|of|out of)\s*$|\d\s*[–-]\s*$", re.I)
+JOB = re.compile(r"Aufgaben|Stellenangebot|wir suchen|your tasks", re.I)
 NOW = re.compile(r"heute|today|derzeit|currently|aktuell|inzwischen|mittlerweile|\bnow\b", re.I)
 TAG = re.compile(r"<(script|style|noscript)[^>]*>.*?</\1>|<[^>]+>", re.I | re.S)
 
@@ -75,6 +79,13 @@ def employees_from(text: str) -> tuple[int, str, bool] | None:
             continue
         before = text[max(0, m.start() - 90): m.start()]
         if YEAR.search(before) and not NOW.search(before):  # company history ("2004 … 10 Mitarbeiter") is not today
+            continue
+        # misreads found by hand on 2026-11-05 (14 companies under 10 employees, 7 wrong): ratios ("1 in 4 people"),
+        # ranges in job ads ("ein Team von 2–5 Mitarbeitenden"), decimals ("SEKbn 138,5 Employees"), and a history
+        # sentence whose year comes after the figure ("… 3 Mitarbeitern entwickelt und es stand 2003 …")
+        if RATIO.search(before) or JOB.search(before[-60:]) or re.search(r"\d[.,]$", before):
+            continue
+        if YEAR.search(text[m.end(): m.end() + 60]) and not NOW.search(before):
             continue
         ctx = text[max(0, m.start() - 80): m.end() + 40]
         group = bool(GROUP.search(ctx))
@@ -128,7 +139,26 @@ def main() -> None:
         # a device list without EMDN codes in the sampled details gives no product groups: NULL, not an empty array
         up[cid].update(device_count=a["n"], emdn=json.dumps([[c, a["text"][c]] for c in codes]) if codes else None,
                        emdn_groups=sorted({c[0] for c in codes}) or None, markets=sorted(a["markets"])[:30] or None)
+    for u in up.values():
+        if u.get("emdn_groups"):
+            u["emdn_source"] = "eudamed"
     print(f"  devices: {len(recs)} SRN records, {len(agg)} companies with device data")
+
+    # product group derived from the own website by the classifier (etl.product_model), only where EUDAMED has none;
+    # kept apart by emdn_source = 'website' and shown as derived, with the measured precision
+    try:
+        pred = json.loads(open("var/product/pred.json").read())
+        meta = pred.pop("_meta")
+        n_pred = 0
+        for cid, p in pred.items():
+            if cid in up and not up[cid].get("emdn_groups"):
+                up[cid].update(emdn_groups=[p["g"]], emdn_source="website",
+                               emdn_evidence=f"{', '.join(p['words'])} · Trefferquote {round(100 * meta['cv_precision'])} % "
+                                             f"(Prüfung an {meta['cv_kept']} Firmen mit EUDAMED-Angabe, {meta['date']})")
+                n_pred += 1
+        print(f"  product groups derived from websites: {n_pred}")
+    except FileNotFoundError:
+        pass
 
     # websites
     try:
@@ -184,6 +214,37 @@ def main() -> None:
     except FileNotFoundError:
         pass
 
+    # strict re-check of every counted contact path (etl.sources.contact_recheck, 2026-11-05): from then on only
+    # contact pages that passed it count, and a role mailbox whose domain does not name the company is dropped
+    dead_mail: list[str] = []
+    try:
+        rdir = latest_dir("contact_recheck")
+        n_ok = 0
+        recs = {}
+        for name in ("recheck.jsonl", "recheck2.jsonl"):  # the slower second pass overrides the first
+            if (rdir / name).exists():
+                recs.update({r["cid"]: r for r in map(json.loads, (rdir / name).open())})
+        for r in recs.values():
+            if r["cid"] not in up:
+                continue
+            u = up[r["cid"]]
+            u["contact_url"] = r["url"] if r["ok"] and r["kind"] == "contact" else None
+            n_ok += r["ok"] and r["kind"] == "contact"
+        print(f"  contact recheck: {n_ok} contact or imprint pages passed")
+    except FileNotFoundError:
+        pass
+    # a register role mailbox counts on its own (LB: "mindestens eine E-Mail-Adresse oder ein Verweis auf die
+    # Kontaktseite"); it is dropped only when its domain measurably cannot receive mail (etl.sources.mail_mx)
+    try:
+        dead = {r["domain"] for r in map(json.loads, (latest_dir("mail_mx") / "mx.jsonl").open())
+                if r["status"] == "NXDOMAIN" or (r["status"] == "ok" and not r["mx"] and not r["a"])}
+        dead_mail = [cid for cid, mail in conn.execute(
+            "SELECT id, email_role FROM company WHERE email_role IS NOT NULL").fetchall()
+            if mail.split("@")[1].lower() in dead]
+        print(f"  mail domains without mail server: {len(dead)} ({len(dead_mail)} companies)")
+    except FileNotFoundError:
+        pass
+
     # EMA products
     for cid, names in conn.execute("""
             SELECT m.company_id, array_agg(DISTINCT p) FROM company_member m
@@ -192,11 +253,14 @@ def main() -> None:
         up[cid]["products"] = sorted(names)[:20]
 
     cols = ["contact_url", "site_ok", "site_checked", "employees", "employees_source", "employees_evidence", "size_class",
-            "revenue_eur", "revenue_class", "device_count", "emdn", "emdn_groups", "markets", "products"]
+            "revenue_eur", "revenue_class", "device_count", "emdn", "emdn_groups", "emdn_source", "emdn_evidence",
+            "markets", "products"]
     conn.execute("UPDATE company SET " + ", ".join(f"{c} = NULL" for c in cols))
     with conn.cursor() as cur:
         cur.executemany("UPDATE company SET " + ", ".join(f"{c} = %({c})s" for c in cols) + " WHERE id = %(id)s",
                         [{**{c: u.get(c) for c in cols}, "id": cid} for cid, u in up.items() if u])
+    if dead_mail:
+        conn.execute("UPDATE company SET email_role = NULL WHERE id = ANY(%s)", (dead_mail,))
     # placeholder postcodes from procurement notices ("99999", "00000") are not addresses
     conn.execute("UPDATE company SET post_code = NULL WHERE post_code IN ('00000', '99999')")
     # city names without umlauts ("Munchen", "Muenchen" from GLEIF/EUDAMED) take the umlaut spelling that the

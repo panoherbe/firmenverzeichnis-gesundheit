@@ -42,6 +42,9 @@ TIERS = {"A": "Hersteller / Zulassungsinhaber", "B": "Bevollmächtigte / Importe
 SIZES = {"micro": "Kleinst (< 10 Beschäftigte)", "small": "Klein (10–49)", "medium": "Mittel (50–249)",
          "large": "Groß (ab 250)"}
 REVENUES = {"r1": "bis 2 Mio. €", "r2": "2–10 Mio. €", "r3": "10–50 Mio. €", "r4": "über 50 Mio. €"}
+# revenue classes come from licensed data that is switched on at contract start; until then filter and field are shown
+# locked, with no values anywhere (page, export, API). REVENUE_UNLOCKED=1 once the licensed data are loaded.
+REVENUE_LOCKED = os.environ.get("REVENUE_UNLOCKED") != "1"
 EMDN = {"A": "Verabreichung, Entnahme, Sammlung", "B": "Hämatologie und Transfusion", "C": "Herz-Kreislauf",
         "D": "Desinfektion und Sterilisation", "F": "Dialyse", "G": "Gastroenterologie und Urologie",
         "H": "Naht- und Wundversorgung", "J": "Aktive Implantate", "K": "Minimalinvasive Chirurgie",
@@ -57,7 +60,7 @@ REGIONS = {"DE-BW": "Baden-Württemberg", "DE-BY": "Bayern", "DE-BE": "Berlin", 
            "DE-SL": "Saarland", "DE-SN": "Sachsen", "DE-ST": "Sachsen-Anhalt", "DE-SH": "Schleswig-Holstein",
            "DE-TH": "Thüringen"}
 EXPORT_FIELDS = ["id", "name", "legal_form", "street", "post_code", "city", "region", "website", "contact_url",
-                 "email_role", "vat", "register_no", "lei", "srns", "sectors", "emdn_groups", "size_class",
+                 "email_role", "vat", "register_no", "lei", "srns", "sectors", "emdn_groups", "emdn_source", "size_class",
                  "employees", "tier", "public_awards", "public_last_award", "verified", "sources"]
 PUBLIC_FIELDS = EXPORT_FIELDS + ["sector_evidence", "roles", "verified_reason", "public_buyers", "emdn",
                                  "device_count", "markets", "employees_source", "revenue_class"]
@@ -69,7 +72,9 @@ APP_EN = {
     "Suche": "Search", "Statistik": "Statistics", "Hilfe": "Help", "Quellen & Lizenzen": "Sources & licences",
     "Matchmaking": "Matchmaking", "Support": "Support", "API": "API",
     "Suchbegriff": "Search term", "Branche": "Sector", "Rolle": "Role", "Bundesland": "Federal state",
-    "Größe (Beschäftigte)": "Size (employees)", "Umsatz": "Revenue", "Produktgruppe": "Product group",
+    "Größe (Beschäftigte)": "Size (employees)", "Umsatz": "Revenue",
+    "wird zum Vertragsstart freigeschaltet": "switched on at contract start", "Produktgruppe (EMDN)": "Product group (EMDN)",
+    "abgeleitet aus der eigenen Website": "derived from the company's own website", "Umsatzklassen: wird zum Vertragsstart freigeschaltet.": "Revenue classes: switched on at contract start.", "Umsatzklasse": "Revenue class", "Produktgruppe": "Product group",
     "alle": "all", "Suchen": "Search", "Zurücksetzen": "Reset", "Unternehmen": "Companies",
     "Ort": "Location", "Öff. Aufträge": "Public contracts", "Keine Treffer.": "No results.",
     "auch nicht registergeprüfte": "include not register-verified", "nur mit Kontaktweg": "only with contact path",
@@ -152,7 +157,8 @@ app = FastAPI(
 app.mount("/static", StaticFiles(directory=str(Path(__file__).parent / "static")), name="static")
 if (Path(__file__).parent.parent / "medien").is_dir():  # walkthrough video and screenshots (help page)
     app.mount("/medien", StaticFiles(directory=str(Path(__file__).parent.parent / "medien")), name="medien")
-templates.env.globals.update(SECTORS=SECTORS, TIERS=TIERS, REGIONS=REGIONS, SIZES=SIZES, REVENUES=REVENUES, EMDN=EMDN)
+templates.env.globals.update(SECTORS=SECTORS, TIERS=TIERS, REGIONS=REGIONS, SIZES=SIZES, REVENUES=REVENUES, EMDN=EMDN,
+                             REVENUE_LOCKED=REVENUE_LOCKED)
 templates.env.globals["current_user"] = auth.current_user
 templates.env.globals["theme"] = theme
 templates.env.filters["urldecode"] = unquote_plus
@@ -234,7 +240,7 @@ def where(q=None, sector=None, tier=None, region=None, size=None, revenue=None, 
     if size in SIZES:
         clauses.append("size_class = %(size)s")
         params["size"] = size
-    if revenue in REVENUES:
+    if revenue in REVENUES and not REVENUE_LOCKED:
         clauses.append("revenue_class = %(revenue)s")
         params["revenue"] = revenue
     if product in EMDN:
@@ -268,6 +274,10 @@ def search(f: dict, limit: int, offset: int, fields: str = "*", order: str = "re
     for x in facets:
         if x["value"]:
             fc[x["kind"]][x["value"]] = x["n"]
+    if REVENUE_LOCKED:
+        fc.pop("revenue")
+        for r in rows:
+            r.pop("revenue_class", None)
     return total, rows, fc
 
 
@@ -438,6 +448,8 @@ def api_one(cid: str):
         c = conn.execute("SELECT * FROM company WHERE id = %s AND hidden_reason IS NULL", (cid,)).fetchone()
     if not c:
         raise HTTPException(404)
+    if REVENUE_LOCKED:
+        c = {k: v for k, v in c.items() if k not in ("revenue_eur", "revenue_class")}
     return clean(c)
 
 

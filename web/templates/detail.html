@@ -60,11 +60,14 @@
 <div class="card facts"><dl class="kv">
   <dt>{{ _("Rechtsform") }}</dt><dd>{{ c.legal_form or "–" }}</dd>
   <dt>{{ _("Anschrift") }}</dt><dd>{{ c.street or "" }}{% if c.street %}, {% endif %}{{ c.post_code or "" }} {{ c.city or "" }}{% if c.region %} ({{ REGIONS.get(c.region, c.region) }}){% endif %}</dd>
+  {% if c.emdn_source == "website" and c.emdn_groups %}<dt>{{ _("Produktgruppe (EMDN)") }}</dt><dd><span class="tag">{{ c.emdn_groups[0] }}</span> {{ _(EMDN.get(c.emdn_groups[0], c.emdn_groups[0])) }}<br><span class="small">{{ _("abgeleitet aus der eigenen Website") }}: {{ c.emdn_evidence }}</span></dd>{% endif %}
   {% if c.emdn %}<dt>{{ _("Produkte (EMDN)") }}</dt><dd>{% for code, text in c.emdn[:8] %}<span class="tag" title="{{ text }}">{{ code }}</span> <span class="small">{{ text | lower }}</span><br>{% endfor %}</dd>{% endif %}
   {% if c.device_count %}<dt>{{ _("Medizinprodukte in EUDAMED") }}</dt><dd>{{ c.device_count }}{% if c.markets %} · {{ _("erhältlich in") }} {{ c.markets | join(", ") }}{% endif %}</dd>{% endif %}
   {% if c.products %}<dt>{{ _("Arzneimittel (Auswahl)") }}</dt><dd>{{ c.products[:10] | join(", ") }}</dd>{% endif %}
   {% if c.size_class or c.employees %}<dt>{{ _("Größenklasse") }}</dt><dd>{% if c.size_class %}{{ _(SIZES[c.size_class]) }}{% endif %}{% if c.employees %} · {{ _("rund") }} {{ "{:,}".format(c.employees).replace(",", ".") }} {{ _("Beschäftigte") }}{% endif %}
       {% if c.employees_source %}<br><span class="small">{{ _("Quelle") }}: {{ _(c.employees_source) }}</span>{% endif %}</dd>{% endif %}
+  {% if REVENUE_LOCKED %}<dt>{{ _("Umsatzklasse") }}</dt><dd class="locked"><span aria-hidden="true">🔒</span> {{ _("wird zum Vertragsstart freigeschaltet") }}</dd>
+  {% elif c.revenue_class %}<dt>{{ _("Umsatzklasse") }}</dt><dd>{{ _(REVENUES[c.revenue_class]) }}</dd>{% endif %}
   <dt>{{ _("USt-IdNr.") }}</dt><dd>{{ c.vat or "–" }}</dd>
   <dt>{{ _("Handelsregister") }}</dt><dd>{{ c.register_no or "–" }}</dd>
   <dt>LEI</dt><dd>{% if c.lei %}<a href="https://search.gleif.org/#/record/{{ c.lei }}" target="_blank" rel="noopener">{{ c.lei }}</a>{% else %}–{% endif %}</dd>

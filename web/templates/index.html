@@ -151,9 +151,12 @@ aside.filters .signin { display:block; margin:14px 4px 0; font-size:13px; }
     <label for="size">{{ _("Größe (Beschäftigte)") }} <span class="tip" tabindex="0" data-tip="{{ _('EU-KMU-Klassen. Quelle: Angaben der Unternehmen auf ihrer Website, Wikidata und EU-Förderdaten. Nicht für jedes Unternehmen bekannt.') }}">?</span></label>
     <select form="sf" id="size" name="size" data-autosubmit><option value="">{{ _("alle") }}</option>
       {% for k, v in SIZES.items() %}<option value="{{ k }}" {% if size == k %}selected{% endif %}>{{ _(v) }} ({{ facets.size.get(k, 0) }})</option>{% endfor %}</select>
-    <label for="revenue">{{ _("Umsatz") }}</label>
-    <select form="sf" id="revenue" name="revenue" data-autosubmit><option value="">{{ _("alle") }}</option>
-      {% for k, v in REVENUES.items() %}<option value="{{ k }}" {% if revenue == k %}selected{% endif %}>{{ _(v) }} ({{ facets.revenue.get(k, 0) }})</option>{% endfor %}</select>
+    <label for="revenue">{{ _("Umsatz") }}{% if REVENUE_LOCKED %} <span aria-hidden="true">🔒</span>{% endif %}</label>
+    {% if REVENUE_LOCKED %}<select id="revenue" disabled aria-describedby="revenue-note"><option>{{ _("alle") }}</option>
+      {% for k, v in REVENUES.items() %}<option>{{ _(v) }}</option>{% endfor %}</select>
+    <p class="small" id="revenue-note">{{ _("wird zum Vertragsstart freigeschaltet") }}</p>
+    {% else %}<select form="sf" id="revenue" name="revenue" data-autosubmit><option value="">{{ _("alle") }}</option>
+      {% for k, v in REVENUES.items() %}<option value="{{ k }}" {% if revenue == k %}selected{% endif %}>{{ _(v) }} ({{ facets.revenue.get(k, 0) }})</option>{% endfor %}</select>{% endif %}
     <label for="tier">{{ _("Rolle") }}</label>
     <select form="sf" id="tier" name="tier" data-autosubmit><option value="">{{ _("alle") }}</option>
       {% for k, v in TIERS.items() %}{% if facets.tier.get(k) or tier == k %}<option value="{{ k }}" {% if tier == k %}selected{% endif %}>{{ _(v) }} ({{ facets.tier.get(k, 0) }})</option>{% endif %}{% endfor %}</select>
