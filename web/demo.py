@@ -21,12 +21,13 @@ from web import auth
 from web.common import db, register, templates
 
 ENABLED = os.environ.get("DEMO_LOGIN") == "1"
+ORG = os.environ.get("DEMO_ORG", "")  # optional name of the evaluating organisation shown on the buttons
 ACCOUNTS = {"nutzerin": ("demo@example.org", "/konto"), "veranstalterin": ("demo-admin@example.org", "/matchmaking/admin")}
 DEMO_EMAILS = {e for e, _ in ACCOUNTS.values()}
 BLOCKED = ("/admin/nutzer", "/admin/support")
 
 register({
-    "Testzugang": "Test access", "Als GTAI-Nutzerin testen": "Test as a GTAI user",
+    "Testzugang": "Test access", "Als Nutzerin testen": "Test as a user",
     "Als Veranstalterin testen": "Test as event organiser",
     "Ein Klick meldet ein Demo-Konto an. Kein Passwort nötig.": "One click signs in a demo account. No password needed.",
     "In zwei Minuten": "In two minutes",
@@ -48,7 +49,7 @@ router = APIRouter()
 def test_page(request: Request):
     if not ENABLED:
         raise HTTPException(404)
-    resp = templates.TemplateResponse(request, "test.html", dict(embed=False))
+    resp = templates.TemplateResponse(request, "test.html", dict(embed=False, org=ORG))
     resp.headers["X-Robots-Tag"] = "noindex, nofollow"
     return resp
 

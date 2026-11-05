@@ -11,7 +11,7 @@
 <div class="tz">
 <h1>{{ _("Testzugang") }}</h1>
 <p>{{ _("Ein Klick meldet ein Demo-Konto an. Kein Passwort nötig.") }}</p>
-<form method="post" action="/test/anmelden"><input type="hidden" name="als" value="nutzerin"><button>{{ _("Als GTAI-Nutzerin testen") }}</button></form>
+<form method="post" action="/test/anmelden"><input type="hidden" name="als" value="nutzerin"><button>{% if org %}{{ _("Als Nutzerin testen") | replace("Nutzerin", org ~ "-Nutzerin") | replace("user", org ~ " user") }}{% else %}{{ _("Als Nutzerin testen") }}{% endif %}</button></form>
 <form method="post" action="/test/anmelden"><input type="hidden" name="als" value="veranstalterin"><button class="ghost">{{ _("Als Veranstalterin testen") }}</button></form>
 <h2>{{ _("In zwei Minuten") }}</h2>
 <ol>
