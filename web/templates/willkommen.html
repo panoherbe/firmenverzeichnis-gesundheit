@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Willkommen") }}{% endblock %}
+{% block css %}
+.wk { max-width:900px; margin:20px auto; }
+.wk .btns form { display:inline-block; margin:6px 10px 6px 0; }
+.wk .btns button { font-size:17px; padding:14px 22px; }
+.wk .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:12px; margin-top:12px; }
+.wk .grid a.card { text-decoration:none; color:var(--fg); display:block; }
+.wk .grid a.card:hover { border-color:var(--accent); }
+.wk .grid .k { font-size:12px; color:var(--muted); }
+{% endblock %}
+{% block main %}
+<meta name="robots" content="noindex, nofollow">
+<div class="wk">
+<h1>{{ _("Willkommen") }}{% if demo_org %}, {{ demo_org }}{% endif %}</h1>
+{% if welcome %}<p class="lead">{{ welcome }}</p>{% endif %}
+<p>{{ _("Ihr persönlicher Zugang ist aktiv (30 Tage auf diesem Gerät). Alles läuft ohne Passwort; ein Klick meldet ein Demo-Konto an.") }}</p>
+<div class="btns">
+  <form method="post" action="/test/anmelden"><input type="hidden" name="als" value="nutzerin"><button>{{ _("Als Nutzerin testen") }}</button></form>
+  <form method="post" action="/test/anmelden"><input type="hidden" name="als" value="veranstalterin"><button class="ghost">{{ _("Als Veranstalterin testen") }}</button></form>
+</div>
+<h2>{{ _("Direkt zu dem, was Sie prüfen") }}</h2>
+<div class="grid">
+  <a class="card" href="/?q=Endoskop*&region=DE-BW"><span class="k">{{ _("Suche, Filter, Boolesche Operatoren") }}</span><br><strong>„Endoskop*“ · Baden-Württemberg</strong></a>
+  <a class="card" href="/?q=%28Implantat%20ODER%20Prothese%29%20NICHT%20Dental&sector=medtech"><span class="k">{{ _("Kombinierte Suche") }}</span><br><strong>(Implantat ODER Prothese) NICHT Dental</strong></a>
+  <a class="card" href="/?product=W&contact=true"><span class="k">{{ _("Produktgruppe, Kontaktweg") }}</span><br><strong>{{ _("In-vitro-Diagnostika mit Kontaktweg") }}</strong></a>
+  <a class="card" href="/statistik?sector=medtech"><span class="k">{{ _("Export Daten und Grafiken") }}</span><br><strong>{{ _("Statistik, JPG/PNG, PDF") }}</strong></a>
+  <a class="card" href="/export.xlsx?q=Endoskop*"><span class="k">{{ _("Export") }}</span><br><strong>Excel</strong> · <span class="small">CSV, PDF, JSON {{ _("in der Trefferliste") }}</span></a>
+  <a class="card" href="/?lang=en"><span class="k">{{ _("Englisch") }}</span><br><strong>{{ _("Oberfläche und Profile auf Englisch") }}</strong></a>
+  <a class="card" href="/?embed=1"><span class="k">{{ _("Einbettung (iframe)") }}</span><br><strong>{{ _("Ansicht ohne Seitenrahmen") }}</strong></a>
+  <a class="card" href="/api/docs"><span class="k">{{ _("Dokumentierte API") }}</span><br><strong>/api/docs · /openapi.json</strong></a>
+  <a class="card" href="/matchmaking"><span class="k">{{ _("Matchmaking") }}</span><br><strong>{{ _("Beispielveranstaltung") }}</strong></a>
+  <a class="card" href="/hilfe"><span class="k">{{ _("Servicefunktionen") }}</span><br><strong>{{ _("Hilfe, Glossar, Video, Einführung") }}</strong></a>
+  <a class="card" href="/support"><span class="k">{{ _("Support und SLA") }}</span><br><strong>{{ _("Ticketformular, Statusseite") }}</strong></a>
+  <a class="card" href="/datenschutz"><span class="k">{{ _("Datenschutz") }}</span><br><strong>{{ _("Hinweise nach Art. 13 DSGVO") }}</strong></a>
+</div>
+<p class="small" style="margin-top:16px">{{ _("Nur Demodaten. Was Sie eintragen, sehen alle Testenden bis zum nächtlichen Zurücksetzen. Bitte keine echten Personendaten eingeben.") }}</p>
+</div>
+{% endblock %}

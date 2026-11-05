@@ -1,25 +1,35 @@
 {% extends "base.html" %}
 {% block title %}{{ _("Testzugang") }}{% endblock %}
 {% block css %}
-.tz { max-width:720px; margin:20px auto; }
-.tz form { display:inline-block; margin:6px 10px 6px 0; }
-.tz button { font-size:17px; padding:14px 22px; }
-.tz ol li { margin:8px 0; }
+.tz { max-width:760px; margin:8px auto; }
+.tz .tzcard { padding:34px 34px 28px; border-radius:calc(var(--radius-lg) + 4px); box-shadow:var(--shadow);
+  background: radial-gradient(800px 260px at 100% 0%, var(--accent-tint), transparent 65%), var(--bg); }
+.tz h1 { margin-top:0; }
+.tz .lead { font-size:17px; color:var(--muted); }
+.tz form { display:inline-block; margin:8px 10px 4px 0; }
+.tz button { font-size:16px; padding:14px 24px; min-height:52px; }
+.tz ol { counter-reset:t; list-style:none; padding:0; margin:0; }
+.tz ol li { counter-increment:t; position:relative; margin:0 0 10px; padding:14px 16px 14px 56px; background:var(--bg); border:1px solid var(--line); border-radius:var(--radius-lg); }
+.tz ol li::before { content:counter(t); position:absolute; left:16px; top:13px; width:26px; height:26px; border-radius:50%; background:var(--accent-soft); color:var(--accent); font-weight:700; font-size:13px; display:grid; place-items:center; }
+.tz .fine { margin-top:18px; }
+@media (max-width:760px) { .tz .tzcard { padding:22px 18px; } .tz form { display:block; margin-right:0; } .tz button { width:100%; } }
 {% endblock %}
 {% block main %}
 <meta name="robots" content="noindex, nofollow">
 <div class="tz">
+<div class="card tzcard">
 <h1>{{ _("Testzugang") }}</h1>
-<p>{{ _("Ein Klick meldet ein Demo-Konto an. Kein Passwort nötig.") }}</p>
+<p class="lead">{{ _("Ein Klick meldet ein Demo-Konto an. Kein Passwort nötig.") }}</p>
 <form method="post" action="/test/anmelden"><input type="hidden" name="als" value="nutzerin"><button>{% if org %}{{ _("Als Nutzerin testen") | replace("Nutzerin", org ~ "-Nutzerin") | replace("user", org ~ " user") }}{% else %}{{ _("Als Nutzerin testen") }}{% endif %}</button></form>
 <form method="post" action="/test/anmelden"><input type="hidden" name="als" value="veranstalterin"><button class="ghost">{{ _("Als Veranstalterin testen") }}</button></form>
+</div>
 <h2>{{ _("In zwei Minuten") }}</h2>
 <ol>
   <li>{{ _("Gespeicherte Suche: oben „Endoskop*“ suchen, links „Baden-Württemberg“ wählen, über der Liste „Suche speichern“.") }}</li>
   <li>{{ _("Export: „Treffer als Excel“ oder „Statistik“ und dort eine Grafik als JPG.") }}</li>
   <li>{{ _("Matchmaking: als Veranstalterin die Beispielveranstaltung öffnen, Reiter „Gespräche“ und „Auswertung“.") }}</li>
 </ol>
-<p class="small">{{ _("Nur Demodaten. Änderungen werden jede Nacht zurückgesetzt. Nutzerverwaltung und Protokolle sind für Demo-Konten gesperrt.") }}
+<p class="small fine">{{ _("Nur Demodaten. Änderungen werden jede Nacht zurückgesetzt. Nutzerverwaltung und Protokolle sind für Demo-Konten gesperrt.") }}
   {{ _("Was Sie hier eintragen (auch eine Anmeldung zur Beispielveranstaltung), sehen alle Testenden bis zum nächtlichen Zurücksetzen. Bitte keine echten Personendaten eingeben.") }}</p>
 </div>
 {% endblock %}

@@ -152,13 +152,20 @@ def require_admin(request: Request) -> dict:
     return user
 
 
+def redact(path: str) -> str:
+    """Never write an access token (web.gate, /zugang/<token>) into a log."""
+    return "/zugang/***" if path.startswith("/zugang/") else path
+
+
 def log_access(request: Request, status: int, ms: int) -> None:
     user = request.state.user if "user" in request.state._state else None
     ip = request.headers.get("x-forwarded-for", "").split(",")[0].strip() or (request.client.host if request.client else None)
     with db() as conn:
-        conn.execute("INSERT INTO access_log (user_id, ip_net, method, path, status, ms, ua) VALUES (%s,%s,%s,%s,%s,%s,%s)",
-                     (user["id"] if user else None, ip_net(ip), request.method, request.url.path[:300], status, ms,
-                      (request.headers.get("user-agent") or "")[:200]))
+        aid = request.state.access_id if "access_id" in request.state._state else None
+        conn.execute("INSERT INTO access_log (user_id, ip_net, method, path, status, ms, ua, access_id) "
+                     "VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
+                     (user["id"] if user else None, ip_net(ip), request.method, redact(request.url.path)[:300], status, ms,
+                      (request.headers.get("user-agent") or "")[:200], aid))
 
 
 def record_search(request: Request, query: str, hits: int) -> None:

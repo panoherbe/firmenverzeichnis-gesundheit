@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Zugang") }}{% endblock %}
+{% block main %}
+<meta name="robots" content="noindex, nofollow">
+<div style="max-width:620px;margin:40px auto">
+<h1>{{ _("Zugang") }}</h1>
+<p>{{ _("Dieser Link ist nicht (mehr) gültig.") }} <a href="mailto:{{ OPERATOR.email }}">{{ OPERATOR.email }}</a></p>
+</div>
+{% endblock %}

@@ -1,53 +1,144 @@
 {% extends "base.html" %}
 {% block css %}
-.searchbar { display:flex; gap:8px; }
-.searchbar input { flex:1; font-size:17px; padding:12px 14px; }
-.layout { display:grid; grid-template-columns: 250px 1fr; gap:22px; margin-top:16px; }
-aside.filters label { display:block; font-size:12px; color:var(--muted); margin:12px 0 3px; font-weight:600; }
-aside.filters select { width:100%; }
-aside.filters .chk { font-size:13px; color:var(--fg); font-weight:400; margin-top:8px; }
-.chips { display:flex; gap:6px; flex-wrap:wrap; margin:8px 0 0; }
-.chip { background:var(--soft); border-radius:14px; padding:3px 10px; font-size:13px; text-decoration:none; color:var(--fg); }
-.chip:hover { background:var(--line); }
-.res td.n { font-weight:600; }
-.res .name { font-weight:600; font-size:15px; }
-.res tr:hover { background:var(--soft); }
-.toolbar { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:6px; }
-.toolbar .exp a { margin-left:10px; font-size:13px; }
-.pager { display:flex; gap:12px; align-items:center; margin-top:12px; }
-.examples { font-size:13px; color:var(--muted); margin-top:6px; }
-.examples a { margin-right:8px; }
-@media (max-width:900px) { .layout { grid-template-columns:1fr; } aside.filters { order:2; } }
+.hero { position:relative; border:1px solid var(--line); border-radius:calc(var(--radius-lg) + 4px); padding:40px 40px 30px; margin:0 0 26px; overflow:hidden;
+  background: radial-gradient(1100px 380px at 100% -10%, var(--accent-tint), transparent 60%), radial-gradient(700px 300px at -10% 120%, var(--accent-soft), transparent 60%), var(--bg);
+  box-shadow:var(--shadow); }
+.hero::after { content:""; position:absolute; right:-60px; top:-60px; width:260px; height:260px; border-radius:50%; border:44px solid color-mix(in srgb, var(--accent) 7%, transparent); pointer-events:none; }
+.hero .hero-text { position:relative; z-index:1; max-width:760px; }
+.hero h1 { font-size:clamp(28px, 3vw + 14px, 42px); margin:0 0 8px; letter-spacing:-.025em; }
+.hero .lead { font-size:17px; color:var(--muted); margin:0 0 24px; max-width:640px; }
+.hero.compact { padding:20px 22px 16px; margin-bottom:22px; }
+.hero.compact::after { display:none; }
+.hero.compact .hero-text { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+.searchbar { position:relative; z-index:1; display:flex; gap:8px; max-width:920px; background:var(--bg); border:1px solid color-mix(in srgb, var(--line) 60%, var(--muted));
+  border-radius:calc(var(--radius) + 6px); padding:6px; box-shadow:var(--shadow); }
+.searchbar:focus-within { border-color:var(--accent); box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent), var(--shadow); }
+.searchbar .sicon { display:grid; place-items:center; padding:0 2px 0 10px; color:var(--muted); }
+.searchbar .sicon svg { width:20px; height:20px; }
+.searchbar input { flex:1; min-width:0; font-size:17px; padding:10px 6px; border:0; box-shadow:none; background:transparent; min-height:46px; }
+.searchbar input:focus-visible { outline:none; }
+.searchbar button { min-height:46px; padding:0 26px; font-size:15.5px; border-radius:calc(var(--radius) + 2px); }
+.examples { position:relative; z-index:1; display:flex; flex-wrap:wrap; align-items:center; gap:6px 6px; font-size:13px; color:var(--muted); margin-top:14px; }
+.examples a { text-decoration:none; }
+.examples a.ex { font:12.5px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color:var(--fg); background:color-mix(in srgb, var(--bg) 70%, transparent);
+  border:1px solid var(--line); border-radius:999px; padding:3px 10px; }
+.examples a.ex:hover { border-color:var(--accent-line); color:var(--accent); background:var(--bg); }
+.examples .ex-help { display:inline-flex; gap:14px; margin-left:8px; }
+.examples .ex-help a { font-weight:600; }
+.examples .ex-help a:hover { text-decoration:underline; }
+.chips { position:relative; z-index:1; display:flex; gap:6px; flex-wrap:wrap; margin:0; }
+.chips:not(:empty) { margin-top:14px; }
+.chip { display:inline-flex; align-items:center; gap:6px; background:var(--accent-soft); border:1px solid var(--accent-line); color:var(--accent-strong);
+  border-radius:999px; padding:4px 12px; font-size:13px; font-weight:550; text-decoration:none; }
+.chip:hover { background:var(--accent-tint); color:var(--accent-strong); }
+.chip.reset { background:transparent; border-color:var(--line); color:var(--muted); }
+.chip.reset:hover { color:var(--fg); border-color:var(--muted); }
+
+.layout { display:grid; grid-template-columns:272px minmax(0, 1fr); gap:26px; align-items:start; }
+aside.filters { position:sticky; top:calc(var(--header-h) + 16px); }
+aside.filters .fcard { background:var(--bg); border:1px solid var(--line); border-radius:var(--radius-lg); padding:16px 18px 18px; box-shadow:var(--shadow-sm); }
+aside.filters .fhead { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.07em; color:var(--muted); margin:0 0 4px; }
+aside.filters .fhead svg { width:15px; height:15px; }
+aside.filters .fgrid > label { display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--fg); margin:14px 0 5px; font-weight:600; }
+aside.filters select { width:100%; font-size:14px; min-height:38px; padding-top:7px; padding-bottom:7px; }
+aside.filters .fchecks { border-top:1px solid var(--line); margin-top:16px; padding-top:6px; }
+aside.filters label.chk { display:flex; align-items:center; font-size:13.5px; color:var(--fg); font-weight:400; margin:10px 0 0; cursor:pointer; }
+aside.filters .saved { margin-top:16px; padding:14px 16px; }
+aside.filters .saved strong { display:block; font-size:13px; margin-bottom:6px; }
+aside.filters .saved .small { margin-top:4px; }
+aside.filters .signin { display:block; margin:14px 4px 0; font-size:13px; }
+
+.toolbar { display:flex; justify-content:space-between; gap:12px 16px; flex-wrap:wrap; align-items:center; margin-bottom:14px; }
+.toolbar .count { display:flex; align-items:center; gap:8px 16px; flex-wrap:wrap; }
+.toolbar .total { font-size:22px; font-weight:700; letter-spacing:-.02em; }
+.toolbar .total + span { color:var(--muted); font-size:15px; margin-left:-10px; }
+.toolbar .sortl { display:inline-flex; align-items:center; gap:8px; font-size:13px; color:var(--muted); }
+.toolbar .sortl select { font-size:13.5px; min-height:34px; padding:5px 32px 5px 10px; }
+.toolbar .exp { display:flex; align-items:center; flex-wrap:wrap; gap:6px; font-size:13px; color:var(--muted); }
+.toolbar .exp a { display:inline-flex; align-items:center; font-size:12.5px; font-weight:600; color:var(--fg); text-decoration:none; background:var(--bg);
+  border:1px solid var(--line); border-radius:999px; padding:4px 11px; }
+.toolbar .exp a:hover { color:var(--accent); border-color:var(--accent-line); }
+.toolbar .tofilter { display:none; align-items:center; gap:6px; font-size:13px; font-weight:600; text-decoration:none; color:var(--accent); border:1px solid var(--accent-line); background:var(--accent-soft); border-radius:999px; padding:4px 12px; }
+.toolbar .tofilter svg { width:14px; height:14px; }
+.savesearch { display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin:0 0 14px; padding:10px 12px; background:var(--accent-soft);
+  border:1px dashed var(--accent-line); border-radius:var(--radius-lg); }
+.savesearch input { flex:1 1 200px; min-height:36px; padding:6px 10px; }
+.savesearch button { min-height:36px; padding:6px 14px; }
+
+.restable { background:var(--bg); border:1px solid var(--line); border-radius:var(--radius-lg); box-shadow:var(--shadow-sm); overflow:hidden; }
+.res td { padding:14px 14px; }
+.res tbody tr { position:relative; }
+.res tbody tr:hover td { background:var(--accent-soft); }
+.res .name { font-weight:650; font-size:15.5px; color:var(--fg); text-decoration:none; letter-spacing:-.005em; }
+.res .name:hover { color:var(--accent); text-decoration:underline; }
+.res .vf { display:inline-grid; place-items:center; width:18px; height:18px; border-radius:50%; background:var(--ok-soft); color:var(--ok); font-size:11px; font-weight:800; vertical-align:1px; margin-left:4px; }
+.res .sub { display:block; margin-top:3px; }
+.res td.loc { color:var(--fg); white-space:nowrap; }
+.res td.loc .small { white-space:normal; }
+.res td.empty { padding:36px 16px; text-align:center; color:var(--muted); }
+.pager { display:flex; gap:10px; align-items:center; justify-content:center; margin:18px 0 6px; }
+.pager a { display:inline-flex; align-items:center; min-height:36px; padding:6px 14px; border:1px solid var(--line); border-radius:999px; background:var(--bg);
+  text-decoration:none; font-weight:600; font-size:13.5px; color:var(--fg); }
+.pager a:hover { border-color:var(--accent-line); color:var(--accent); }
+
+@media (max-width:900px) {
+  .layout { grid-template-columns:1fr; gap:18px; }
+  aside.filters { position:static; order:2; }
+  .toolbar .tofilter { display:inline-flex; }
+  aside.filters .fgrid { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); grid-auto-flow:row dense; gap:0 12px; }
+  aside.filters .fgrid > label { margin-top:10px; }
+  aside.filters .fgrid > label:nth-of-type(odd) { grid-column:1; } aside.filters .fgrid > label:nth-of-type(even) { grid-column:2; }
+  aside.filters .fgrid > select:nth-of-type(odd) { grid-column:1; } aside.filters .fgrid > select:nth-of-type(even) { grid-column:2; }
+  aside.filters .fchecks { display:flex; flex-wrap:wrap; gap:0 18px; }
+}
+@media (max-width:760px) {
+  .hero { padding:26px 18px 20px; border-radius:var(--radius-lg); }
+  .hero .lead { font-size:15px; margin-bottom:18px; }
+  .hero::after { width:180px; height:180px; border-width:30px; right:-70px; top:-70px; }
+  .hero.compact { padding:12px; }
+  .searchbar { padding:4px; }
+  .searchbar .sicon { display:none; }
+  .searchbar input { font-size:16px; padding:8px 10px; min-height:44px; }
+  .searchbar button { padding:0 16px; min-height:44px; }
+  .examples .ex-help { margin-left:0; flex-basis:100%; }
+  .restable { border-radius:var(--radius-lg); }
+  .res thead { display:none; }
+  .res, .res tbody, .res tr, .res td { display:block; width:100%; }
+  .res tr { padding:13px 14px; border-bottom:1px solid var(--line); }
+  .res tbody tr:last-child { border-bottom:0; }
+  .res td { padding:0; border:0; }
+  .res td + td { margin-top:8px; }
+  .res tbody tr:hover td { background:transparent; }
+}
 {% endblock %}
 {% block main %}
-<form method="get" action="/" id="sf" role="search">
+<form method="get" action="/" id="sf" role="search" class="hero{% if q or sector or region or tier or size or revenue or product or contact or alle %} compact{% endif %}">
   {% if embed %}<input type="hidden" name="embed" value="1">{% endif %}
+  <div class="hero-text">
+    <h1>{{ _("Firmenverzeichnis Gesundheitswirtschaft") }}</h1>
+    <p class="lead">{{ _("Unternehmen der deutschen Gesundheitswirtschaft aus amtlichen Registern") }} (EUDAMED, EMA, GLEIF, CORDIS)</p>
+  </div>
   <div class="searchbar">
     <label class="sr" for="q">{{ _("Suchbegriff") }}</label>
+    <span class="sicon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></span>
     <input id="q" name="q" value="{{ q }}" placeholder="{{ _('z. B. Endoskop UND Tuttlingen') }}" autocomplete="off" data-tour="{{ _('Suchen Sie nach Name, Produkt, Ort, PLZ, Website oder Registernummer. Mehrere Wörter werden mit UND verknüpft; ODER, NICHT, Klammern und \"Phrasen\" gehen auch.') }}">
     <button type="submit">{{ _("Suchen") }}</button>
   </div>
   <div class="examples">{{ _("Beispiele") }}:
-    <a href="/?q=Endoskop*{% if embed %}&embed=1{% endif %}">Endoskop*</a>
-    <a href="/?q=Implantat ODER Prothese{% if embed %}&embed=1{% endif %}">Implantat ODER Prothese</a>
-    <a href="/?q=%22In-vitro%22 NICHT Labor{% if embed %}&embed=1{% endif %}">"In-vitro" NICHT Labor</a>
-    · <a href="/hilfe#suche">{{ _("Suchhilfe") }}</a> · <a href="#" data-tour-start>{{ _("Kurze Einführung") }}</a>
+    <a class="ex" href="/?q=Endoskop*{% if embed %}&embed=1{% endif %}">Endoskop*</a>
+    <a class="ex" href="/?q=Implantat ODER Prothese{% if embed %}&embed=1{% endif %}">Implantat ODER Prothese</a>
+    <a class="ex" href="/?q=%22In-vitro%22 NICHT Labor{% if embed %}&embed=1{% endif %}">"In-vitro" NICHT Labor</a>
+    <span class="ex-help"><a href="/hilfe#suche">{{ _("Suchhilfe") }}</a> <a href="#" data-tour-start>{{ _("Kurze Einführung") }}</a></span>
   </div>
   {% set active = [] %}
-  <div class="chips">
-    {% if sector %}<a class="chip" href="?{{ request.query_params | qs_with(sector='', page='') }}">{{ _(SECTORS[sector]) }} ✕</a>{% endif %}
-    {% if region %}<a class="chip" href="?{{ request.query_params | qs_with(region='', page='') }}">{{ REGIONS[region] }} ✕</a>{% endif %}
-    {% if tier %}<a class="chip" href="?{{ request.query_params | qs_with(tier='', page='') }}">{{ _(TIERS[tier]) }} ✕</a>{% endif %}
-    {% if size %}<a class="chip" href="?{{ request.query_params | qs_with(size='', page='') }}">{{ _(SIZES[size]) }} ✕</a>{% endif %}
-    {% if revenue %}<a class="chip" href="?{{ request.query_params | qs_with(revenue='', page='') }}">{{ _("Umsatz") }} {{ _(REVENUES[revenue]) }} ✕</a>{% endif %}
-    {% if product %}<a class="chip" href="?{{ request.query_params | qs_with(product='', page='') }}">{{ _(EMDN[product]) }} ✕</a>{% endif %}
-    {% if contact %}<a class="chip" href="?{{ request.query_params | qs_with(contact='', page='') }}">{{ _("nur mit Kontaktweg") }} ✕</a>{% endif %}
-    {% if q or sector or region or tier or size or revenue or product or contact or alle %}<a class="chip" href="/{% if embed %}?embed=1{% endif %}">{{ _("Zurücksetzen") }}</a>{% endif %}
-  </div>
+  <div class="chips">{% if sector %}<a class="chip" href="?{{ request.query_params | qs_with(sector='', page='') }}">{{ _(SECTORS[sector]) }} ✕</a>{% endif %}{% if region %}<a class="chip" href="?{{ request.query_params | qs_with(region='', page='') }}">{{ REGIONS[region] }} ✕</a>{% endif %}{% if tier %}<a class="chip" href="?{{ request.query_params | qs_with(tier='', page='') }}">{{ _(TIERS[tier]) }} ✕</a>{% endif %}{% if size %}<a class="chip" href="?{{ request.query_params | qs_with(size='', page='') }}">{{ _(SIZES[size]) }} ✕</a>{% endif %}{% if revenue %}<a class="chip" href="?{{ request.query_params | qs_with(revenue='', page='') }}">{{ _("Umsatz") }} {{ _(REVENUES[revenue]) }} ✕</a>{% endif %}{% if product %}<a class="chip" href="?{{ request.query_params | qs_with(product='', page='') }}">{{ _(EMDN[product]) }} ✕</a>{% endif %}{% if contact %}<a class="chip" href="?{{ request.query_params | qs_with(contact='', page='') }}">{{ _("nur mit Kontaktweg") }} ✕</a>{% endif %}{% if q or sector or region or tier or size or revenue or product or contact or alle %}<a class="chip reset" href="/{% if embed %}?embed=1{% endif %}">{{ _("Zurücksetzen") }}</a>{% endif %}</div>
 </form>
 
 <div class="layout">
   <aside class="filters" aria-label="{{ _('Filter') }}" data-tour="{{ _('Filter grenzen die Liste ein. Die Zahl in Klammern zeigt, wie viele Treffer der Filter ergibt. Alle Filter lassen sich kombinieren.') }}">
+   <div class="fcard">
+    <div class="fhead" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>{{ _('Filter') }}</div>
+    <div class="fgrid">
     <label for="sector">{{ _("Branche") }}</label>
     <select form="sf" id="sector" name="sector" data-autosubmit><option value="">{{ _("alle") }}</option>
       {% for k, v in SECTORS.items() %}<option value="{{ k }}" {% if sector == k %}selected{% endif %}>{{ _(v) }} ({{ facets.sector.get(k, 0) }})</option>{% endfor %}</select>
@@ -66,57 +157,64 @@ aside.filters .chk { font-size:13px; color:var(--fg); font-weight:400; margin-to
     <label for="tier">{{ _("Rolle") }}</label>
     <select form="sf" id="tier" name="tier" data-autosubmit><option value="">{{ _("alle") }}</option>
       {% for k, v in TIERS.items() %}{% if facets.tier.get(k) or tier == k %}<option value="{{ k }}" {% if tier == k %}selected{% endif %}>{{ _(v) }} ({{ facets.tier.get(k, 0) }})</option>{% endif %}{% endfor %}</select>
+    </div>
+    <div class="fchecks">
     <label class="chk"><input form="sf" type="checkbox" name="contact" value="true" {% if contact %}checked{% endif %} data-autosubmit> {{ _("nur mit Kontaktweg") }}</label>
     <label class="chk"><input form="sf" type="checkbox" name="alle" value="true" {% if alle %}checked{% endif %} data-autosubmit> {{ _("auch nicht registergeprüfte") }}</label>
-    <noscript><button form="sf" type="submit" style="margin-top:10px">{{ _("Filter anwenden") }}</button></noscript>
+    </div>
+    <noscript><button form="sf" type="submit" style="margin-top:12px;width:100%">{{ _("Filter anwenden") }}</button></noscript>
+   </div>
 
     {% if user %}
-    <div class="card" style="margin-top:18px" data-tour="{{ _('Angemeldete Nutzer speichern Suchen als Profil und finden ihren Suchverlauf unter Mein Konto.') }}">
-      <strong style="font-size:13px">{{ _("Gespeicherte Suchen") }}</strong>
+    <div class="card saved" data-tour="{{ _('Angemeldete Nutzer speichern Suchen als Profil und finden ihren Suchverlauf unter Mein Konto.') }}">
+      <strong>{{ _("Gespeicherte Suchen") }}</strong>
       {% for s in recent %}<div class="small"><a href="/?{{ s.query }}">{{ s.name }}</a></div>{% else %}<div class="small">{{ _("Noch keine gespeicherten Suchen.") }}</div>{% endfor %}
-      <div class="small" style="margin-top:6px"><a href="/konto">{{ _("Suchverlauf") }} →</a></div>
+      <div class="small" style="margin-top:10px"><a href="/konto">{{ _("Suchverlauf") }} →</a></div>
     </div>
     {% else %}
-    <p class="small" style="margin-top:18px"><a href="/login?next=/">{{ _("Anmelden, um Suchen zu speichern") }}</a></p>
+    <p class="small signin"><a href="/login?next=/">{{ _("Anmelden, um Suchen zu speichern") }}</a></p>
     {% endif %}
   </aside>
 
   <section aria-live="polite">
     <div class="toolbar">
-      <div><strong style="font-size:17px">{{ "{:,}".format(total).replace(",", ".") }}</strong> {{ _("Unternehmen") }}
-        <label class="small" style="margin-left:10px">{{ _("Sortierung") }}
-          <select name="sort" form="sf" data-autosubmit style="padding:4px">
+      <div class="count"><strong class="total">{{ "{:,}".format(total).replace(",", ".") }}</strong> <span>{{ _("Unternehmen") }}</span>
+        <label class="sortl">{{ _("Sortierung") }}
+          <select name="sort" form="sf" data-autosubmit>
             <option value="rel" {% if sort == 'rel' %}selected{% endif %}>{{ _("Relevanz") }}</option>
             <option value="name" {% if sort == 'name' %}selected{% endif %}>{{ _("Name") }}</option>
             <option value="awards" {% if sort == 'awards' %}selected{% endif %}>{{ _("Öffentliche Aufträge") }}</option>
-          </select></label></div>
+          </select></label>
+        <a class="tofilter" href="#sector"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>{{ _('Filter') }}</a></div>
       <div class="exp small" data-tour="{{ _('Die Trefferliste geht als Excel, CSV oder PDF heraus, die Statistik dazu auch als Grafik (JPG/PNG).') }}">{{ _("Treffer als") }}
         <a href="/export.xlsx?{{ qs }}">Excel</a><a href="/export.csv?{{ qs }}">CSV</a><a href="/export.pdf?{{ qs }}">PDF</a>
         <a href="/statistik?{{ qs }}">{{ _("Statistik") }}</a><a href="/api/v1/companies?{{ qs }}">JSON</a></div>
     </div>
     {% if user and (q or sector or region or tier or size or revenue or product or contact) %}
-    <form method="post" action="/konto/suche" class="meta noprint" style="margin:0 0 6px">
+    <form method="post" action="/konto/suche" class="savesearch noprint">
       <input type="hidden" name="query" value="{{ qs }}">
-      <input name="name" placeholder="{{ _('Name der Suche') }}" required style="padding:5px 8px" aria-label="{{ _('Name der Suche') }}">
-      <button class="ghost" style="padding:5px 12px">{{ _("Suche speichern") }}</button>
+      <input name="name" placeholder="{{ _('Name der Suche') }}" required aria-label="{{ _('Name der Suche') }}">
+      <button class="ghost">{{ _("Suche speichern") }}</button>
     </form>
     {% endif %}
+    <div class="restable">
     <table class="res">
     <thead><tr><th>{{ _("Unternehmen") }}</th><th class="hide-s">{{ _("Ort") }}</th><th>{{ _("Branche") }}</th><th class="hide-s">{{ _("Produktgruppe") }}</th></tr></thead>
     <tbody>
     {% for r in rows %}
     <tr>
-      <td><a class="name" href="/firma/{{ r.id }}{% if embed %}?embed=1{% endif %}" {% if loop.first %}data-tour="{{ _('Ein Klick öffnet das Profil mit Kontaktweg, Produkten, Registernummern und Quellen.') }}"{% endif %}>{{ r.name }}</a>{% if r.verified %} <span class="ok" title="{{ _('registergeprüft') }}">✓</span>{% endif %}
-          <br><span class="small">{{ _(TIERS.get(r.tier, "")) }}{% if r.domain %} · {{ r.domain }}{% endif %}{% if r.size_class %} · {{ _(SIZES[r.size_class]) }}{% endif %}</span></td>
-      <td class="hide-s">{{ r.post_code or "" }} {{ r.city or "" }}<br><span class="small">{{ REGIONS.get(r.region, "") }}</span></td>
+      <td><a class="name" href="/firma/{{ r.id }}{% if embed %}?embed=1{% endif %}" {% if loop.first %}data-tour="{{ _('Ein Klick öffnet das Profil mit Kontaktweg, Produkten, Registernummern und Quellen.') }}"{% endif %}>{{ r.name }}</a>{% if r.verified %} <span class="ok vf" title="{{ _('registergeprüft') }}">✓</span>{% endif %}
+          <span class="small sub">{{ _(TIERS.get(r.tier, "")) }}{% if r.domain %} · {{ r.domain }}{% endif %}{% if r.size_class %} · {{ _(SIZES[r.size_class]) }}{% endif %}</span></td>
+      <td class="hide-s loc">{{ r.post_code or "" }} {{ r.city or "" }}<br><span class="small">{{ REGIONS.get(r.region, "") }}</span></td>
       <td>{% for s in r.sectors %}<a class="tag" href="?{{ request.query_params | qs_with(sector=s, page='') }}">{{ _(SECTORS[s]) }}</a>{% endfor %}</td>
       <td class="hide-s">{% for g in (r.emdn_groups or [])[:3] %}<a class="tag" href="?{{ request.query_params | qs_with(product=g, page='') }}" title="{{ _(EMDN.get(g, g)) }}">{{ _(EMDN.get(g, g)) }}</a>{% endfor %}</td>
     </tr>
     {% else %}
-    <tr><td colspan="4">{{ _("Keine Treffer.") }} <a href="/hilfe#suche">{{ _("Suchhilfe") }}</a></td></tr>
+    <tr><td colspan="4" class="empty">{{ _("Keine Treffer.") }} <a href="/hilfe#suche">{{ _("Suchhilfe") }}</a></td></tr>
     {% endfor %}
     </tbody>
     </table>
+    </div>
     <p class="pager">
     {% if page > 1 %}<a href="?{{ request.query_params | qs_with(page=page - 1) }}">← {{ _("zurück") }}</a>{% endif %}
     <span class="small">{{ _("Seite") }} {{ page }} {{ _("von") }} {{ pages }}</span>

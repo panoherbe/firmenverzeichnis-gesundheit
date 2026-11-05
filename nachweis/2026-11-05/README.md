@@ -1,13 +1,13 @@
 # Nachweis 05.11.2026
 
 Woher die Zahlen in der README kommen. Gemessen am 05.11.2026 gegen 17:00 MEZ an der Datenbank der laufenden
-Installation; die öffentliche Demo (https://firmen.panoherbe.com) läuft mit einem Abzug derselben Datenbank.
+Installation; die Demo-Installation (seit 05.11.2026 abends nur mit Zugangslink, auf Anfrage) läuft mit einem Abzug derselben Datenbank.
 
 | Datei | Inhalt |
 |---|---|
 | [`zaehlungen.sql`](zaehlungen.sql) | die Zählabfragen (PostgreSQL) |
 | [`zaehlungen-ausgabe.txt`](zaehlungen-ausgabe.txt) | ihre Ausgabe |
-| [`api-health-demo.json`](api-health-demo.json) | `GET https://firmen.panoherbe.com/api/health` zum selben Zeitpunkt |
+| [`api-health-demo.json`](api-health-demo.json) | `GET /api/health` der Demo-Installation zum selben Zeitpunkt |
 
 ## Ergebnisse
 

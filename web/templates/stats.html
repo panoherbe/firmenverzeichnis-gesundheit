@@ -1,15 +1,24 @@
 {% extends "base.html" %}
 {% block title %}{{ _("Statistik") }} – {{ _("Firmenverzeichnis Gesundheitswirtschaft") }}{% endblock %}
 {% block css %}
-.charts { display:grid; grid-template-columns: 1fr 1fr; gap:18px; }
-.chart h2 { margin-top:0; font-size:16px; }
-.chart svg { width:100%; height:auto; }
-.chart .acts a { font-size:12px; margin-right:10px; }
-@media (max-width:900px) { .charts { grid-template-columns:1fr; } }
+.statmeta { display:flex; flex-wrap:wrap; align-items:center; gap:10px 18px; padding:16px 20px; margin:0 0 22px; background:var(--bg);
+  border:1px solid var(--line); border-radius:var(--radius-lg); box-shadow:var(--shadow-sm); color:var(--muted); font-size:14px; }
+.statmeta > strong { font-size:22px; letter-spacing:-.02em; color:var(--fg); }
+.statmeta > span { flex:1 1 280px; }
+.statmeta .btn { margin-left:auto; }
+.charts { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:20px; }
+.chart { display:flex; flex-direction:column; padding:20px 22px 16px; }
+.chart h2 { margin:0 0 14px; font-size:15.5px; }
+.chart svg { width:100%; height:auto; display:block; margin-bottom:14px; }
+.chart .acts { display:flex; flex-wrap:wrap; gap:6px; margin-top:auto; padding-top:12px; border-top:1px solid var(--line); }
+.chart .acts a { font-size:12px; font-weight:600; text-decoration:none; color:var(--fg); border:1px solid var(--line); border-radius:999px; padding:3px 10px; }
+.chart .acts a:hover { color:var(--accent); border-color:var(--accent-line); }
+.statnote { margin-top:20px; }
+@media (max-width:900px) { .charts { grid-template-columns:1fr; } .statmeta .btn { margin-left:0; } }
 {% endblock %}
 {% block main %}
 <h1>{{ _("Statistik") }}</h1>
-<p class="meta"><strong>{{ "{:,}".format(s.total).replace(",", ".") }} {{ _("Unternehmen") }}</strong>
+<p class="meta statmeta"><strong>{{ "{:,}".format(s.total).replace(",", ".") }} {{ _("Unternehmen") }}</strong>
   <span>{{ _("Die Statistik folgt den gewählten Filtern.") }} <a href="/?{{ qs }}">{{ _("Filter ändern") }}</a></span>
   <a class="btn ghost" href="/statistik.pdf?{{ qs }}">{{ _("Statistik als PDF") }}</a></p>
 <div class="charts">
@@ -35,6 +44,6 @@
 </div>
 {% endfor %}
 </div>
-<p class="small">{{ _("Größenklassen und Produktgruppen sind nicht für jedes Unternehmen bekannt; „unbekannt“ zeigt den Rest.") }}
+<p class="small statnote">{{ _("Größenklassen und Produktgruppen sind nicht für jedes Unternehmen bekannt; „unbekannt“ zeigt den Rest.") }}
   {{ _("Grafiken und Tabellen dürfen mit Quellenangabe verwendet werden.") }} <a href="/quellen">{{ _("Quellen & Lizenzen") }}</a></p>
 {% endblock %}

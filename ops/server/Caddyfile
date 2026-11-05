@@ -50,6 +50,8 @@
 					ipv4 24
 					ipv6 48
 				}
+				# personal access links of the closed demo (web/gate.py) must not land in the log
+				request>uri regexp "^/zugang/[^?]*" "/zugang/***"
 				request>headers>Cookie delete
 				request>headers>Authorization delete
 				request>headers>X-Ops-Token delete

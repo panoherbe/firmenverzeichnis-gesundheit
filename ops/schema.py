@@ -19,7 +19,7 @@ import psycopg
 from etl.common.env import load_env
 
 ROOT = Path(__file__).resolve().parents[1]
-PARTS = [("etl.enrich", "COLUMNS"), ("etl.cleanup", "SCHEMA"), ("web.auth", "SCHEMA"), ("web.support", "SCHEMA"), ("web.matchmaking", "SCHEMA")]
+PARTS = [("etl.enrich", "COLUMNS"), ("etl.cleanup", "SCHEMA"), ("web.auth", "SCHEMA"), ("web.support", "SCHEMA"), ("web.matchmaking", "SCHEMA"), ("web.gate", "SCHEMA")]
 
 
 def main() -> None:

@@ -24,11 +24,11 @@ from pathlib import Path
 from urllib.parse import unquote_plus, urlencode
 
 from fastapi import FastAPI, HTTPException, Query, Request
-from fastapi.responses import HTMLResponse, JSONResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from markupsafe import Markup
 
-from web import auth, demo, i18n_app, pdf
+from web import auth, demo, gate, i18n_app, pdf
 from web.common import LANG, _, db, lang, pick_lang, register, templates
 from web.query import parse
 
@@ -130,6 +130,9 @@ APP_EN = {
 def theme(request: Request) -> dict:
     name = request.query_params.get("theme") or request.cookies.get("theme")
     path = (THEMES / f"{name}.json") if name and name.isidentifier() else Path(os.environ.get("THEME_FILE", THEMES / "default.json"))
+    # closed demo: visitors with an access link see the buyer's corporate-design preview (file only on that server)
+    if f := gate.theme_file(request):
+        path = Path(f)
     try:
         th = json.loads(path.read_text())
     except (OSError, ValueError):
@@ -160,7 +163,7 @@ RULE_LABELS = {"anchor": "Registereintrag", "transitive": "über verknüpften Ei
 templates.env.filters["rule_label"] = lambda r: ", ".join(dict.fromkeys(_(RULE_LABELS.get(x.strip(), x.strip())) for x in (r or "").split(",")))
 templates.env.filters["qs_with"] = lambda params, **kw: urlencode({**dict(params), **kw})
 app.include_router(auth.router)
-for mod in ("matchmaking", "support", "demo"):  # optional modules; the app runs without them
+for mod in ("matchmaking", "support", "demo", "gate"):  # optional modules; the app runs without them
     try:
         app.include_router(__import__(f"web.{mod}", fromlist=["router"]).router)
     except ImportError:
@@ -174,7 +177,16 @@ async def frame_policy(request: Request, call_next):
     t0 = time.monotonic()
     lng = pick_lang(request.query_params.get("lang"), request.cookies.get("lang"), request.headers.get("accept-language"))
     LANG.set(lng)
-    if demo.blocked(request):  # demo accounts on a demo installation: no user management, logs, support admin
+    if gate.rate_limited(request):
+        resp = HTMLResponse(f"<p>{_('Zu viele Anfragen. Bitte kurz warten.')}</p>", status_code=429)
+    elif gate.needs_access(request):  # closed demo: strangers get the neutral start page only
+        if request.url.path == "/":
+            resp = gate.landing(request)
+        elif request.url.path.startswith(("/api/", "/openapi.json", "/export")):
+            resp = JSONResponse({"detail": "access required"}, status_code=401)
+        else:
+            resp = RedirectResponse("/", status_code=303)
+    elif demo.blocked(request):  # demo accounts on a demo installation: no user management, logs, support admin
         resp = HTMLResponse(f"<p>{_('In der Demo gesperrt.')}</p><p><a href='/'>←</a></p>", status_code=403)
     else:
         resp = await call_next(request)

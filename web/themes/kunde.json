@@ -10,5 +10,6 @@
  "accent_fg": "#ffffff",
  "radius": "2px",
  "font": "Arial, Helvetica, sans-serif",
- "provider": "Anbieter: Panagiotis Herbe, Hamburg"
+ "provider": "Anbieter: Panagiotis Herbe, Hamburg",
+ "preview_notice": ""
 }

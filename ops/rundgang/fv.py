@@ -135,7 +135,7 @@ def main():
         page.wait_for_selector('h1')
         # the personal link is a secret (it is the participant's access): never show a real one in the video
         page.evaluate("""() => { const i = document.getElementById('mylink');
-            if (i) { i.value = 'https://firmen.panoherbe.com/matchmaking/p/••••••••••••'; } }""")
+            if (i) { i.value = 'https://demo.example/matchmaking/p/••••••••••••'; } }""")
         rg.untertitel('Jede teilnehmende Firma bekommt Vorschläge mit Begründung, fragt Gespräche an, und der Termin wird '
                       'automatisch eingeplant – mit Videoraum und Kalenderdatei.')
         rg.halte(4.2)

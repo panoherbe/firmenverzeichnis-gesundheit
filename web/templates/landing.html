@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}{{ _("Firmenverzeichnis Gesundheitswirtschaft") }}{% endblock %}
+{% block css %}
+.land { max-width:760px; margin:40px auto; }
+.land h1 { font-size:32px; line-height:1.2; margin-bottom:12px; }
+.land .lead { font-size:18px; color:var(--muted); }
+.land video { width:100%; border-radius:var(--radius); border:1px solid var(--line); margin:22px 0; }
+{% endblock %}
+{% block main %}
+<meta name="robots" content="noindex">
+<div class="land">
+<h1>{{ _("Firmenverzeichnis Gesundheitswirtschaft") }}</h1>
+<p class="lead">{{ _("Ein Verzeichnis der deutschen Medizintechnik-, Pharma-, Biotech- und Digital-Health-Unternehmen aus amtlichen Registern, mit Suche, Export, API und virtuellem Matchmaking.") }}
+{{ _("Diese Installation ist eine geschlossene Vorschau; der Zugang kommt per persönlichem Link.") }}</p>
+<video controls preload="none" poster="/medien/poster.png"><source src="/medien/rundgang.mp4" type="video/mp4"></video>
+<p>{{ _("Zugang oder Fragen:") }} <a href="mailto:{{ OPERATOR.email }}">{{ OPERATOR.email }}</a></p>
+</div>
+{% endblock %}
