@@ -83,12 +83,22 @@ APP_EN = {
     "Rolle im Register: Hersteller bzw. Zulassungsinhaber, Bevollmächtigter oder Importeur.": "Role in the register: manufacturer or marketing-authorisation holder, authorised representative or importer.",
     "Funktionspostfach oder Kontakt-/Impressumsseite des Unternehmens.": "Company role mailbox or contact/imprint page.",
     "Auch Unternehmen, die nur aus öffentlichen Zuschlägen bekannt und nicht in einem amtlichen Register bestätigt sind.": "Also companies known only from public contract awards and not confirmed in an official register.",
-    "Die Plattform läuft bereits im vollen Betrieb. Diese Vorschau zeigt den Aufbau des Registers an 100 ausgewählten Unternehmen, 10 davon vollständig mit Kontakt- und Registerangaben. Alle in der Leistungsbeschreibung geforderten Angaben stehen zum Vertragsbeginn bereit.": "The platform is already in full operation. This preview shows the structure of the register with 100 selected companies, 10 of them complete with contact and register data. All data required by the specification are available at contract start.",
+    "Die Plattform läuft bereits. Diese Vorschau zeigt den Aufbau des Registers an 100 ausgewählten Unternehmen, 10 davon vollständig mit Kontakt- und Registerangaben.": "The platform is already running. This preview shows the structure of the register with 100 selected companies, 10 of them complete with contact and register data.",
+    "Ihr persönlicher Zugang ist aktiv (30 Tage auf diesem Gerät). Alles läuft ohne Passwort; ein Klick meldet ein Demo-Konto an.": "Your personal access is active (30 days on this device). No password needed; one click signs in a demo account.",
+    "Direkt zu dem, was Sie prüfen": "Straight to what you evaluate", "Als Nutzerin testen": "Try as a user", "Als Veranstalterin testen": "Try as an organiser",
+    "Suche, Filter, Boolesche Operatoren": "Search, filters, Boolean operators", "Kombinierte Suche": "Combined search", "Produktgruppe": "Product group",
+    "Export Daten und Grafiken": "Export data and charts", "Statistik, JPG/PNG, PDF": "Statistics, JPG/PNG, PDF", "Export": "Export",
+    "in der Trefferliste": "in the result list", "Englisch": "English", "Oberfläche und Profile auf Englisch": "Interface and profiles in English",
+    "Einbettung (iframe)": "Embedding (iframe)", "Ansicht ohne Seitenrahmen": "View without page frame", "Dokumentierte API": "Documented API",
+    "Beispielveranstaltung": "Example event", "Servicefunktionen": "Service functions", "Support und SLA": "Support and SLA",
+    "Ticketformular, Statusseite": "Ticket form, status page", "Hinweise nach Art. 13 DSGVO": "Information under Art. 13 GDPR",
+    "Nur Demodaten. Was Sie eintragen, sehen alle Testenden bis zum nächtlichen Zurücksetzen. Bitte keine echten Personendaten eingeben.": "Demo data only. Whatever you enter is visible to all testers until the nightly reset. Please do not enter real personal data.",
+    "Willkommen": "Welcome",
     "Kontaktseite und Funktionspostfach": "Contact page and role mailbox", "Hilfe, Glossar, Einführung": "Help, glossary, introduction", "In-vitro-Diagnostika": "In-vitro diagnostics", "Treffer in der Auswahl": "hits in the selection", "Unternehmen in der Auswahl": "companies in the selection", "Auswahl": "selection",
     "Für heute genug Profile angesehen": "Enough profiles for today",
     "Die Vorschau zeigt bis zu {n} Profile am Tag; morgen geht es weiter. Im Vertrag ohne Grenze.": "The preview shows up to {n} profiles a day; more tomorrow. No limit in the contract.",
     "In der Vorschau lässt sich jede Funktion ausprobieren; den vollständigen Datenbestand gibt es im Vertrag.": "Every function can be tried in the preview; the complete data set comes with the contract.",
-    "Zurück zur Übersicht": "Back to the overview", "Trefferliste": "Result list", "Treffer": "hits", "Stand": "as of", "Unternehmen mit Angabe": "companies with a figure", "alle registergeprüften Unternehmen": "all register-verified companies", "Quellen und Lizenzen": "Sources and licences", "Suche": "Search", "Für heute genug gesucht": "Enough searching for today",
+    "Zurück zur Übersicht": "Back to the overview", "Trefferliste": "Result list", "Treffer": "hits", "Stand": "as of", "Unternehmen mit Angabe": "companies with a figure", "ohne Filter": "no filter", "Quellen und Lizenzen": "Sources and licences", "Suche": "Search", "Für heute genug gesucht": "Enough searching for today",
     "Die Vorschau erlaubt viele Suchen am Tag; das Tageskontingent ist erreicht. Morgen geht es weiter.": "The preview allows many searches a day; today's quota is used up. More tomorrow.",
     "Für heute genug exportiert": "Enough exports for today",
     "Die Vorschau erlaubt {n} Exporte am Tag mit je bis zu {r} Zeilen; morgen geht es weiter. Im Vertrag ohne Grenze.": "The preview allows {n} exports a day of up to {r} rows each; more tomorrow. No limit in the contract.", "Kurz durchatmen": "One moment, please", "Zur Suche": "To the search",
@@ -383,7 +393,9 @@ def sources(request: Request, embed: bool = False):
         rows = conn.execute("""SELECT s.*, (SELECT count(*) FROM company_member m WHERE m.source = s.id) AS n
                                FROM source s ORDER BY id""").fetchall()
         gleif = conn.execute("SELECT count(*) AS n FROM company WHERE lei IS NOT NULL").fetchone()["n"]
-    return templates.TemplateResponse(request, "sources.html", dict(rows=rows, gleif=gleif, embed=embed))
+        built = conn.execute("SELECT max(built_at) AS d FROM company").fetchone()["d"]
+    return templates.TemplateResponse(request, "sources.html", dict(rows=rows, gleif=gleif, embed=embed,
+                                                                    data_date=built.strftime("%d.%m.%Y") if built else "–"))
 
 
 @app.get("/datenschutz", response_class=HTMLResponse)
@@ -516,7 +528,7 @@ def api_one(request: Request, cid: str):
         raise HTTPException(404)
     if REVENUE_LOCKED:
         c = {k: v for k, v in c.items() if k not in ("revenue_eur", "revenue_class")}
-    return clean(c)
+    return clean(gate.tease([dict(c)])[0])
 
 
 # ---------- exports ----------
@@ -532,7 +544,8 @@ def export_rows(f: dict, request: Request | None = None) -> tuple[int, list[dict
         r["sectors"] = ", ".join(_(SECTORS.get(x, x)) for x in r["sectors"])
         r["emdn_groups"] = ", ".join(_(EMDN.get(x, x)) for x in (r["emdn_groups"] or []))
         r["srns"] = ", ".join(r["srns"])
-        r["sources"] = ", ".join(r["sources"])
+        r["sources"] = ", ".join(SOURCE_LABELS.get(x, x) for x in r["sources"])
+        r["verified"] = _("ja") if r["verified"] else _("nein")
         r["region"] = REGIONS.get(r["region"], r["region"])
         r["tier"] = _(TIERS.get(r["tier"], r["tier"]))
         r["size_class"] = _(SIZES[r["size_class"]]) if r["size_class"] else None
@@ -565,7 +578,7 @@ def filter_text(f: dict) -> str:
             parts.append(_(m.get(f[k], f[k])))
     if f.get("contact"):
         parts.append(_("nur mit Kontaktweg"))
-    return " · ".join(parts) or _("alle registergeprüften Unternehmen")
+    return " · ".join(parts) or _("ohne Filter")
 
 
 def preview_note(total: int, n: int) -> str | None:
@@ -593,6 +606,9 @@ ATTRIBUTION = ("Quellen: Europäische Kommission – EUDAMED und TED (Weiterverw
                "CORDIS (CC BY 4.0); Source: European Medicines Agency (Art. 57); GLEIF (CC0); oeffentlichevergabe.de "
                "(amtliche Bekanntmachungen); Websites der Unternehmen (Kontaktseite, Beschäftigtenzahl); eigene Auswertung. "
                "Keine personenbezogenen Daten.")
+
+
+SOURCE_LABELS = {"eudamed": "EUDAMED", "ema": "EMA", "gleif": "GLEIF", "cordis": "CORDIS", "corpus": "öffentliche Zuschläge"}
 
 
 def ef(q="", sector="", tier="", region="", size="", revenue="", product="", contact=False, alle=False):
@@ -718,6 +734,7 @@ def detail_pdf(request: Request, cid: str):
             "Die Vorschau zeigt bis zu {n} Profile am Tag; morgen geht es weiter. Im Vertrag ohne Grenze.").format(
             n=gate.PREVIEW_PROFILES))
     c, members, _s = load_company(cid)
+    c = gate.tease([dict(c)])[0]
     b = brand(request)
     doc = pdf.Doc(c["name"], brand=b["name"], accent=b["accent"], footer=b["footer"])
     kv = [(_("Rechtsform"), c["legal_form"]), (_("Anschrift"), f"{c['street'] or ''}, {c['post_code'] or ''} {c['city'] or ''}"),
@@ -727,7 +744,8 @@ def detail_pdf(request: Request, cid: str):
           (_("USt-IdNr."), c["vat"]), (_("Handelsregister"), c["register_no"]), ("LEI", c["lei"]),
           ("EUDAMED SRN", ", ".join(c["srns"]))]
     doc.table(["", ""], [(k, v or "–") for k, v in kv], [0.3, 0.7], header=False)
-    doc.text(_("Herkunft der Daten") + ": " + "; ".join(f"{m['title']} ({m['licence']})" for m in members), 8)
+    sources = dict.fromkeys(f"{m['title']} ({m['licence']})" for m in members)  # one line per source, not per record
+    doc.text(_("Herkunft der Daten") + ": " + "; ".join(sources), 8)
     return Response(doc.render(), media_type="application/pdf",
                     headers={"Content-Disposition": f'attachment; filename="{cid}.pdf"'})
 

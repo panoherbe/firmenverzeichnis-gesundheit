@@ -14,7 +14,7 @@
     {% for k, v in MM_SECTORS.items() %}<option value="{{ k }}" {% if sector == k %}selected{% endif %}>{{ _(v) }}</option>{% endfor %}</select></div>
   <div><button>{{ _("Suchen") }}</button> <a href="?{{ qs }}&fmt=csv">CSV</a></div>
 </form>
-<p class="meta"><b>{{ total }} {{ _("Organisationen") }}</b> · {{ by_country|length }} {{ _("Länder") }}</p>
+<p class="meta"><b>{{ total }} {{ _("Organisationen") }}</b> · {{ by_country|length }} {{ _("Länder") }}{% if gate_enabled %} · {{ _("Auswahl der Vorschau") }}{% endif %}</p>
 <div class="scroll"><table>
 <thead><tr><th>{{ _("Name der Organisation") }}</th><th>{{ _("Land") }}</th><th class="hide-s">{{ _("Stadt") }}</th><th>{{ _("Branchen") }}</th><th class="hide-s">{{ _("Quelle") }}</th></tr></thead>
 {% for r in rows %}<tr><td><b>{{ r.name }}</b>{% if r.website %}<br><a class="small" href="{{ r.website }}" target="_blank" rel="noopener noreferrer">{{ r.website|replace("https://", "") }}</a>{% endif %}</td>

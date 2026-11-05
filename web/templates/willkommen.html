@@ -13,8 +13,7 @@
 <meta name="robots" content="noindex, nofollow">
 <div class="wk">
 <h1>{{ _("Willkommen") }}{% if demo_org %}, {{ demo_org }}{% endif %}</h1>
-{% if welcome %}<p class="lead">{{ welcome }}</p>{% endif %}
-<p class="lead">{{ _("Die Plattform läuft bereits im vollen Betrieb. Diese Vorschau zeigt den Aufbau des Registers an 100 ausgewählten Unternehmen, 10 davon vollständig mit Kontakt- und Registerangaben. Alle in der Leistungsbeschreibung geforderten Angaben stehen zum Vertragsbeginn bereit.") }}</p>
+<p class="lead">{{ _("Die Plattform läuft bereits. Diese Vorschau zeigt den Aufbau des Registers an 100 ausgewählten Unternehmen, 10 davon vollständig mit Kontakt- und Registerangaben.") }}{% if welcome %} {{ welcome }}{% endif %}</p>
 <p>{{ _("Ihr persönlicher Zugang ist aktiv (30 Tage auf diesem Gerät). Alles läuft ohne Passwort; ein Klick meldet ein Demo-Konto an.") }}</p>
 <div class="btns">
   <form method="post" action="/test/anmelden"><input type="hidden" name="als" value="nutzerin"><button>{{ _("Als Nutzerin testen") }}</button></form>

@@ -1,8 +1,8 @@
 """
-Is the domain of a register role mailbox able to receive mail? LB 2.1 asks for "mindestens eine E-Mail-Adresse oder
-ein Verweis auf die Kontaktseite"; a role mailbox from the register (EUDAMED, EMA) counts on its own, also when the
-company's website blocks bots. It is dropped only when its domain has neither an MX record nor an A record (no mail
-server; RFC 5321 falls back to A). Lookups over DNS-over-HTTPS (datanuc has no DNS), no mail is sent.
+Is the domain of a register role mailbox able to receive mail? A profile needs at least an e-mail address or a link
+to the contact page; a role mailbox from the register (EUDAMED, EMA) counts on its own, also when the company's
+website blocks bots. etl.enrich keeps it only when its domain has a real MX record (an A record alone often points at
+a CDN; null MX and "localhost" mean no mail). Lookups over DNS-over-HTTPS (the ETL host has no DNS resolver), no mail is sent.
 
 Raw before parse: raw/mail_mx/<day>/mx.jsonl {domain, mx: [...], a: bool, status}. etl.enrich applies it.
 

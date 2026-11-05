@@ -114,10 +114,15 @@ def main() -> None:
             c.post(f"/matchmaking/p/{tok_by_id[m['partner_id']]}/antwort", data={"meeting_id": m["id"], "decision": "accept"},
                    follow_redirects=False)
         c.post(f"/matchmaking/admin/{eid}/planen", follow_redirects=False)
+        # example survey answers (fictional participants) so the evaluation is not empty in the demo
+        for tok, (sat, ben, contacts, band, follow) in zip(tokens, [(5, 4, 3, "50k_250k", "yes"), (4, 4, 2, "10k_50k", "yes"),
+                                                                     (4, 3, 1, "open", "no"), (5, 5, 2, "gt250k", "yes")]):
+            c.post(f"/matchmaking/p/{tok}/umfrage", data={"satisfaction": sat, "benefit": ben, "contacts": contacts,
+                   "revenue_band": band, "follow_up": follow, "comment": "Beispielantwort (fiktiv)"}, follow_redirects=False)
     finally:
         with db() as conn:
             conn.execute("UPDATE app_user SET pw_hash = %s WHERE id = %s", (old, admin["id"]))
-    print(f"demo login: demo@example.org / {pw}")
+    print("demo login: demo@example.org (password set, not printed)")
     print(f"demo event: /matchmaking/{slug}  · agenda of a fictional participant: /matchmaking/p/{de[0]}")
 
 

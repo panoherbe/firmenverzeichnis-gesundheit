@@ -24,7 +24,7 @@ details[open] summary { margin-bottom:6px; }
 <nav class="helpnav" aria-label="{{ _('Hilfe') }}">
   <a href="#start">{{ _("Schnellstart") }}</a><a href="#suche">{{ _("Suchen") }}</a><a href="#filter">{{ _("Filter") }}</a>
   <a href="#profil">{{ _("Profil") }}</a><a href="#export">{{ _("Export") }}</a><a href="#konto">{{ _("Konto") }}</a>
-  <a href="#video">{{ _("Videos") }}</a><a href="#glossar">{{ _("Glossar") }}</a><a href="#datenschutz">{{ _("Datenschutz") }}</a><a href="#faq">FAQ</a>
+  {% if not gate_enabled %}<a href="#video">{{ _("Videos") }}</a>{% endif %}<a href="#glossar">{{ _("Glossar") }}</a><a href="#datenschutz">{{ _("Datenschutz") }}</a><a href="#faq">FAQ</a>
 </nav>
 
 <section class="h" id="start">
@@ -39,13 +39,13 @@ details[open] summary { margin-bottom:6px; }
 
 <section class="h" id="suche">
 <h2>{{ _("Suchen") }}</h2>
-<p>{{ _("Die Suche durchsucht Namen, Orte, Postleitzahlen, Websites, Registernummern und Produktbezeichnungen.") }}</p>
+<p>{{ _("Die Suche durchsucht Namen, Orte, Postleitzahlen, Branchen, Produktbezeichnungen und EUDAMED-Kennungen (SRN); ein Wort ab vier Buchstaben findet auch Wortformen (implantat → Implantate).") }}</p>
 <table>
 <thead><tr><th>{{ _("Eingabe") }}</th><th>{{ _("Bedeutung") }}</th></tr></thead>
 <tbody>
-<tr><td><code>endoskop tuttlingen</code></td><td>{{ _("beide Wörter (UND ist Standard)") }}</td></tr>
+<tr><td><code>implantat buxtehude</code></td><td>{{ _("beide Wörter (UND ist Standard)") }}</td></tr>
 <tr><td><code>implantat ODER prothese</code></td><td>{{ _("eines der Wörter") }}</td></tr>
-<tr><td><code>diagnostik NICHT labor</code> / <code>-labor</code></td><td>{{ _("ohne das Wort") }}</td></tr>
+<tr><td><code>diagnostik NICHT dental</code> / <code>-dental</code></td><td>{{ _("ohne das Wort") }}</td></tr>
 <tr><td><code>(berlin ODER potsdam) software</code></td><td>{{ _("Klammern gruppieren") }}</td></tr>
 <tr><td><code>"b braun"</code></td><td>{{ _("genau diese Wortfolge") }}</td></tr>
 <tr><td><code>orthop*</code></td><td>{{ _("Wortanfang (orthopädie, orthopedic …)") }}</td></tr>
@@ -122,7 +122,7 @@ details[open] summary { margin-bottom:6px; }
 <h2>FAQ</h2>
 <details><summary>{{ _("Warum fehlt ein Unternehmen?") }}</summary><p>{{ _("Das Verzeichnis baut auf amtlichen Registern auf. Wer dort nicht steht, fehlt noch. Unternehmen können sich über das Support-Formular melden; neue Registereinträge kommen bei jeder Aktualisierung dazu.") }}</p></details>
 <details><summary>{{ _("Warum gibt es keine Ansprechpersonen?") }}</summary><p>{{ _("Aus Datenschutzgründen speichern wir nur Unternehmen, ihre Kontaktseiten und Funktionspostfächer, keine Namen oder persönlichen Adressen.") }}</p></details>
-<details><summary>{{ _("Wie aktuell sind die Daten?") }}</summary><p>{{ _("Register werden monatlich abgeglichen, das ganze Verzeichnis mindestens quartalsweise bereinigt. Das Datum der letzten Aktualisierung steht unter Quellen & Lizenzen.") }}</p></details>
+<details><summary>{{ _("Wie aktuell sind die Daten?") }}</summary><p>{{ _("Im Betrieb werden Register monatlich abgeglichen und das ganze Verzeichnis mindestens quartalsweise bereinigt. Den Datenstand nennt die Seite Quellen & Lizenzen.") }}</p></details>
 <details><summary>{{ _("Ein Eintrag ist falsch. Was tun?") }}</summary><p>{{ _("Im Profil auf „Melden“ klicken. Sie bekommen sofort eine Ticketnummer.") }} <a href="/support">{{ _("Support") }}</a></p></details>
 </section>
 {% endblock %}

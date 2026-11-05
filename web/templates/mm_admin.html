@@ -6,7 +6,7 @@
 <div class="crumb"><a href="/matchmaking">{{ _("Matchmaking") }}</a></div>
 <div class="spread"><h1>{{ _("Organisation") }}</h1>
   <div class="row"><a class="btn" href="/matchmaking/admin/neu">+ {{ _("Neue Veranstaltung") }}</a>
-  <a class="btn sec" href="/matchmaking/admin/international">{{ _("Internationale Datenbank") }} ({{ intl.n }})</a></div></div>
+  <a class="btn sec" href="/matchmaking/admin/international">{{ _("Internationale Datenbank") }}{% if gate_enabled %} ({{ _("Auswahl") }}){% else %} ({{ intl.n }}){% endif %}</a></div></div>
 <p class="help">{{ _("Hier legen Sie Veranstaltungen an, sehen Anmeldungen und Gespräche und werten die Umfrage aus.") }}</p>
 <p class="note">{{ _("Keine Kalt-E-Mails: Einladungen nur über eigene Kanäle (Newsletter, Website, AHK-Netz, Verbände). Werbe-E-Mails ohne Einwilligung sind nach § 7 UWG unzulässig. Die Plattform verschickt keine E-Mails.") }}</p>
 <div class="scroll"><table>

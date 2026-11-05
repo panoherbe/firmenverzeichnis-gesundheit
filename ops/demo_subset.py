@@ -40,9 +40,13 @@ def main() -> None:
     n_total = int(sys.argv[1]) if len(sys.argv) > 1 else 100
     n_full = int(sys.argv[2]) if len(sys.argv) > 2 else 10
     conn = connect()
-    base = "verified AND hidden_reason IS NULL"
+    # never show records with visible data faults (hand check 2026-11-06): city names in English or run together
+    # ("Munich", "WinsenLuhe"), plus companies listed in DEMO_EXCLUDE (e.g. a seat outside its federal state)
+    exclude = [x for x in os.environ.get("DEMO_EXCLUDE", "").split(",") if x]
+    base = ("verified AND hidden_reason IS NULL AND city !~ '[a-zäöüß][A-ZÄÖÜ]' AND city NOT IN ('Munich', 'Cologne', "
+            "'Nuremberg', 'Frankfurt', 'Hanover', 'Brunswick') AND id <> ALL(%(ex)s)")
     cand = conn.execute(f"""SELECT id, name, sectors, region, tier, emdn_groups, size_class, products IS NOT NULL AS pharma,
-        {SCORE} AS score FROM company WHERE {base} ORDER BY score DESC, public_awards DESC, id""").fetchall()
+        {SCORE} AS score FROM company WHERE {base} ORDER BY score DESC, public_awards DESC, id""", {"ex": exclude}).fetchall()
     by_id = {r[0]: r for r in cand}
     chosen: list[str] = []
 
@@ -51,8 +55,8 @@ def main() -> None:
             chosen.append(cid)
 
     for _label, cond in EXAMPLES:
-        for (cid,) in conn.execute(f"SELECT id FROM company WHERE {base} AND {cond} "
-                                   f"ORDER BY {SCORE} DESC, id LIMIT 3").fetchall():
+        for (cid,) in conn.execute(f"SELECT id FROM company WHERE {base} AND {cond.replace('%', '%%')} "
+                                   f"ORDER BY {SCORE} DESC, id LIMIT 3", {"ex": exclude}).fetchall():
             add(cid)
     # every filter value at least once (best-filled company that has it)
     keys = [("sector", lambda r: r[2] or []), ("region", lambda r: [r[3]]), ("tier", lambda r: [r[4]]),
@@ -90,12 +94,17 @@ def main() -> None:
     conn.execute("DELETE FROM company_member WHERE company_id <> ALL(%s)", (keep,))
     conn.execute("""DELETE FROM source_record s WHERE NOT EXISTS
         (SELECT 1 FROM company_member m WHERE m.source = s.source AND m.source_id = s.source_id)""")
+    # first take the locked companies' SRN words out of the search index (else they stay findable), then empty the fields
+    conn.execute("""UPDATE company SET search = ts_delete(search, tsvector_to_array(to_tsvector('simple',
+        array_to_string(coalesce(srns, '{}'), ' ') || ' ' || coalesce(vat, '') || ' ' || coalesce(register_no, '') || ' ' ||
+        coalesce(lei, '') || ' ' || coalesce(email_role, '')))) WHERE id = ANY(%s)""", (locked,))
     conn.execute("""UPDATE company SET preview_locked = true, email_role = NULL, contact_url = NULL, vat = NULL,
         register_no = NULL, lei = NULL, srns = '{}' WHERE id = ANY(%s)""", (locked,))
     conn.execute("""UPDATE source_record s SET email_role = NULL, vat = NULL, register_no = NULL, register_ra = NULL,
         lei = NULL, srn = NULL FROM company_member m
         WHERE m.source = s.source AND m.source_id = s.source_id AND m.company_id = ANY(%s)""", (locked,))
     conn.execute("UPDATE source_record SET facts = '{}'::jsonb, raw_path = '', raw_sha256 = ''")
+
     # international base: a small sample, at most 3 companies per country
     conn.execute("""DELETE FROM intl_company WHERE id NOT IN (SELECT id FROM (SELECT id, row_number() OVER
         (PARTITION BY country ORDER BY website IS NULL, name) AS k FROM intl_company) x WHERE k <= 3)""")

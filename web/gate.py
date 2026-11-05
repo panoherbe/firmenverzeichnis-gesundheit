@@ -237,8 +237,10 @@ def welcome(request: Request):
     if not ENABLED:
         raise HTTPException(404)
     t = tenant(request) or {}
+    from web.common import lang
+    welcome = t.get("welcome_en" if lang() == "en" else "welcome", "") or t.get("welcome", "")
     resp = templates.TemplateResponse(request, "willkommen.html",
-                                      dict(embed=False, demo_org=t.get("name", ""), welcome=t.get("welcome", "")))
+                                      dict(embed=False, demo_org=t.get("name", ""), welcome=welcome))
     resp.headers["X-Robots-Tag"] = "noindex, nofollow"
     return resp
 

@@ -3,7 +3,8 @@ Search syntax → Postgres tsquery (config 'simple').
 
     endoskop UND (tuttlingen ODER berlin) NICHT dental      German or English operators: UND/AND, ODER/OR, NICHT/NOT
     "b braun"                                              phrase (words in this order)
-    implant*                                               prefix
+    implant*                                               prefix (a plain word of 4+ letters also matches as a word
+                                                           stem: "implantat" finds "Implantate", 2026-11-06)
     -dental                                                same as NICHT dental
 Two words without an operator mean AND. Unbalanced brackets or stray operators are repaired, never an error.
 Returns (tsquery text, list of plain terms for ILIKE on the name) or (None, []) when nothing searchable is left.
@@ -24,7 +25,7 @@ def clean(word: str) -> str:
 
 
 def term(word: str) -> str | None:
-    prefix = word.endswith("*")
+    prefix = word.endswith("*") or (len(clean(word)) >= 4 and clean(word).isalpha())
     parts = [clean(p) for p in re.split(r"[.\-/]", word.rstrip("*"))]
     parts = [p for p in parts if p]
     if not parts:

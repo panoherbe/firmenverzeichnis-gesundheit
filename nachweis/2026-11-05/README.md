@@ -1,13 +1,14 @@
 # Nachweis 05.11.2026
 
-Woher die Zahlen in der README kommen. Gemessen am 05.11.2026 gegen 17:00 MEZ an der Datenbank der laufenden
-Installation; die Demo-Installation (seit 05.11.2026 abends nur mit Zugangslink, auf Anfrage) läuft mit einem Abzug derselben Datenbank.
+Woher die Zahlen in der README kommen. Gemessen am 05.11.2026 an der Datenbank des Gesamtbestands (Endstand nachts,
+siehe unten). Die Demo-Installation zeigt seit 06.11.2026 nur eine Auswahl von 100 Unternehmen (Zugang auf Anfrage);
+die Zahlen hier gelten für den Gesamtbestand.
 
 | Datei | Inhalt |
 |---|---|
 | [`zaehlungen.sql`](zaehlungen.sql) | die Zählabfragen (PostgreSQL) |
 | [`zaehlungen-ausgabe.txt`](zaehlungen-ausgabe.txt) | ihre Ausgabe |
-| [`api-health-demo.json`](api-health-demo.json) | `GET /api/health` der Demo-Installation zum selben Zeitpunkt |
+| [`api-health-demo.json`](api-health-demo.json) | `GET /api/health` der Demo-Installation am 05.11.2026 nachmittags, als sie noch den Gesamtbestand zeigte (heute: Auswahl) |
 
 ## Ergebnisse
 
@@ -34,7 +35,7 @@ Gegenüber der ersten Neuprüfung (4.012, unten) gelten drei strengere Regeln:
 - **Postfach** nur bei einem echten MX-Eintrag. Kein A-Eintrag allein (der zeigt oft auf CDN/Proxy), kein Null-MX und
   kein „localhost“ (betrifft die Postfächer von 32 Firmen).
 - **Postfach auf einer fremd wirkenden Domain** (weder Firmenname noch Website): Die Startseite oder das Impressum der
-  Domain muss die Firma nennen (Name oder PLZ). die Postfächer von 94 der 179 Firmen zählen nicht mehr, darunter Postfächer bei Beratern und
+  Domain muss die Firma nennen (Name oder PLZ). Die Postfächer von 94 der 179 Firmen zählen nicht mehr, darunter Postfächer bei Beratern und
   Prüflaboren, aber auch einige Konzern-Domains. Das ist streng, aber belegt.
 - **Kontaktseite** nur mit Kontakt- oder Impressumsadresse im letzten Pfadteil. Startseiten und „Status 200 mit
   404-Text“-Seiten fallen damit heraus: 152 Links weg.

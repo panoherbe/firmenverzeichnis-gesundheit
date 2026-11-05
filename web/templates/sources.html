@@ -10,6 +10,12 @@
 <tr><td><a href="{{ r.url }}" target="_blank" rel="noopener">{{ r.title }}</a><br><span class="small">{{ r.note or "" }}</span></td>
 <td>{% if gate_enabled %}{{ _("Auswahl") }}{% elif r.id == "gleif" %}{{ gleif }}{% else %}{{ r.n }}{% endif %}</td><td class="small">{{ r.licence }}</td><td class="small">{{ r.attribution }}</td></tr>
 {% endfor %}
+<tr><td>{{ _("Websites der Unternehmen") }}<br><span class="small">{{ _("nur Fakten: Kontaktseite, Größenangabe der Firma; robots.txt und Nutzungsvorbehalte (§ 44b UrhG) beachtet") }}</span></td><td>–</td><td class="small">{{ _("Fakten, keine Texte, Logos oder Bilder") }}</td><td class="small">{{ _("Link auf die Website im Profil") }}</td></tr>
+<tr><td>{{ _("Lizenzierter Datenbezug") }}<br><span class="small">{{ _("Umsatzgrößenklassen, Freischaltung zum Vertragsstart") }}</span></td><td>–</td><td class="small">{{ _("nach Lizenzvertrag, Bedingungen vorab an den Auftraggeber") }}</td><td class="small">{{ _("an der Angabe im Profil") }}</td></tr>
 </tbody>
+</table>
+<p class="small">{{ _("Datenstand") }}: {{ data_date }}</p>
+<table style="display:none">
+<tbody>
 </table>
 {% endblock %}

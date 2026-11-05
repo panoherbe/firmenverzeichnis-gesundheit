@@ -10,7 +10,7 @@ code, pre { background:var(--soft); border-radius:4px; } code { padding:1px 6px;
 <p>Read-only REST API, JSON over HTTPS. Same data and filters as the search page; every record carries its sources.
 Machine-readable schema: <a href="/openapi.json">/openapi.json</a> (OpenAPI 3). Use within the licence terms (<a href="/quellen">sources &amp; licences</a>).</p>
 <h2>Quick start</h2>
-<pre>curl "{{ base }}/api/v1/companies?q=endoscope*&amp;sector=medtech&amp;region=DE-BW&amp;limit=10"
+<pre>curl "{{ base }}/api/v1/companies?q=implant*&amp;sector=medtech&amp;limit=10"
 curl "{{ base }}/api/v1/stats?sector=pharma"
 curl -o list.xlsx "{{ base }}/export.xlsx?product=W"</pre>
 {% if gate_locked is defined and gate_enabled %}<p class="small">Closed preview: these calls work in this browser (your access link set a cookie); from the command line they return 401. In the contract, access to the API is set up as agreed.</p>{% endif %}
