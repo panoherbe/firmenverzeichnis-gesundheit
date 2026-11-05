@@ -8,13 +8,17 @@ A contact path counts only if, today:
                 HTML on the company's host, robots.txt allows it, and the text has an imprint/contact keyword, an
                 e-mail address or phone number, and a distinctive word of the company name;
   else          the usual contact/imprint paths of the company's site are tried with the same test (search again);
-  e-mail only   the mailbox's domain serves a page (home or imprint) that names the company.
+  e-mail        counted separately (etl.sources.mail_mx: the domain needs a real MX record). Mailboxes on a domain
+                that matches neither the company name nor its website are checked with --maildomain: the domain's
+                home or imprint page must name the company (name word or register postcode), else the mailbox
+                does not count (reviewer 2026-11-05: mailboxes of an external consultant and a test lab).
 Raw before parse: raw/contact_recheck/<day>/recheck.jsonl {cid, kind, url, ok, why}; pages/ holds the HTML (gzip,
 sha256 in the record). etl.enrich applies the result: contact_url only from ok rows, email_role dropped when its
 domain did not pass.
 
     python -m etl.sources.contact_recheck            # first pass, 16 threads
     python -m etl.sources.contact_recheck --retry    # failures from blocking/timeouts again, 3 threads, 2 s pause
+    python -m etl.sources.contact_recheck --maildomain   # third-party mailbox domains -> maildomain.jsonl
 """
 
 from __future__ import annotations
@@ -38,14 +42,16 @@ from etl.common.fetch import USER_AGENT
 from etl.common.raw import latest_dir, run_dir
 from etl.sources.contact_probe import CT, KW, MORE, name_words
 
-STRICT = re.compile(r"^(?:kontakt|contact|impressum|imprint|legal|legal-notice|rechtliches|impressum-datenschutz)"
-                    r"(?:[-_](?:us|uns|formular|form|page|seite|zu-uns|de|en))?(?:\.(?:html?|php|aspx?))?$", re.I)
+# last path segment starts with a contact/imprint word, alone or followed by a separator ("kontakt-anfahrt",
+# "impressum.html", "contact_us"); never product or error pages ("kontaktlinsen", "contact-lenses", "fehler-404")
+STRICT = re.compile(r"^(?:kontakt|contact|impressum|imprint|legal|legal-notice|rechtliches)(?:[-_.][\w.-]*)?$", re.I)
+NOT_CONTACT = re.compile(r"lens|linse|thermom|newsletter|404|error|fehler|not-found", re.I)
 TAG = re.compile(r"<(script|style|noscript)[^>]*>.*?</\1>|<[^>]+>", re.I | re.S)
 
 
 def strict_url(url: str) -> bool:
     segs = [s for s in urlparse(url).path.split("/") if s]
-    return bool(segs) and bool(STRICT.match(segs[-1]))
+    return bool(segs) and bool(STRICT.match(segs[-1])) and not NOT_CONTACT.search(segs[-1])
 
 
 def host(url: str) -> str:
@@ -167,5 +173,46 @@ def main() -> None:
     print(f"contact recheck: {len(rows)} companies, {n_ok} with a contact path that passed", flush=True)
 
 
+def foreign_domain(email: str, name: str, website: str | None) -> bool:
+    """True when the mailbox domain matches neither a distinctive name word nor the website's host."""
+    d = email.split("@")[1].lower()
+    if website and host(website).endswith(d.removeprefix("www.")) or website and d.endswith(host(website)):
+        return False
+    label = re.sub(r"[^a-z0-9]", "", d.split(".")[-2] if d.count(".") >= 1 else d)
+    return not any(w.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss")[:5] in label or w[:5] in label
+                   for w in name_words(name))
+
+
+def maildomain() -> None:
+    resolver.install()
+    with connect() as conn:
+        rows = [r for r in conn.execute("""SELECT id, name, website, email_role, post_code FROM company
+                WHERE verified AND hidden_reason IS NULL AND email_role IS NOT NULL""").fetchall()
+                if foreign_domain(r[3], r[1], r[2])]
+    out = latest_dir("contact_recheck") / "maildomain.jsonl"
+    c = httpx.Client(headers={"User-Agent": USER_AGENT, "Accept": "text/html"}, timeout=12, follow_redirects=True)
+
+    def one(row) -> dict:
+        cid, name, _w, email, pc = row
+        d = email.split("@")[1]
+        for u in (f"https://{d}/", f"https://www.{d}/", f"https://{d}/impressum", f"https://www.{d}/impressum"):
+            try:
+                r = c.get(u)
+            except Exception:  # noqa: BLE001
+                continue
+            if r.status_code != 200:
+                continue
+            text = re.sub(r"\s+", " ", TAG.sub(" ", r.text)).lower()
+            if any(w in text for w in name_words(name)) or (pc and re.search(rf"\b{pc}\b", text)):
+                return {"cid": cid, "domain": d, "ok": True, "url": u}
+        return {"cid": cid, "domain": d, "ok": False}
+
+    with out.open("w") as f, ThreadPoolExecutor(max_workers=8) as pool:
+        recs = list(pool.map(one, rows))
+        for r in recs:
+            f.write(json.dumps(r) + "\n")
+    print(f"maildomain: {len(recs)} mailboxes on a foreign-looking domain, {sum(r['ok'] for r in recs)} name the company")
+
+
 if __name__ == "__main__":
-    main()
+    maildomain() if "--maildomain" in sys.argv else main()

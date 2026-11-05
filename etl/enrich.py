@@ -236,14 +236,32 @@ def main() -> None:
     # a register role mailbox counts on its own (LB: "mindestens eine E-Mail-Adresse oder ein Verweis auf die
     # Kontaktseite"); it is dropped only when its domain measurably cannot receive mail (etl.sources.mail_mx)
     try:
+        # only a real MX counts (reviewer 2026-11-05: an A record alone often points at a CDN; null MX "0 ." and
+        # "localhost" mean no mail); lookup failures are not judged
+        def real_mx(r: dict) -> bool:
+            return any(m.split()[-1].rstrip(".").lower() not in ("", "localhost") for m in r["mx"])
         dead = {r["domain"] for r in map(json.loads, (latest_dir("mail_mx") / "mx.jsonl").open())
-                if r["status"] == "NXDOMAIN" or (r["status"] == "ok" and not r["mx"] and not r["a"])}
+                if r["status"] == "NXDOMAIN" or (r["status"] == "ok" and not real_mx(r))}
         dead_mail = [cid for cid, mail in conn.execute(
             "SELECT id, email_role FROM company WHERE email_role IS NOT NULL").fetchall()
             if mail.split("@")[1].lower() in dead]
-        print(f"  mail domains without mail server: {len(dead)} ({len(dead_mail)} companies)")
+        print(f"  mail domains without a real MX: {len(dead)} ({len(dead_mail)} companies)")
+        md = latest_dir("contact_recheck") / "maildomain.jsonl"
+        if md.exists():
+            foreign = [r["cid"] for r in map(json.loads, md.open()) if not r["ok"]]
+            dead_mail += foreign
+            print(f"  mailboxes on a domain that does not name the company: {len(foreign)} dropped")
     except FileNotFoundError:
         pass
+
+    # a contact link counts only with a contact/imprint address (start pages and "200 with 404 text" pages out)
+    from etl.sources.contact_recheck import strict_url
+    n_strict = 0
+    for u in up.values():
+        if u.get("contact_url") and not strict_url(u["contact_url"]):
+            u["contact_url"] = None
+            n_strict += 1
+    print(f"  contact links without a contact/imprint address dropped: {n_strict}")
 
     # EMA products
     for cid, names in conn.execute("""

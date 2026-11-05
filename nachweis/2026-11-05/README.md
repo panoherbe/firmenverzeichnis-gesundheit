@@ -14,7 +14,7 @@ Installation; die Demo-Installation (seit 05.11.2026 abends nur mit Zugangslink,
 | Zahl in der README | gemessen | Abfrage |
 |---|---|---|
 | 9.744 Unternehmen, 4.787 registergeprüft | 9.744 / 4.787 (Hersteller und Zulassungsinhaber 3.399, Bevollmächtigte und Importeure 1.388) | 1 |
-| 4.012 mit geprüftem Kontaktweg (Funktionspostfach oder Kontakt-/Impressumsseite), Neuzählung 05.11. nachts | 4.012; dazu 321 nur mit Website, 454 ohne Kontaktweg. Davon Funktionspostfach aus dem Register mit Mailserver 3.372, geprüfte Kontakt-/Impressumsseite 2.904, beides 2.264 | 2 |
+| 3.964 mit geprüftem Kontaktweg (Funktionspostfach oder Kontakt-/Impressumsseite), Endstand 05.11. nachts | 3.964; dazu 303 nur mit Website, 520 ohne Kontaktweg. Davon Funktionspostfach aus dem Register (echter MX-Eintrag, Domain gehört zur Firma) 3.249, Kontakt-/Impressumsseite mit Kontakt- oder Impressumsadresse 2.846, beides 2.131 | 2 |
 | 2.013 mit Produktkennung | 2.013 (EMDN-Produktgruppe 1.734, Arzneimittel aus EMA 331) | 3 |
 | 405 mit Größenklasse | 405 registergeprüfte (614 Firmen mit einer Beschäftigtenzahl insgesamt), nach den Lesefehler-Regeln vom 05.11. nachts | 3 |
 | 6.450 internationale Unternehmen aus 80 Ländern | 6.450 / 80 (CORDIS 3.711, EMA 2.739) | 5 |
@@ -27,7 +27,32 @@ Impressumsseite nachgesucht (zwei Läufe, robots.txt beachtet). Gezählt wird ei
 wirklich eine Impressums- oder Kontaktseite ist (Stichwort und E-Mail-Adresse oder Telefon): 94 von 116 Treffern;
 die übrigen 22 waren Login-Seiten, „Seite nicht gefunden“ mit Status 200 oder Seiten, deren Inhalt nur per Skript lädt.
 
-## Strenge Neuprüfung aller Kontaktwege (05.11.2026 nachts)
+## Endstand Kontaktwege (05.11.2026 nachts, nach dem zweiten Prüfbericht): 3.964
+
+Gegenüber der ersten Neuprüfung (4.012, unten) gelten drei strengere Regeln:
+
+- **Postfach** nur bei einem echten MX-Eintrag. Kein A-Eintrag allein (der zeigt oft auf CDN/Proxy), kein Null-MX und
+  kein „localhost“ (betrifft die Postfächer von 32 Firmen).
+- **Postfach auf einer fremd wirkenden Domain** (weder Firmenname noch Website): Die Startseite oder das Impressum der
+  Domain muss die Firma nennen (Name oder PLZ). die Postfächer von 94 der 179 Firmen zählen nicht mehr, darunter Postfächer bei Beratern und
+  Prüflaboren, aber auch einige Konzern-Domains. Das ist streng, aber belegt.
+- **Kontaktseite** nur mit Kontakt- oder Impressumsadresse im letzten Pfadteil. Startseiten und „Status 200 mit
+  404-Text“-Seiten fallen damit heraus: 152 Links weg.
+- Nachgesucht wurden außerdem die 321 Firmen nur mit Website: 88 neue Kontakt-/Impressumsseiten, inhaltlich geprüft.
+
+**Neue Zufallsstichprobe 100 aus den 3.964** ([`stichprobe-kontakt-v3-100.csv`](stichprobe-kontakt-v3-100.csv),
+Ziehung `ORDER BY md5(id || 'stichprobe-2026-11-05-v3')`), je Firma von Hand geprüft (Seite geladen, MX abgefragt,
+Domain-Zugehörigkeit):
+
+| | ja | ja, Konzern | nein | offen |
+|---|---|---|---|---|
+| gehört zur Gesundheitswirtschaft | 89 | – | 1 | 10 |
+| Kontaktweg funktioniert und gehört der Firma | 86 | 9 | 1 | 4 |
+
+Alle 89 Branchen-Treffer haben einen funktionierenden Kontaktweg. Die offenen Fälle haben nur einen EUDAMED-Eintrag
+und keine eigene Web-Präsenz (Liquidation, geparkte Domain, Baustellenseite).
+
+## Erste strenge Neuprüfung (05.11.2026 nachts, Zwischenstand 4.012)
 
 Anlass: Eine Zufallsstichprobe von 100 der damals 4.139 gezählten Firmen, von Hand im Web geprüft
 ([`stichprobe-kontakt-100.csv`](stichprobe-kontakt-100.csv), Ziehung `ORDER BY md5(id || 'stichprobe-2026-11-05-v2')`):

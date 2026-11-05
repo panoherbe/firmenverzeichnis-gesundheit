@@ -4,6 +4,8 @@
 raw/
 var/
 *.csv
+# hand-checked samples are published evidence (company names and own short reasons, no personal data)
+!nachweis/*/stichprobe-*.csv
 *.xlsx
 *.parquet
 *.duckdb

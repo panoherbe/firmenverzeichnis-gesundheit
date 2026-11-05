@@ -74,7 +74,9 @@ APP_EN = {
     "Suchbegriff": "Search term", "Branche": "Sector", "Rolle": "Role", "Bundesland": "Federal state",
     "Größe (Beschäftigte)": "Size (employees)", "Umsatz": "Revenue",
     "wird zum Vertragsstart freigeschaltet": "switched on at contract start", "Produktgruppe (EMDN)": "Product group (EMDN)",
-    "abgeleitet aus der eigenen Website": "derived from the company's own website", "Umsatzklassen: wird zum Vertragsstart freigeschaltet.": "Revenue classes: switched on at contract start.", "Umsatzklasse": "Revenue class", "Produktgruppe": "Product group",
+    "abgeleitet aus der eigenen Website": "derived from the company's own website", "Umsatzklassen: wird zum Vertragsstart freigeschaltet.": "Revenue classes: switched on at contract start.",
+    "Größe": "Size", "EU-KMU-Klassen nach Beschäftigten, aus der Angabe des Unternehmens auf seiner eigenen Website; die Quelle steht im Profil. Nicht für jedes Unternehmen bekannt.": "EU SME classes by employees, from the company's own statement on its website; the source is shown in the profile. Not known for every company.",
+    "Suche nach Umsatzgrößenklassen: Funktion gebaut; Umsatzdaten über lizenzierten Datenbezug, Freischaltung zum Vertragsstart.": "Search by revenue size class: built; revenue data from a licensed data supply, switched on at contract start.", "Umsatzklasse": "Revenue class", "Produktgruppe": "Product group",
     "alle": "all", "Suchen": "Search", "Zurücksetzen": "Reset", "Unternehmen": "Companies",
     "Ort": "Location", "Öff. Aufträge": "Public contracts", "Keine Treffer.": "No results.",
     "auch nicht registergeprüfte": "include not register-verified", "nur mit Kontaktweg": "only with contact path",
@@ -282,6 +284,7 @@ def search(f: dict, limit: int, offset: int, fields: str = "*", order: str = "re
 
 
 def filters(q="", sector="", tier="", region="", size="", revenue="", product="", contact=False, alle=False) -> dict:
+    revenue = "" if REVENUE_LOCKED else revenue  # locked: a hand-made ?revenue= has no effect and shows no chip
     return dict(q=q.strip() or None, sector=sector or None, tier=tier or None, region=region or None, size=size or None,
                 revenue=revenue or None, product=product or None, contact=contact, verified=not alle)
 
@@ -435,7 +438,7 @@ def api_list(q: str = "", sector: str = "", tier: str = "", region: str = "", si
              limit: int = Query(100, ge=1, le=1000), offset: int = Query(0, ge=0)):
     """Search companies. `q` supports AND/OR/NOT (also UND/ODER/NICHT), brackets, "phrases" and prefix*.
     Filters: sector (medtech, pharma, biotech, digital_health), tier (A, B, C), region (ISO 3166-2, e.g. DE-BW),
-    size (micro, small, medium, large), revenue (r1–r4), product (EMDN category letter, e.g. Z), contact=true,
+    size (micro, small, medium, large), revenue (r1–r4; switched on at contract start, ignored until then), product (EMDN category letter, e.g. Z), contact=true,
     alle=true includes records that are not register-verified."""
     total, rows, facets = search(filters(q, sector, tier, region, size, revenue, product, contact, alle), limit, offset)
     return {"total": total, "limit": limit, "offset": offset, "facets": facets, "items": [clean(r) for r in rows]}
