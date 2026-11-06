@@ -121,7 +121,7 @@ aside.filters .signin { display:block; margin:14px 4px 0; font-size:13px; }
   <div class="searchbar">
     <label class="sr" for="q">{{ _("Suchbegriff") }}</label>
     <span class="sicon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></span>
-    <input id="q" name="q" value="{{ q }}" placeholder="{{ _('z. B. Implantat ODER Prothese') }}" autocomplete="off" data-tour="{{ _('Suchen Sie nach Name, Produkt, Ort, PLZ, Website oder Registernummer. Mehrere Wörter werden mit UND verknüpft; ODER, NICHT, Klammern und \"Phrasen\" gehen auch.') }}">
+    <input id="q" name="q" value="{{ q }}" placeholder="{{ _('z. B. Implantat') }}" autocomplete="off" data-tour="{{ _('Suchen Sie nach Name, Produkt, Ort oder PLZ. Mehrere Wörter verbindet die Suche mit UND; ODER, NICHT, Klammern und \"Phrasen\" gehen auch.') }}">
     <button type="submit">{{ _("Suchen") }}</button>
   </div>
   <div class="examples">{{ _("Beispiele") }}:
@@ -175,7 +175,7 @@ aside.filters .signin { display:block; margin:14px 4px 0; font-size:13px; }
       <div class="small" style="margin-top:10px"><a href="/konto">{{ _("Suchverlauf") }} →</a></div>
     </div>
     {% else %}
-    <p class="small signin"><a href="/login?next=/">{{ _("Anmelden, um Suchen zu speichern") }}</a></p>
+    <p class="small signin">{% if gate_enabled %}<a href="/willkommen">{{ _("Mit Demo-Konto Suchen speichern") }}</a>{% else %}<a href="/login?next=/">{{ _("Anmelden, um Suchen zu speichern") }}</a>{% endif %}</p>
     {% endif %}
   </aside>
 
@@ -192,7 +192,7 @@ aside.filters .signin { display:block; margin:14px 4px 0; font-size:13px; }
       <div class="exp small" data-tour="{{ _('Die Trefferliste geht als Excel, CSV oder PDF heraus, die Statistik dazu auch als Grafik (JPG/PNG).') }}">{{ _("Treffer als") }}
         <a href="/export.xlsx?{{ qs }}">Excel</a><a href="/export.csv?{{ qs }}">CSV</a><a href="/export.pdf?{{ qs }}">PDF</a>
         <a href="/statistik?{{ qs }}">{{ _("Statistik") }}</a><a href="/api/v1/companies?{{ qs }}">JSON</a></div>
-      {% if gate_enabled %}<p class="small" style="margin:4px 0 0">{{ _("Vorschau: Exporte mit der Auswahl; Kontakt- und Registerangaben bei einem Teil vollständig, Gesamtbestand im Vertrag.") }}</p>{% endif %}
+      {% if gate_enabled %}<p class="small" style="margin:4px 0 0">{{ _("Vorschau: 100 ausgewählte Unternehmen, 10 davon vollständig mit Kontakt- und Registerangaben. Alles Weitere im Vertrag.") }}</p>{% endif %}
     </div>
     {% if user and (q or sector or region or tier or size or revenue or product or contact) %}
     <form method="post" action="/konto/suche" class="savesearch noprint">
@@ -207,14 +207,14 @@ aside.filters .signin { display:block; margin:14px 4px 0; font-size:13px; }
     <tbody>
     {% for r in rows %}
     <tr>
-      <td><a class="name" href="/firma/{{ r.id }}{% if embed %}?embed=1{% endif %}" {% if loop.first %}data-tour="{{ _('Ein Klick öffnet das Profil mit Kontaktweg, Produkten, Registernummern und Quellen.') }}"{% endif %}>{{ r.name }}</a>{% if r.verified %} <span class="ok vf" title="{{ _('registergeprüft') }}">✓</span>{% endif %}
+      <td><a class="name" href="/firma/{{ r.id }}{% if embed %}?embed=1{% endif %}" {% if loop.first %}data-tour="{{ _('Ein Klick öffnet das Profil mit Kontaktweg, Produkten, Registernummern und Quellen.') }}"{% endif %}>{{ r.name }}</a>{% if gate_enabled and not r.preview_locked %} <span class="tag full">{{ _("vollständig") }}</span>{% endif %}{% if r.verified %} <span class="ok vf" title="{{ _('registergeprüft') }}">✓</span>{% endif %}
           <span class="small sub">{{ _(TIERS.get(r.tier, "")) }}{% if r.domain %} · {{ r.domain }}{% endif %}{% if r.size_class %} · {{ _(SIZES[r.size_class]) }}{% endif %}</span></td>
       <td class="hide-s loc">{{ r.post_code or "" }} {{ r.city or "" }}<br><span class="small">{{ REGIONS.get(r.region, "") }}</span></td>
       <td>{% for s in r.sectors %}<a class="tag" href="?{{ request.query_params | qs_with(sector=s, page='') }}">{{ _(SECTORS[s]) }}</a>{% endfor %}</td>
       <td class="hide-s">{% for g in (r.emdn_groups or [])[:3] %}<a class="tag" href="?{{ request.query_params | qs_with(product=g, page='') }}" title="{{ _(EMDN.get(g, g)) }}">{{ _(EMDN.get(g, g)) }}</a>{% endfor %}</td>
     </tr>
     {% else %}
-    <tr><td colspan="4" class="empty">{{ _("Keine Treffer.") }} <a href="/hilfe#suche">{{ _("Suchhilfe") }}</a></td></tr>
+    <tr><td colspan="4" class="empty">{% if gate_enabled %}{{ _("Hier noch nichts. Die Vorschau enthält 100 ausgewählte Unternehmen.") }} {{ _("Probieren Sie") }} <a href="/?q=Endoskop*">Endoskop*</a> {{ _("oder") }} <a href="/?q=Hamburg">Hamburg</a> · <a href="/">{{ _("Zurücksetzen") }}</a>{% else %}{{ _("Keine Treffer.") }} <a href="/hilfe#suche">{{ _("Suchhilfe") }}</a>{% endif %}</td></tr>
     {% endfor %}
     </tbody>
     </table>
@@ -223,7 +223,6 @@ aside.filters .signin { display:block; margin:14px 4px 0; font-size:13px; }
     {% if page > 1 %}<a href="?{{ request.query_params | qs_with(page=page - 1) }}">← {{ _("zurück") }}</a>{% endif %}
     <span class="small">{{ _("Seite") }} {{ page }} {{ _("von") }} {{ pages }}</span>
     {% if page < pages and not (gate_enabled and page >= PREVIEW_PAGES) %}<a href="?{{ request.query_params | qs_with(page=page + 1) }}">{{ _("weiter") }} →</a>{% endif %}
-    {% if gate_enabled and pages > PREVIEW_PAGES %}<br><span class="small">{{ _("Vorschau: Blättern bis Seite {n}; alle Zählungen sind vollständig. Vollzugriff im Vertrag.").format(n=PREVIEW_PAGES) }}</span>{% endif %}
     </p>
   </section>
 </div>

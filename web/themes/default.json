@@ -11,5 +11,6 @@
  "radius": "6px",
  "font": "\"Inter\", system-ui, -apple-system, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, sans-serif",
  "provider": "Anbieter: Panagiotis Herbe, Hamburg",
- "preview_notice": ""
+ "preview_notice": "",
+ "preview_notice_en": ""
 }

@@ -14,6 +14,7 @@
 {% block main %}
 <div class="card login" style="max-width:420px;margin:30px auto">
 <h1>{{ _("Anmelden") }}</h1>
+{% if gate_enabled %}<p class="help">{{ _("Für die Vorschau genügt ein Klick.") }} <a href="/willkommen">{{ _("Zu den Demo-Konten") }}</a></p>{% endif %}
 {% if error %}<p class="hint" role="alert">{{ _("Anmeldung fehlgeschlagen.") }}</p>{% endif %}
 <form method="post" action="/login" style="display:grid;gap:10px">
   <input type="hidden" name="next" value="{{ next }}">

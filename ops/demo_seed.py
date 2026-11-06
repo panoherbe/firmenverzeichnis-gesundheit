@@ -74,7 +74,7 @@ def main() -> None:
                         "partners from Finland, Sweden and Denmark.",
             "tz": "Europe/Berlin", "date": "2027-03-10", "starts": "09:30", "ends": "12:30", "b2b_start": "10:00",
             "b2b_end": "12:00", "slot_minutes": "20", "gap_minutes": "5", "max_meetings": "6", "format": "hybrid",
-            "venue": "optional vor Ort: Messe-Lounge, Tisch nach Plan", "markets": "FI, SE, DK",
+            "venue": "Hamburg, Messe-Lounge", "organiser": "Musterorganisation (fiktiv)", "markets": "FI, SE, DK",
             "sectors": ["medtech", "biotech", "digital_health"],
             "agenda": "09:30 Begrüßung und Marktüberblick Nordeuropa\n10:00 B2B-Gespräche (20 Minuten)\n12:00 Abschluss",
             "agenda_en": "09:30 Welcome and market overview Northern Europe\n10:00 B2B meetings (20 minutes)\n12:00 Close",

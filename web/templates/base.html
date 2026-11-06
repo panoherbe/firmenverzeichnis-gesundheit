@@ -5,31 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% if th.name %}{{ self.title() | replace("Firmenverzeichnis Gesundheitswirtschaft", _(th.name)) | replace("Firmenverzeichnis", _(th.name)) }}{% else %}{% block title %}{{ _("Firmenverzeichnis Gesundheitswirtschaft") }}{% endblock %}{% endif %}</title>
 <link rel="icon" href="/static/icon.svg">
-<link rel="stylesheet" href="/static/site.css?v=20261105c">
+<link rel="stylesheet" href="/static/site.css?v=20261106b">
 <style>
 :root { --fg:{{ th.fg }}; --muted:{{ th.muted }}; --line:{{ th.line }}; --bg:{{ th.bg }}; --soft:{{ th.soft }};
-        --accent:{{ th.accent }}; --accent-fg:{{ th.accent_fg }}; --ok:#1a7f37; --radius:{{ th.radius }}; --font:{{ th.font }}; }
+        --accent:{{ th.accent }}; --accent-fg:{{ th.accent_fg }}; --ok:#146c2e; --radius:{{ th.radius }}; --font:{{ th.font }}; }
 {% block css %}{% endblock %}
 </style>
 </head>
 <body>
 <a class="sr" href="#main">{{ _("Zum Inhalt") }}</a>
+{% if th.preview_notice %}<div class="preview-notice" role="note">{{ th.preview_notice_en if lang() == 'en' and th.preview_notice_en else th.preview_notice }}</div>{% endif %}
 {% if not embed %}
-{% if th.preview_notice %}<div class="preview-notice" role="note">{{ th.preview_notice }}</div>{% endif %}
 <header class="site">
   <a class="brand" href="/">{% if th.logo %}<img src="{{ th.logo }}" alt="">{% else %}<span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2.5-6 5 12 2.5-6h4"/></svg></span>{% endif %}<span>{{ _(th.name) if th.name else _("Firmenverzeichnis Gesundheitswirtschaft") }}</span></a>
   {% set p = request.url.path %}{% set locked = gate_locked(request) %}
   {% if not locked %}<nav aria-label="{{ _('Hauptnavigation') }}">
+    {% if gate_enabled %}<a href="/willkommen" class="{{ 'on' if p.startswith('/willkommen') }}">{{ _("Übersicht") }}</a>{% endif %}
     <a href="/" class="{{ 'on' if p == '/' or p.startswith('/firma') }}">{{ _("Suche") }}</a>
     <a href="/statistik" class="{{ 'on' if p.startswith('/statistik') }}">{{ _("Statistik") }}</a>
     <a href="/matchmaking" class="{{ 'on' if p.startswith('/matchmaking') }}">{{ _("Matchmaking") }}</a>
     <a href="/hilfe" class="{{ 'on' if p.startswith('/hilfe') }}">{{ _("Hilfe") }}</a>
-    <a href="/api/docs">{{ _("API") }}</a>
+    <a href="/api/docs" class="{{ 'on' if p.startswith('/api') }}">{{ _("API") }}</a>
   </nav>{% endif %}
   <div class="right">
     <span class="langsw"><a href="?{{ request.query_params | qs_with(lang='de') }}" class="{{ 'on' if lang() == 'de' }}" hreflang="de">DE</a>|<a href="?{{ request.query_params | qs_with(lang='en') }}" class="{{ 'on' if lang() == 'en' }}" hreflang="en">EN</a></span>
-    {% if user %}<a href="/konto">{{ user.name }}</a>{% if user.role == 'admin' %} · <a href="/admin/nutzer">{{ _("Nutzerverwaltung") }}</a>{% endif %} · <a href="/logout">{{ _("Abmelden") }}</a>
-    {% elif not locked %}<a href="/login?next={{ request.url.path }}">{{ _("Anmelden") }}</a>{% endif %}
+    {% if user %}<a href="/konto">{{ user.name }}</a>{% if user.role == 'admin' and not gate_enabled %} · <a href="/admin/nutzer">{{ _("Nutzerverwaltung") }}</a>{% endif %} · <a href="/logout">{{ _("Abmelden") }}</a>
+    {% elif gate_enabled and not locked %}<a href="/willkommen">{{ _("Demo-Konto") }}</a>{% elif not locked %}<a href="/login?next={{ request.url.path }}">{{ _("Anmelden") }}</a>{% endif %}
   </div>
 </header>
 {% else %}

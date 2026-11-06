@@ -76,7 +76,30 @@ APP_EN = {
     "Größe (Beschäftigte)": "Size (employees)", "Umsatz": "Revenue",
     "wird zum Vertragsstart freigeschaltet": "switched on at contract start",
     "Vorschau mit ausgewählten Unternehmen: Kontakt- und Registerangaben bei einem Teil vollständig, sonst „im Vertrag“. Gesamtbestand im Vertrag.": "Preview with selected companies: contact and register data complete for some of them, otherwise 'in the contract'. Full data set in the contract.",
-    "im Vertrag": "in the contract", "Vorschau: Exporte mit der Auswahl; Kontakt- und Registerangaben bei einem Teil vollständig, Gesamtbestand im Vertrag.": "Preview: exports contain the selection; contact and register data complete for some, full data set in the contract.", "Unternehmensverzeichnis Gesundheitswirtschaft": "Directory of the German Health Industry", "Ein Verzeichnis der deutschen Medizintechnik-, Pharma-, Biotech- und Digital-Health-Unternehmen aus amtlichen Registern, mit Suche, Export, API und virtuellem Matchmaking.": "A directory of German medical technology, pharma, biotech and digital health companies from official registers, with search, export, API and virtual matchmaking.", "Diese Installation ist eine geschlossene Vorschau; der Zugang kommt per persönlichem Link.": "This installation is a closed preview; access is by personal link.", "Zugang oder Fragen:": "Access or questions:",
+    "im Vertrag": "in the contract",
+    "Die Plattform läuft. Diese Vorschau zeigt 100 ausgewählte Unternehmen, 10 davon vollständig mit Kontakt- und Registerangaben.": "The platform is running. This preview shows 100 selected companies, 10 of them complete with contact and register data.",
+    "Kein Passwort nötig: Ein Klick, und Sie sind angemeldet.": "No password needed: one click and you are signed in.", "Direkt ausprobieren": "Try it directly",
+    "Vollständiges Profil": "Complete profile", "So sieht es vollständig aus": "See a complete profile", "vollständig": "complete",
+    "Probieren Sie alles aus: Einträge sehen alle Testenden, nachts wird zurückgesetzt. Bitte nur erfundene Namen und Adressen.": "Try everything: all testers see your entries, and the demo resets every night. Please use made-up names and addresses only.",
+    "Hier noch nichts. Die Vorschau enthält 100 ausgewählte Unternehmen.": "Nothing here yet. The preview holds 100 selected companies.", "Probieren Sie": "Try", "oder": "or",
+    "Mit Demo-Konto Suchen speichern": "Save searches with a demo account", "Demo-Konto": "Demo account", "Übersicht": "Overview",
+    "Für die Vorschau genügt ein Klick.": "One click is all the preview needs.", "Zu den Demo-Konten": "To the demo accounts",
+    "Suchen Sie nach Name, Produkt, Ort oder PLZ. Mehrere Wörter verbindet die Suche mit UND; ODER, NICHT, Klammern und \"Phrasen\" gehen auch.": "Search by name, product, city or postcode. Several words are combined with AND; OR, NOT, brackets and \"phrases\" work too.",
+    "z. B. Implantat": "e.g. implant*", "Den vollständigen Datenbestand gibt es im Vertrag.": "The complete data set comes with the contract.",
+    "Morgen geht es weiter": "More tomorrow", "Die Vorschau zeigt bis zu {n} Profile am Tag. Im Vertrag ohne Grenze.": "The preview shows up to {n} profiles a day. No limit in the contract.",
+    "Die Vorschau erlaubt viele Suchen am Tag; für heute sind sie aufgebraucht.": "The preview allows many searches a day; today's are used up.",
+    "Die Vorschau erlaubt {n} Exporte am Tag mit je bis zu {r} Zeilen. Im Vertrag ohne Grenze.": "The preview allows {n} exports a day of up to {r} rows each. No limit in the contract.",
+    "Einen Moment, bitte": "One moment, please", "Gleich geht es weiter.": "Back in a moment.",
+    "Hier nur mit echtem Konto": "Real accounts only", "Die Nutzerverwaltung schützt echte Konten und bleibt in der Demo zu.": "User management protects real accounts and stays closed in the demo.",
+    "Diese Seite gibt es nicht": "This page does not exist", "Vielleicht hilft die Suche weiter.": "The search may help.",
+    "Vorschau: 100 ausgewählte Unternehmen, 10 davon vollständig mit Kontakt- und Registerangaben. Alles Weitere im Vertrag.": "Preview: 100 selected companies, 10 of them complete with contact and register data. Everything else in the contract.",
+    "Warum diese Branche": "Why this sector", "Quellen": "sources", "Hersteller": "manufacturer", "Importeur": "importer", "Bevollmächtigter": "authorised representative",
+    "Hersteller von Systemen und Behandlungseinheiten": "system and procedure pack producer", "Zulassungsinhaber bei der EMA": "Marketing authorisation holder at the EMA",
+    "öffentliche Aufträge für Arzneimittel": "public contracts for medicines", "öffentliche Aufträge für Medizinsoftware": "public contracts for medical software",
+    "öffentliche Aufträge für Medizintechnik": "public contracts for medical technology", "Firmenname": "company name",
+    "Text kopieren und über Newsletter, Website, AHK-Netz oder Verbände teilen. Die Plattform verschickt selbst keine E-Mails.": "Copy a text and share it through your newsletter, website, AHK network or associations. The platform does not send e-mails itself.",
+    "Erreichen Sie sie über AHKs, Verbände und Partnernetzwerke.": "Reach them through AHKs, associations and partner networks.",
+    "Andere sehen Name, Funktion, Organisation und Interessen, nie die E-Mail.": "Others see name, position, organisation and interests, never the e-mail.", "Vorschau: Exporte mit der Auswahl; Kontakt- und Registerangaben bei einem Teil vollständig, Gesamtbestand im Vertrag.": "Preview: exports contain the selection; contact and register data complete for some, full data set in the contract.", "Unternehmensverzeichnis Gesundheitswirtschaft": "Directory of the German Health Industry", "Ein Verzeichnis der deutschen Medizintechnik-, Pharma-, Biotech- und Digital-Health-Unternehmen aus amtlichen Registern, mit Suche, Export, API und virtuellem Matchmaking.": "A directory of German medical technology, pharma, biotech and digital health companies from official registers, with search, export, API and virtual matchmaking.", "Diese Installation ist eine geschlossene Vorschau; der Zugang kommt per persönlichem Link.": "This installation is a closed preview; access is by personal link.", "Zugang oder Fragen:": "Access or questions:",
     "Medizintechnik, Pharma, Biotechnologie, digitale Gesundheit; abgeleitet aus Register (EUDAMED, EMA) und Firmenangaben.": "Medical technology, pharma, biotech, digital health; derived from registers (EUDAMED, EMA) and company information.",
     "Sitz des Unternehmens laut Register.": "Registered seat of the company.",
     "Umsatzgrößenklassen; Daten über lizenzierten Datenbezug, Freischaltung zum Vertragsstart.": "Revenue size classes; data from a licensed supply, switched on at contract start.",
@@ -96,10 +119,10 @@ APP_EN = {
     "Willkommen": "Welcome",
     "Kontaktseite und Funktionspostfach": "Contact page and role mailbox", "Hilfe, Glossar, Einführung": "Help, glossary, introduction", "In-vitro-Diagnostika": "In-vitro diagnostics", "Treffer in der Auswahl": "hits in the selection", "Unternehmen in der Auswahl": "companies in the selection", "Auswahl": "selection",
     "Für heute genug Profile angesehen": "Enough profiles for today",
-    "Die Vorschau zeigt bis zu {n} Profile am Tag; morgen geht es weiter. Im Vertrag ohne Grenze.": "The preview shows up to {n} profiles a day; more tomorrow. No limit in the contract.",
+    "Die Vorschau zeigt bis zu {n} Profile am Tag. Im Vertrag ohne Grenze.": "The preview shows up to {n} profiles a day; more tomorrow. No limit in the contract.",
     "In der Vorschau lässt sich jede Funktion ausprobieren; den vollständigen Datenbestand gibt es im Vertrag.": "Every function can be tried in the preview; the complete data set comes with the contract.",
     "Zurück zur Übersicht": "Back to the overview", "Trefferliste": "Result list", "Treffer": "hits", "Stand": "as of", "Unternehmen mit Angabe": "companies with a figure", "ohne Filter": "no filter", "Quellen und Lizenzen": "Sources and licences", "Suche": "Search", "Für heute genug gesucht": "Enough searching for today",
-    "Die Vorschau erlaubt viele Suchen am Tag; das Tageskontingent ist erreicht. Morgen geht es weiter.": "The preview allows many searches a day; today's quota is used up. More tomorrow.",
+    "Die Vorschau erlaubt viele Suchen am Tag; für heute sind sie aufgebraucht.": "The preview allows many searches a day; today's quota is used up. More tomorrow.",
     "Für heute genug exportiert": "Enough exports for today",
     "Die Vorschau erlaubt {n} Exporte am Tag mit je bis zu {r} Zeilen; morgen geht es weiter. Im Vertrag ohne Grenze.": "The preview allows {n} exports a day of up to {r} rows each; more tomorrow. No limit in the contract.", "Kurz durchatmen": "One moment, please", "Zur Suche": "To the search",
     "Vorschau: Blättern bis Seite {n}; alle Zählungen sind vollständig. Vollzugriff im Vertrag.": "Preview: browsing up to page {n}; all counts are complete. Full access in the contract.",
@@ -191,6 +214,8 @@ app.mount("/static", StaticFiles(directory=str(Path(__file__).parent / "static")
 if (Path(__file__).parent.parent / "medien").is_dir() and not gate.ENABLED:
     app.mount("/medien", StaticFiles(directory=str(Path(__file__).parent.parent / "medien")), name="medien")
 templates.env.globals.update(chart_title=lambda *a: chart_title(*a), brand=lambda r: brand(r))
+templates.env.globals.update(full_example=lambda: full_example())
+templates.env.filters["evidence_label"] = lambda raw: evidence_label(raw)
 templates.env.globals.update(SECTORS=SECTORS, TIERS=TIERS, REGIONS=REGIONS, SIZES=SIZES, REVENUES=REVENUES, EMDN=EMDN,
                              REVENUE_LOCKED=REVENUE_LOCKED)
 templates.env.globals["current_user"] = auth.current_user
@@ -220,7 +245,7 @@ async def frame_policy(request: Request, call_next):
     if gate.rate_limited(request):
         resp = (JSONResponse({"detail": "too many requests, please wait a moment"}, status_code=429)
                 if request.url.path.startswith("/api/") else
-                gate.limit_page(request, _("Kurz durchatmen"), _("Zu viele Anfragen. Bitte kurz warten.")))
+                gate.limit_page(request, _("Einen Moment, bitte"), _("Gleich geht es weiter.")))
     elif gate.needs_access(request):  # closed demo: strangers get the neutral start page only
         if request.url.path == "/":
             resp = gate.landing(request)
@@ -229,7 +254,8 @@ async def frame_policy(request: Request, call_next):
         else:
             resp = RedirectResponse("/", status_code=303)
     elif demo.blocked(request):  # demo accounts on a demo installation: no user management, logs, support admin
-        resp = HTMLResponse(f"<p>{_('In der Demo gesperrt.')}</p><p><a href='/'>←</a></p>", status_code=403)
+        resp = gate.limit_page(request, _("Hier nur mit echtem Konto"), _(
+            "Die Nutzerverwaltung schützt echte Konten und bleibt in der Demo zu."), status=403)
     else:
         resp = await call_next(request)
     if request.query_params.get("lang") in ("de", "en"):
@@ -296,6 +322,8 @@ def search(f: dict, limit: int, offset: int, fields: str = "*", order: str = "re
                                + "tier, public_awards DESC, name")
     with db() as conn:
         total = conn.execute(f"SELECT count(*) AS n FROM company{w}", params).fetchone()["n"]
+        if gate.ENABLED:  # preview: the complete profiles first, so evaluators meet them on page 1
+            by = f"coalesce(preview_locked, false), {by}"
         rows = conn.execute(f"SELECT {fields} FROM company{w} ORDER BY {by} LIMIT %(limit)s OFFSET %(offset)s",
                             {**params, "limit": limit, "offset": offset}).fetchall()
         facets = conn.execute(f"""
@@ -335,8 +363,8 @@ def index(request: Request, q: str = "", sector: str = "", tier: str = "", regio
           page: int = Query(1, ge=1), embed: bool = False):
     f = filters(q, sector, tier, region, size, revenue, product, contact, alle)
     if gate.over(request, "search"):
-        return gate.limit_page(request, _("Für heute genug gesucht"), _(
-            "Die Vorschau erlaubt viele Suchen am Tag; das Tageskontingent ist erreicht. Morgen geht es weiter."))
+        return gate.limit_page(request, _("Morgen geht es weiter"), _(
+            "Die Vorschau erlaubt viele Suchen am Tag; für heute sind sie aufgebraucht."))
     if gate.ENABLED and page > gate.PREVIEW_PAGES:  # closed preview: browse the first pages, counts stay complete
         page = gate.PREVIEW_PAGES
     total, rows, facets = search(f, limit=25, offset=(page - 1) * 25, order=sort)
@@ -380,8 +408,8 @@ def load_company(cid: str):
 @app.get("/firma/{cid}", response_class=HTMLResponse)
 def detail(request: Request, cid: str, embed: bool = False):
     if gate.over(request, "profile"):
-        return gate.limit_page(request, _("Für heute genug Profile angesehen"), _(
-            "Die Vorschau zeigt bis zu {n} Profile am Tag; morgen geht es weiter. Im Vertrag ohne Grenze.").format(
+        return gate.limit_page(request, _("Morgen geht es weiter"), _(
+            "Die Vorschau zeigt bis zu {n} Profile am Tag. Im Vertrag ohne Grenze.").format(
             n=gate.PREVIEW_PROFILES))
     c, members, similar = load_company(cid)
     return templates.TemplateResponse(request, "detail.html", dict(c=c, members=members, similar=similar, embed=embed))
@@ -439,6 +467,36 @@ def stats(f: dict) -> dict:
     return out
 
 
+EUDAMED_ROLES = {"MF": "Hersteller", "IM": "Importeur", "AR": "Bevollmächtigter",
+                 "PR": "Hersteller von Systemen und Behandlungseinheiten"}
+
+
+def evidence_label(raw: str) -> str:
+    """Why a company is in a sector, in plain words (raw: 'EUDAMED AR/MF', 'Aufträge CPV 336', …)."""
+    if raw.startswith("EUDAMED "):
+        return "EUDAMED: " + ", ".join(_(EUDAMED_ROLES.get(r, r)) for r in raw.split()[1].split("/"))
+    if raw == "EMA Zulassungsinhaber":
+        return _("Zulassungsinhaber bei der EMA")
+    if raw.startswith("Aufträge CPV 336"):
+        return _("öffentliche Aufträge für Arzneimittel")
+    if raw.startswith("Aufträge CPV 4818"):
+        return _("öffentliche Aufträge für Medizinsoftware")
+    if raw.startswith("Aufträge CPV"):
+        return _("öffentliche Aufträge für Medizintechnik")
+    if raw == "Name":
+        return _("Firmenname")
+    return raw
+
+
+def full_example() -> dict | None:
+    """A complete profile of the preview selection, linked from locked profiles and the welcome page."""
+    if not gate.ENABLED:
+        return None
+    with db() as conn:
+        return conn.execute("""SELECT id, name FROM company WHERE verified AND NOT coalesce(preview_locked, false)
+            ORDER BY (email_role IS NOT NULL AND contact_url IS NOT NULL AND lei IS NOT NULL) DESC, name LIMIT 1""").fetchone()
+
+
 def chart_title(key: str, title: str, s: dict) -> str:
     if key == "size":
         return f"{_(title)} ({s['size_known']:,} {_('Unternehmen mit Angabe')})".replace(",", ".")
@@ -478,6 +536,14 @@ def statistics_pdf(request: Request, q: str = "", sector: str = "", tier: str = 
     return Response(doc.render(), media_type="application/pdf",
                     headers={"Content-Disposition": 'attachment; filename="statistik.pdf"'})
 
+
+
+@app.exception_handler(404)
+async def not_found(request: Request, exc):
+    """Friendly page instead of raw JSON for people; the API keeps JSON."""
+    if request.url.path.startswith(("/api/", "/export")) or "text/html" not in request.headers.get("accept", ""):
+        return JSONResponse({"detail": getattr(exc, "detail", "Not Found")}, status_code=404)
+    return gate.limit_page(request, _("Diese Seite gibt es nicht"), _("Vielleicht hilft die Suche weiter."), status=404)
 
 # ---------- API ----------
 
@@ -584,14 +650,13 @@ def filter_text(f: dict) -> str:
 def preview_note(total: int, n: int) -> str | None:
     if not gate.ENABLED:
         return None
-    return _("Vorschau mit ausgewählten Unternehmen: Kontakt- und Registerangaben bei einem Teil vollständig, "
-             "sonst „im Vertrag“. Gesamtbestand im Vertrag.")
+    return _("Vorschau: 100 ausgewählte Unternehmen, 10 davon vollständig mit Kontakt- und Registerangaben. "
+             "Alles Weitere im Vertrag.")
 
 
 def export_limit(request: Request):
-    return gate.limit_page(request, _("Für heute genug exportiert"), _(
-        "Die Vorschau erlaubt {n} Exporte am Tag mit je bis zu {r} Zeilen; morgen geht es weiter. Im Vertrag ohne "
-        "Grenze.").format(n=gate.PREVIEW_DAILY["export"], r=gate.PREVIEW_ROWS))
+    return gate.limit_page(request, _("Morgen geht es weiter"), _(
+        "Die Vorschau erlaubt {n} Exporte am Tag mit je bis zu {r} Zeilen. Im Vertrag ohne Grenze.").format(n=gate.PREVIEW_DAILY["export"], r=gate.PREVIEW_ROWS))
 
 
 def export_name(ext: str, f: dict | None = None) -> str:
@@ -654,7 +719,7 @@ def export_xlsx(request: Request):
     ws["A2"].font = Font(size=10, color="5A5F66")
     note = preview_note(total, len(rows))
     ws.append([note or ""])
-    ws["A3"].font = Font(size=10, bold=True, color="B45309")
+    ws["A3"].font = Font(size=10, color="5A5F66")
     head_row = 5
     ws.append([])
     ws.append([_(EXPORT_LABELS.get(k, k)) for k in EXPORT_FIELDS])
@@ -730,8 +795,8 @@ def export_pdf(request: Request):
 @app.get("/firma/{cid}/pdf")
 def detail_pdf(request: Request, cid: str):
     if gate.over(request, "profile"):
-        return gate.limit_page(request, _("Für heute genug Profile angesehen"), _(
-            "Die Vorschau zeigt bis zu {n} Profile am Tag; morgen geht es weiter. Im Vertrag ohne Grenze.").format(
+        return gate.limit_page(request, _("Morgen geht es weiter"), _(
+            "Die Vorschau zeigt bis zu {n} Profile am Tag. Im Vertrag ohne Grenze.").format(
             n=gate.PREVIEW_PROFILES))
     c, members, _s = load_company(cid)
     c = gate.tease([dict(c)])[0]
@@ -742,7 +807,7 @@ def detail_pdf(request: Request, cid: str):
           (_("Kontaktseite"), c.get("contact_url")), (_("E-Mail (Funktionspostfach)"), c["email_role"]),
           (_("Produkte (EMDN)"), ", ".join(_(EMDN.get(g, g)) for g in (c.get("emdn_groups") or []))),
           (_("USt-IdNr."), c["vat"]), (_("Handelsregister"), c["register_no"]), ("LEI", c["lei"]),
-          ("EUDAMED SRN", ", ".join(c["srns"]))]
+          ("EUDAMED SRN", c["srns"] if isinstance(c["srns"], str) else ", ".join(c["srns"] or []))]
     doc.table(["", ""], [(k, v or "–") for k, v in kv], [0.3, 0.7], header=False)
     sources = dict.fromkeys(f"{m['title']} ({m['licence']})" for m in members)  # one line per source, not per record
     doc.text(_("Herkunft der Daten") + ": " + "; ".join(sources), 8)

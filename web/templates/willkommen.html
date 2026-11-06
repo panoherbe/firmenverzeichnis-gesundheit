@@ -13,14 +13,15 @@
 <meta name="robots" content="noindex, nofollow">
 <div class="wk">
 <h1>{{ _("Willkommen") }}{% if demo_org %}, {{ demo_org }}{% endif %}</h1>
-<p class="lead">{{ _("Die Plattform läuft bereits. Diese Vorschau zeigt den Aufbau des Registers an 100 ausgewählten Unternehmen, 10 davon vollständig mit Kontakt- und Registerangaben.") }}{% if welcome %} {{ welcome }}{% endif %}</p>
-<p>{{ _("Ihr persönlicher Zugang ist aktiv (30 Tage auf diesem Gerät). Alles läuft ohne Passwort; ein Klick meldet ein Demo-Konto an.") }}</p>
+<p class="lead">{{ _("Die Plattform läuft. Diese Vorschau zeigt 100 ausgewählte Unternehmen, 10 davon vollständig mit Kontakt- und Registerangaben.") }}{% if welcome %} {{ welcome }}{% endif %}</p>
+<p>{{ _("Kein Passwort nötig: Ein Klick, und Sie sind angemeldet.") }}</p>
 <div class="btns">
   <form method="post" action="/test/anmelden"><input type="hidden" name="als" value="nutzerin"><button>{{ _("Als Nutzerin testen") }}</button></form>
   <form method="post" action="/test/anmelden"><input type="hidden" name="als" value="veranstalterin"><button class="ghost">{{ _("Als Veranstalterin testen") }}</button></form>
 </div>
-<h2>{{ _("Direkt zu dem, was Sie prüfen") }}</h2>
+<h2>{{ _("Direkt ausprobieren") }}</h2>
 <div class="grid">
+  {% set fx = full_example() %}{% if fx %}<a class="card" href="/firma/{{ fx.id }}"><span class="k">{{ _("Vollständiges Profil") }}</span><br><strong>{{ fx.name }}</strong></a>{% endif %}
   <a class="card" href="/?q=Endoskop*&region=DE-BW"><span class="k">{{ _("Suche, Filter, Boolesche Operatoren") }}</span><br><strong>„Endoskop*“ · Baden-Württemberg</strong></a>
   <a class="card" href="/?q=%28Implantat*%20ODER%20Prothese*%29%20NICHT%20Dental*&sector=medtech"><span class="k">{{ _("Kombinierte Suche") }}</span><br><strong>(Implantat* ODER Prothese*) NICHT Dental*</strong></a>
   <a class="card" href="/?product=W"><span class="k">{{ _("Produktgruppe") }}</span><br><strong>{{ _("In-vitro-Diagnostika") }}</strong></a>
@@ -34,6 +35,6 @@
   <a class="card" href="/support"><span class="k">{{ _("Support und SLA") }}</span><br><strong>{{ _("Ticketformular, Statusseite") }}</strong></a>
   <a class="card" href="/datenschutz"><span class="k">{{ _("Datenschutz") }}</span><br><strong>{{ _("Hinweise nach Art. 13 DSGVO") }}</strong></a>
 </div>
-<p class="small" style="margin-top:16px">{{ _("Nur Demodaten. Was Sie eintragen, sehen alle Testenden bis zum nächtlichen Zurücksetzen. Bitte keine echten Personendaten eingeben.") }}</p>
+<p class="small" style="margin-top:16px">{{ _("Probieren Sie alles aus: Einträge sehen alle Testenden, nachts wird zurückgesetzt. Bitte nur erfundene Namen und Adressen.") }}</p>
 </div>
 {% endblock %}

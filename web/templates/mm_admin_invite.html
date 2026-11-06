@@ -3,9 +3,8 @@
 {% block css %}{% include "mm_style.html" %}{% endblock %}
 {% block main %}
 <div class="mm">{% include "mm_tabs.html" %}
-<p class="note">{{ _("Keine Kalt-E-Mails: Einladungen nur über eigene Kanäle (Newsletter, Website, AHK-Netz, Verbände). Werbe-E-Mails ohne Einwilligung sind nach § 7 UWG unzulässig. Die Plattform verschickt keine E-Mails.") }}</p>
+<p class="help">{{ _("Text kopieren und über Newsletter, Website, AHK-Netz oder Verbände teilen. Die Plattform verschickt selbst keine E-Mails.") }}</p>
 <h2>{{ _("Anmeldelink") }}</h2>
-<p class="small">{{ _("Den Link kopieren und in eigenen Kanälen veröffentlichen.") }}</p>
 <div class="linkbox"><input id="u" type="text" readonly value="{{ url }}"><button type="button" data-copy="u">⧉</button></div>
 {% if ev.status != "open" %}<p class="note">{{ _("Status „Anmeldung offen“ macht die Seite öffentlich. Zeiten gelten in der gewählten Zeitzone.") }}</p>{% endif %}
 <h2>{{ _("Einladungstexte") }}</h2>
@@ -14,6 +13,6 @@
   <button type="button" class="sec" data-copy="t{{ loop.index }}">⧉</button></div>
   <pre class="copy" id="t{{ loop.index }}">{{ text }}</pre></div>
 {% endfor %}
-<p class="small"><a href="/matchmaking/admin/international">{{ _("Internationale Datenbank") }}</a> – {{ _("Ansprache über AHKs, Verbände und Partnernetzwerke – nicht per Kalt-E-Mail.") }}</p>
+<p class="small"><a href="/matchmaking/admin/international">{{ _("Internationale Datenbank") }}</a> – {{ _("Erreichen Sie sie über AHKs, Verbände und Partnernetzwerke.") }}</p>
 </div>
 {% endblock %}

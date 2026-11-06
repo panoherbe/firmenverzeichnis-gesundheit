@@ -170,3 +170,24 @@ footer a:hover { color: var(--accent); }
   body { background: #fff; display: block; } .card { box-shadow: none; } header.site { position: static; }
   main { padding: 0; } th { background: none; }
 }
+
+/* 2026-11-06 phone and contrast pass (preview review): readable and stable at 375 px */
+::placeholder { color: var(--muted); }
+.tag.full { background: var(--ok-soft); color: var(--ok); }
+details.provd { margin-top: 18px; } details.provd > summary { cursor: pointer; padding: 6px 0; }
+@media (max-width: 900px) {
+  header.site { position: static; }
+  html { scroll-padding-top: 12px; }
+}
+@media (max-width: 760px) {
+  h1 { overflow-wrap: anywhere; hyphens: auto; }
+  header.site .right { flex-wrap: wrap; gap: 6px 10px; }
+  header.site nav { flex-wrap: wrap; }
+  section.p table, section.h table, .prov table, main > table { display: block; overflow-x: auto; max-width: 100%; }
+  input, select, textarea { font-size: 16px; }
+  .btn, .exp a, .acts a, .langsw a, .pager a { min-height: 36px; display: inline-flex; align-items: center; }
+  .tip:hover::after, .tip:focus::after { position: fixed; left: 16px; right: 16px; top: auto; bottom: 16px; width: auto; }
+}
+@media (max-width: 1024px) {
+  header.site { flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+}
