@@ -29,7 +29,8 @@ DSN = os.environ["DATABASE_URL"]
 OPERATOR = {
     "name": os.environ.get("OPERATOR_NAME", "Panagiotis Herbe"),
     "address": os.environ.get("OPERATOR_ADDRESS", "Stockhausenstr. 10, 22305 Hamburg, Deutschland"),
-    "email": os.environ.get("OPERATOR_EMAIL", "kontakt@panoherbe.com"),
+    # joined at runtime so no plain address sits in the public source (bot spam, 2026-11-11); the pages still show it
+    "email": os.environ.get("OPERATOR_EMAIL", "@".join(("kontakt", "panoherbe.com"))),
     "imprint_url": os.environ.get("IMPRINT_URL", "https://www.panoherbe.com/impressum"),
     "authority": os.environ.get("PRIVACY_AUTHORITY", "Der Hamburgische Beauftragte für Datenschutz und "
                                 "Informationsfreiheit, Ludwig-Erhard-Str. 22, 20459 Hamburg"),

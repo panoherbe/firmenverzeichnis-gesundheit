@@ -8,7 +8,7 @@ import httpx
 
 from etl.common import resolver
 
-USER_AGENT = "firmenverzeichnis-gesundheit/0.1 (research crawler; contact: kontakt@panoherbe.com)"
+USER_AGENT = "firmenverzeichnis-gesundheit/0.1 (research crawler; +https://panoherbe.com)"
 
 
 def client(timeout: float = 60.0) -> httpx.Client:
